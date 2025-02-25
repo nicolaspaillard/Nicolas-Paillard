@@ -5,7 +5,7 @@ import { CareerService, Experience } from "@app/shared/services/career.service";
 import { Section, SectionsService } from "@app/shared/services/sections.service";
 import { Category, SkillsService } from "@app/shared/services/skills.service";
 import { AuthService } from "@services/auth.service";
-import { DesignerService } from "@services/frontend/designer.service";
+import { DesignerService } from "@services/designer.service";
 import { MenuItem } from "primeng/api";
 import { ButtonModule } from "primeng/button";
 import { FileUploadHandlerEvent, FileUploadModule } from "primeng/fileupload";

@@ -5,7 +5,7 @@ import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validatio
 import { NavigationEnd, NavigationStart, Route, Router, RouterModule, RouterOutlet } from "@angular/router";
 import { AnimationComponent } from "@components/animation/animation.component";
 import { AuthService } from "@services/auth.service";
-import { DesignerService } from "@services/frontend/designer.service";
+import { DesignerService } from "@services/designer.service";
 import { ButtonModule } from "primeng/button";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { DialogModule } from "primeng/dialog";

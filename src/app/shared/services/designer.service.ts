@@ -11,10 +11,10 @@ import { TextSchema } from "@pdfme/schemas/dist/types/src/text/types";
 import { Designer } from "@pdfme/ui";
 import { IconNode, Link } from "lucide";
 import { cloudinaryConfig } from "src/main";
-import { Section, SectionsService } from "../sections.service";
-import { Category, SkillsService } from "../skills.service";
-import { AnimationService } from "./animation.service";
-import { ToastService } from "./toast.service";
+import { AnimationService } from "./frontend/animation.service";
+import { ToastService } from "./frontend/toast.service";
+import { Section, SectionsService } from "./sections.service";
+import { Category, SkillsService } from "./skills.service";
 
 @Injectable({
   providedIn: "root",
