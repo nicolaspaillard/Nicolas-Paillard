@@ -21,12 +21,13 @@ export const cloudinaryConfig = {
   cloudName: "dsuvd32up",
 };
 const firebaseConfig: FirebaseOptions = {
+  projectId: "nicolas-paillard",
+  appId: "1:95010764775:web:13c56aa8915dd2c65bef42",
+  databaseURL: "https://nicolas-paillard-default-rtdb.europe-west1.firebasedatabase.app",
+  storageBucket: "nicolas-paillard.firebasestorage.app",
   apiKey: "AIzaSyCKSTi3zt6uYsjrwFAo_36OsnkjEK7wxt8",
   authDomain: "nicolas-paillard.firebaseapp.com",
-  projectId: "nicolas-paillard",
-  storageBucket: "nicolas-paillard.firebasestorage.app",
   messagingSenderId: "95010764775",
-  appId: "1:95010764775:web:13c56aa8915dd2c65bef42",
   measurementId: "G-Y6HMSH0JV4",
 };
 const matrix = definePreset(Aura, {
@@ -712,24 +713,23 @@ bootstrapApplication(AppComponent, {
         anchorScrolling: "enabled",
       }),
     ),
-    provideHttpClient(withInterceptorsFromDi()),
-    provideFirebaseApp(() => initializeApp(firebaseConfig)),
-    provideFirestore(() => getFirestore()),
-    provideAuth(() => getAuth()),
-    provideAnalytics(() => getAnalytics()),
-    provideAppCheck(() => initializeAppCheck(undefined, { provider: new ReCaptchaEnterpriseProvider("6LdH4IYqAAAAAFEF9U2RMeZGVxRXVZAf_67iHt9M"), isTokenAutoRefreshEnabled: true })),
     provideAnimationsAsync(),
+    provideHttpClient(withInterceptorsFromDi()),
     providePrimeNG({
       theme: {
         preset: matrix,
       },
       ripple: true,
     }),
-
     ConfirmationService,
     MessageService,
+    provideCloudinaryLoader("https://res.cloudinary.com/" + cloudinaryConfig.cloudName),
+    provideFirebaseApp(() => initializeApp(firebaseConfig)),
+    provideAuth(() => getAuth()),
+    provideAnalytics(() => getAnalytics()),
     ScreenTrackingService,
     UserTrackingService,
-    provideCloudinaryLoader("https://res.cloudinary.com/" + cloudinaryConfig.cloudName),
+    provideAppCheck(() => initializeAppCheck(undefined, { provider: new ReCaptchaEnterpriseProvider("6LdH4IYqAAAAAFEF9U2RMeZGVxRXVZAf_67iHt9M"), isTokenAutoRefreshEnabled: true })),
+    provideFirestore(() => getFirestore()),
   ],
 }).catch((err) => console.error(err));

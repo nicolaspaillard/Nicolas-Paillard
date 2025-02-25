@@ -1,16 +1,17 @@
-<canvas class="absolute top-0 right-0 bottom-0 left-0 opacity-50" (window:resize)="matrix()"></canvas>
+<canvas class="absolute bottom-0 left-0 right-0 top-0 opacity-50" (window:resize)="matrix()"></canvas>
 <div class="flex h-full w-full flex-col overflow-hidden">
-  <nav #nav class="card sticky top-0 z-20 container mx-auto flex justify-between gap-2 border-b-0 p-2 lg:justify-center lg:border-b-2 [&_button]:h-full [&_button]:w-full">
+  <nav #nav class="card container sticky top-0 z-20 mx-auto flex justify-between gap-2 border-b-0 p-2 lg:justify-center lg:border-b-2 [&_button]:h-full [&_button]:w-full">
     <div class="flex gap-2">
       <p-button class="lg:hidden" icon="pi pi-bars" [text]="true" [ngClass]="{ '[&>button]:border-primary!': menuShown.checked }" (onClick)="menuShown.checked = !menuShown.checked"></p-button>
       <p-button routerLink="/" size="large" routerLinkActive="[&>button]:border-primary!" [ngClass]="{ '[&>button]:border-none!': menuShown.checked }" [routerLinkActiveOptions]="{ exact: true }" [text]="true" icon="pi pi-home"></p-button>
       <p-button size="large" styleClass="text-black!" (onClick)="downloadCV()">CV</p-button>
+      <p-button size="large" *ngIf="user && user['roles'].includes('admin')" styleClass="text-black!" (onClick)="analog()">LOG !</p-button>
       <input #menuShown type="checkbox" class="peer hidden" />
       <div
         class="z-10 flex overflow-hidden"
         [ngClass]="{
           'lg:relative lg:inset-x-auto lg:top-0 lg:mx-auto lg:max-h-full lg:w-auto lg:flex-row lg:justify-center lg:gap-2 lg:border-0 lg:bg-transparent lg:px-0 lg:shadow-none': true,
-          'card absolute -inset-x-0.5 top-full max-h-0 flex-col border-t-0 px-2 transition-[max-height] peer-checked:max-h-[999px]!': true,
+          'card peer-checked:max-h-[999px]! absolute -inset-x-0.5 top-full max-h-0 flex-col border-t-0 px-2 transition-[max-height]': true,
         }">
         <ng-container *ngFor="let route of routes">
           <p-button class="mb-2 lg:mb-0" *ngIf="!route.canActivate || !route.data!['role'] || (user && user['roles'].includes(route.data!['role']))" size="large" (onClick)="menuShown.checked = false" [routerLink]="route.path" routerLinkActive="[&>button]:border-primary!" [label]="route.title + ''" [text]="true"></p-button>
@@ -20,7 +21,7 @@
     <p-button *ngIf="!user" size="large" styleClass="text-black!" (onClick)="isSigninShown = true">Connexion</p-button>
     <p-button *ngIf="user" size="large" styleClass="text-black!" (onClick)="signout()">Déconnexion</p-button>
   </nav>
-  <div id="router-container" class="relative container mx-auto grow overflow-x-hidden" [ngClass]="{ 'overflow-hidden!': isTransitioning }" [@routeAnimations]="prepareRoute(outlet)">
+  <div id="router-container" class="container relative mx-auto grow overflow-x-hidden" [ngClass]="{ 'overflow-hidden!': isTransitioning }" [@routeAnimations]="prepareRoute(outlet)">
     <router-outlet #outlet="outlet"></router-outlet>
   </div>
 </div>
@@ -28,7 +29,7 @@
 <p-toast [life]="5000" position="bottom-right"></p-toast>
 <p-confirmDialog [dismissableMask]="true"></p-confirmDialog>
 <p-dialog header="Connexion" [modal]="true" [(visible)]="isSigninShown" [dismissableMask]="true">
-  <form [formGroup]="formSignin" class="mb-2 flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&_label]:flex [&_label]:w-full [&_label]:flex-col [&>label]:gap-0">
+  <form [formGroup]="formSignin" class="mb-2 flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
     <label>
       Email
       <input pInputText type="text" formControlName="email" />
