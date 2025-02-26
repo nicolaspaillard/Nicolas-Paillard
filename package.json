@@ -5,8 +5,7 @@
     "start": "ng serve",
     "build": "ng build",
     "update": "ng update",
-    "deploy gh": "ng deploy",
-    "deploy fb": "ng build & firebase deploy"
+    "deploy": "ng deploy & firebase deploy"
   },
   "private": true,
   "dependencies": {
