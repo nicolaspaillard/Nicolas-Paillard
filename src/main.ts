@@ -21,14 +21,14 @@ export const cloudinaryConfig = {
   cloudName: "dsuvd32up",
 };
 const firebaseConfig: FirebaseOptions = {
-  projectId: "nicolas-paillard",
-  appId: "1:95010764775:web:13c56aa8915dd2c65bef42",
-  databaseURL: "https://nicolas-paillard-default-rtdb.europe-west1.firebasedatabase.app",
-  storageBucket: "nicolas-paillard.firebasestorage.app",
-  apiKey: "AIzaSyCKSTi3zt6uYsjrwFAo_36OsnkjEK7wxt8",
+  apiKey: "AIzaSyCK63FPXXdZiLhcEAno8bx3dRnn3TkzZ0A",
   authDomain: "nicolas-paillard.firebaseapp.com",
+  databaseURL: "https://nicolas-paillard-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "nicolas-paillard",
+  storageBucket: "nicolas-paillard.firebasestorage.app",
   messagingSenderId: "95010764775",
-  measurementId: "G-Y6HMSH0JV4",
+  appId: "1:95010764775:web:e31ecc087cb7e98d5bef42",
+  measurementId: "G-TP7L771J2P",
 };
 const matrix = definePreset(Aura, {
   primitive: {

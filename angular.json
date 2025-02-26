@@ -80,9 +80,8 @@
         },
         "deploy": {
           "builder": "angular-cli-ghpages:deploy",
-          "options": {
-            "buildTarget": "nicolaspaillard:build:production"
-          }
+          // "builder": "@angular/fire:deploy",
+          "options": {}
         }
       }
     }

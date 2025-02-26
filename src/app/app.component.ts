@@ -1,7 +1,6 @@
 import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
-import { Component, inject, OnInit } from "@angular/core";
-import { Analytics, logEvent } from "@angular/fire/analytics";
+import { Component, OnInit } from "@angular/core";
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { NavigationEnd, NavigationStart, Route, Router, RouterModule, RouterOutlet } from "@angular/router";
 import { AnimationComponent } from "@components/animation/animation.component";
@@ -53,7 +52,6 @@ export class AppComponent implements OnInit {
     email: new FormControl("", [Validators.required, Validators.email]),
     password: new FormControl("", [Validators.required]),
   });
-  private analytics = inject(Analytics);
   constructor(
     private router: Router,
     private authService: AuthService,
@@ -75,10 +73,6 @@ export class AppComponent implements OnInit {
     this.matrix();
   }
 
-  analog = () => {
-    console.log("analog");
-    logEvent(this.analytics, "analog", { name: "analog" });
-  };
   downloadCV = () => this.designerService.downloadPDF({ editing: false, replace: true });
 
   prepareRoute = (outlet: RouterOutlet) => outlet && outlet.activatedRouteData && outlet.activatedRouteData["animation"];

@@ -5,7 +5,6 @@
       <p-button class="lg:hidden" icon="pi pi-bars" [text]="true" [ngClass]="{ '[&>button]:border-primary!': menuShown.checked }" (onClick)="menuShown.checked = !menuShown.checked"></p-button>
       <p-button routerLink="/" size="large" routerLinkActive="[&>button]:border-primary!" [ngClass]="{ '[&>button]:border-none!': menuShown.checked }" [routerLinkActiveOptions]="{ exact: true }" [text]="true" icon="pi pi-home"></p-button>
       <p-button size="large" styleClass="text-black!" (onClick)="downloadCV()">CV</p-button>
-      <p-button size="large" *ngIf="user && user['roles'].includes('admin')" styleClass="text-black!" (onClick)="analog()">LOG !</p-button>
       <input #menuShown type="checkbox" class="peer hidden" />
       <div
         class="z-10 flex overflow-hidden"
