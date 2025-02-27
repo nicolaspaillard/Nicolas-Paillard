@@ -1,11 +1,11 @@
-<div class="group card relative h-full p-5 lg:p-10">
+<div class="card group relative h-full p-5 lg:p-10">
   <h2 class="mb-3 text-center text-xl font-bold">
     {{ project.url }}
     <span *ngIf="project.url" class="text-sm">
-      <a [href]="'https://' + project.url" target="_blank" class="text-[#00c800]"><i class="pi pi-link"></i></a>
+      <a [href]="'https://' + project.url" target="_blank" class="text-primary"><i class="pi pi-link"></i></a>
     </span>
   </h2>
-  <div *ngIf="user && user['roles'].includes('admin')" class="absolute top-0 right-0 z-10 transition-opacity group-hover:opacity-100 lg:opacity-0">
+  <div *ngIf="user && user['roles'].includes('admin')" class="absolute right-0 top-0 z-10 transition-opacity group-hover:opacity-100 lg:opacity-0">
     <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="onProjectEdit.emit(project)" />
     <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="onProjectRemoved.emit(project)" />
   </div>
@@ -16,12 +16,6 @@
           <i class="pi pi-search"></i>
         </ng-template>
       </p-image>
-    </ng-template>
-    <ng-template pTemplate="previousicon">
-      <p-button icon="pi pi-angle-left" class="block" [outlined]="true" size="small"></p-button>
-    </ng-template>
-    <ng-template pTemplate="nexticon">
-      <p-button icon="pi pi-angle-right" class="block" [outlined]="true" size="small"></p-button>
     </ng-template>
   </p-carousel>
   <i class="block text-center">{{ project.company }} | {{ project.start | date: "MM/yyyy" }} - {{ project.end | date: "MM/yyyy" }}</i>
