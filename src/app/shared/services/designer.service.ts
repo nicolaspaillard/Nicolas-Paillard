@@ -137,7 +137,7 @@ export class DesignerService {
         address: "Montpellier",
         phone: JSON.stringify([["07 81 48 00 36", "tel:0781480036"]]),
         email: JSON.stringify([["paillard.nicolas.pro@gmail.com", "mailto:paillard.nicolas.pro@gmail.com"]]),
-        site: JSON.stringify([["nicolaspaillard.github.io", "https://nicolaspaillard.github.io/designer"]]),
+        site: JSON.stringify([["nicolaspaillard.fr", "https://nicolaspaillard.fr/designer"]]),
         github: JSON.stringify([["github.com/nicolaspaillard", "https://github.com/nicolaspaillard"]]),
         gitlab: JSON.stringify([["gitlab.com/nicolaspaillard", "https://gitlab.com/nicolaspaillard"]]),
         linkedin: JSON.stringify([["linkedin.com/in/nicolas--p", "https://www.linkedin.com/in/nicolas--p"]]),
