@@ -1,45 +1,32 @@
 <canvas id="matrix" class="absolute bottom-0 left-0 right-0 top-0 bg-black" [ngClass]="{ hidden: !matrixEnabled }" (window:resize)="matrix()"></canvas>
 <div class="flex h-full w-full flex-col overflow-hidden">
-  <nav #nav class="card container sticky top-0 z-20 mx-auto flex justify-between gap-2 border-b-0 p-2 lg:justify-center lg:border-b-2 [&_button]:h-full [&_button]:w-full">
-    <div class="flex gap-2">
-      <p-button class="lg:hidden" icon="pi pi-bars" [text]="true" [ngClass]="{ '[&>button]:border-primary!': menuShown.checked }" (onClick)="menuShown.checked = !menuShown.checked"></p-button>
-      <p-button routerLink="/" size="large" routerLinkActive="[&>button]:border-primary!" [ngClass]="{ '[&>button]:border-none!': menuShown.checked }" [routerLinkActiveOptions]="{ exact: true }" [text]="true" icon="pi pi-home"></p-button>
-      <p-button size="large" styleClass="text-black!" (onClick)="downloadCV()">CV</p-button>
-      <input #menuShown type="checkbox" class="peer hidden" />
-      <div
-        class="z-10 flex overflow-hidden"
-        [ngClass]="{
-          'lg:relative lg:inset-x-auto lg:top-0 lg:mx-auto lg:max-h-full lg:w-auto lg:flex-row lg:justify-center lg:gap-2 lg:border-0 lg:bg-transparent lg:px-0 lg:shadow-none': true,
-          'card peer-checked:max-h-[999px]! absolute -inset-x-0.5 top-full max-h-0 flex-col border-t-0 px-2 transition-[max-height]': true,
-        }">
-        <ng-container *ngFor="let route of routes">
-          <p-button class="mb-2 lg:mb-0" *ngIf="!route.canActivate || !route.data!['role'] || (user && user['roles'].includes(route.data!['role']))" size="large" (onClick)="menuShown.checked = false" [routerLink]="route.path" routerLinkActive="[&>button]:border-primary!" [label]="route.title + ''" [text]="true"></p-button>
-        </ng-container>
+  <nav class="card container fixed left-1/2 z-20 -translate-x-1/2 [&_button]:h-full [&_button]:w-full">
+    <div #nav class="flex justify-between gap-2 p-2 lg:justify-center">
+      <div class="flex gap-2">
+        <p-button class="lg:hidden" icon="pi pi-bars" [text]="true" [ngClass]="{ '[&>button]:border-primary!': menuShown.checked }" (onClick)="menuShown.checked = !menuShown.checked"></p-button>
+        <p-button routerLink="/" size="large" routerLinkActive="[&>button]:border-primary!" [ngClass]="{ '[&>button]:border-none!': menuShown.checked }" [routerLinkActiveOptions]="{ exact: true }" [text]="true" icon="pi pi-home"></p-button>
+        <p-button size="large" styleClass="text-black!" (onClick)="downloadCV()">CV</p-button>
+        <input #menuShown type="checkbox" class="peer hidden" />
+        <div class="hidden gap-2 overflow-hidden lg:flex">
+          <ng-container *ngFor="let route of routes">
+            <p-button class="mb-2 lg:mb-0" *ngIf="!route.canActivate || !route.data!['role'] || (user && user['roles'].includes(route.data!['role']))" size="large" (onClick)="menuShown.checked = false" [routerLink]="route.path" routerLinkActive="[&>button]:border-primary!" [label]="route.title + ''" [text]="true"></p-button>
+          </ng-container>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <p-toggleswitch pTooltip="Red pill ?" tooltipPosition="bottom" class="inline-flex" (onChange)="switchPreset()" />
+        <p-button *ngIf="!user" size="large" styleClass="text-black!" (onClick)="isSigninShown = true">Connexion</p-button>
+        <p-button *ngIf="user" size="large" styleClass="text-black!" (onClick)="signout()">Déconnexion</p-button>
       </div>
     </div>
-    <div class="flex items-center gap-2">
-      <div class="flex items-center gap-1">
-        <svg class="h-5" fill="blue" version="1.2" baseProfile="tiny" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-351 153 256 256" xml:space="preserve">
-          <g id="_x3C_Pill_x3E_">
-            <path
-              id="XMLID_31_"
-              d="M-108.8,208.4c-13.1-18.8-35.5-29-58.3-26.6l0,0l0,0c-10.5,1.1-20.7,4.9-29.4,11L-321.6,280c-28.5,19.9-35.5,59.2-15.6,87.7c13.1,18.8,35.5,29,58.3,26.6c10.5-1.1,20.7-4.9,29.4-11l125-87.2C-95.9,276.2-88.9,236.9-108.8,208.4z M-311.3,309.7c-18.1,14.8-18.7,28.7-18.7,28.7s-4.9-13.1,3.1-28.2c8-15.1,41.7-36.8,41.7-36.8l7.3,9.3C-277.8,282.6-293.1,294.9-311.3,309.7z M-135.2,280.6l-54.8,38.2c-1.6-10-5.7-24.2-15.7-40.2c-13.3-21.3-27.7-29-35.5-31.7l55.5-38.7c6.3-4.4,13.4-6.9,20.6-7.7c15.5-1.6,31.3,5,40.9,18.6C-110.3,239.2-115.2,266.7-135.2,280.6z" />
-          </g>
-        </svg>
-        <p-toggleswitch class="inline-flex" (onChange)="switchPreset()" />
-        <svg class="h-5" fill="red" version="1.2" baseProfile="tiny" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-351 153 256 256" xml:space="preserve">
-          <g id="_x3C_Pill_x3E_">
-            <path
-              id="XMLID_31_"
-              d="M-108.8,208.4c-13.1-18.8-35.5-29-58.3-26.6l0,0l0,0c-10.5,1.1-20.7,4.9-29.4,11L-321.6,280c-28.5,19.9-35.5,59.2-15.6,87.7c13.1,18.8,35.5,29,58.3,26.6c10.5-1.1,20.7-4.9,29.4-11l125-87.2C-95.9,276.2-88.9,236.9-108.8,208.4z M-311.3,309.7c-18.1,14.8-18.7,28.7-18.7,28.7s-4.9-13.1,3.1-28.2c8-15.1,41.7-36.8,41.7-36.8l7.3,9.3C-277.8,282.6-293.1,294.9-311.3,309.7z M-135.2,280.6l-54.8,38.2c-1.6-10-5.7-24.2-15.7-40.2c-13.3-21.3-27.7-29-35.5-31.7l55.5-38.7c6.3-4.4,13.4-6.9,20.6-7.7c15.5-1.6,31.3,5,40.9,18.6C-110.3,239.2-115.2,266.7-135.2,280.6z" />
-          </g>
-        </svg>
-      </div>
-      <p-button *ngIf="!user" size="large" styleClass="text-black!" (onClick)="isSigninShown = true">Connexion</p-button>
-      <p-button *ngIf="user" size="large" styleClass="text-black!" (onClick)="signout()">Déconnexion</p-button>
+    <div class="flex max-h-0 w-full flex-col overflow-hidden px-2 transition-[max-height] lg:hidden" [ngClass]="{ 'max-h-[999px]!': menuShown.checked }">
+      <ng-container *ngFor="let route of routes">
+        <p-button class="mb-2" *ngIf="!route.canActivate || !route.data!['role'] || (user && user['roles'].includes(route.data!['role']))" size="large" (onClick)="menuShown.checked = false" [routerLink]="route.path" routerLinkActive="[&>button]:border-primary!" [label]="route.title + ''" [text]="true"></p-button>
+      </ng-container>
     </div>
   </nav>
-  <div id="router-container" class="container relative mx-auto grow overflow-x-hidden" [ngClass]="{ 'overflow-hidden!': isTransitioning }" [@routeAnimations]="prepareRoute(outlet)">
+  <div class="shrink-0" [style.height.px]="nav.getBoundingClientRect().height + 4"></div>
+  <div id="router-container" [ngClass]="{ '': true }" class="container relative mx-auto grow overflow-x-hidden" [ngClass]="{ 'overflow-hidden!': isTransitioning }" [@routeAnimations]="prepareRoute(outlet)">
     <router-outlet #outlet="outlet"></router-outlet>
   </div>
 </div>

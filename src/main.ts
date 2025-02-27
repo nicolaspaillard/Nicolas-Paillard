@@ -15,9 +15,6 @@ import { AppComponent, routes } from "./app/app.component";
 import { aura } from "./themes/aura.preset";
 
 export const cloudinaryConfig = { cloudName: "dsuvd32up" };
-// #region routes
-
-// #endregion
 bootstrapApplication(AppComponent, {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
