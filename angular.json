@@ -77,9 +77,6 @@
           "options": {
             "buildTarget": "nicolaspaillard:build"
           }
-        },
-        "deploy": {
-          "builder": "angular-cli-ghpages:deploy"
         }
       }
     }
