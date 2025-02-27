@@ -67,7 +67,7 @@ export class DesignerService {
   };
   downloadPDF = async ({ editing, replace }: { editing: boolean; replace: boolean }) => {
     const format = (data: Experience[] | Category[] | Section[], title: string) => {
-      title = `nicolaspaillard.github.io/${title}# `;
+      title = `nicolaspaillard.fr/${title}# `;
       let result: string[] = [];
       data.forEach((item: Experience | Category | Section, index) => {
         result.push(title + (item instanceof Section ? item.text : item.title));
@@ -80,7 +80,7 @@ export class DesignerService {
       this.animationService.animate({
         callback: async () => generate({ template: editing ? this.designer.getTemplate() : await this.getTemplate(), inputs: await this.getInputs(), plugins: plugins, options: { font: fonts } }).then((pdf) => window.open(URL.createObjectURL(new Blob([pdf.buffer], { type: "application/pdf" })), replace ? "_self" : "_blank")),
         sections: [
-          { route: "home", lines: ["Accueil", "nicolaspaillard.github.io/home# " + (await this.getPhoto())] },
+          { route: "home", lines: ["Accueil", "nicolaspaillard.fr/home# " + (await this.getPhoto())] },
           { route: "about", lines: ["A propos", ...format(this.sections, "about")] },
           { route: "career", lines: ["Carrière", ...format(this.experiences, "career")] },
           { route: "skills", lines: ["Compétences", ...format(this.categories, "skills")] },
