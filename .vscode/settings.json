@@ -1,6 +1,6 @@
 {
   "prettier.configPath": ".vscode/.prettierrc",
-  "tailwindCSS.classAttributes": ["class", "className", "ngClass", "class:list", "menuStyleClass", "headerStyleClass", "contentStyleClass", "tabStyleClass", "styleClass", "routerLinkActive", "[ngClass]"],
+  "tailwindCSS.classAttributes": ["class", "className", "ngClass", "class:list", "menuStyleClass", "headerStyleClass", "contentStyleClass", "tabStyleClass", "styleClass", "chooseStyleClass", "routerLinkActive", "[ngClass]"],
   "workbench.editor.customLabels.enabled": true,
   "workbench.editor.customLabels.patterns": {
     "**/root/*/*.*": "${dirname(1)}/${filename}.${extname(-2)}",

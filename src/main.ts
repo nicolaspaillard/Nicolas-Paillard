@@ -8,7 +8,7 @@ import { getAuth, provideAuth } from "@angular/fire/auth";
 import { getFirestore, provideFirestore } from "@angular/fire/firestore";
 import { bootstrapApplication } from "@angular/platform-browser";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
-import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from "@angular/router";
+import { PreloadAllModules, provideRouter, withComponentInputBinding, withInMemoryScrolling, withPreloading } from "@angular/router";
 import { ConfirmationService, MessageService } from "primeng/api";
 import { providePrimeNG } from "primeng/config";
 import { AppComponent, routes } from "./app/app.component";
@@ -20,6 +20,7 @@ bootstrapApplication(AppComponent, {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(
       routes,
+      withPreloading(PreloadAllModules),
       withComponentInputBinding(),
       // withViewTransitions(),
       withInMemoryScrolling({

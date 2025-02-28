@@ -1,8 +1,8 @@
 <div class="flex min-h-full flex-col items-center justify-center p-5 lg:p-10">
   <div class="flex max-w-full flex-col lg:flex-row">
-    <div class="group relative aspect-square w-full max-w-[400px] sm:w-[400px]">
+    <div class="group relative aspect-square w-full max-w-[400px] overflow-hidden rounded-t-[var(--p-overlay-modal-border-radius)] sm:w-[400px] lg:rounded-l-[var(--p-overlay-modal-border-radius)] lg:rounded-t-none">
       <div *ngIf="user && user['roles'].includes('admin')" class="absolute right-0 top-0 z-10">
-        <p-fileupload (uploadHandler)="(null)" class="transition-opacity group-hover:opacity-100 lg:opacity-0" mode="basic" chooseIcon="pi pi-pencil" accept="image/*" maxFileSize="1000000" [customUpload]="true" [auto]="true" chooseLabel="" chooseStyleClass="p-button-icon-only p-button-text p-button-sm text-[#00ff00]!" />
+        <p-fileupload (uploadHandler)="(null)" class="transition-opacity group-hover:opacity-100 lg:opacity-0" mode="basic" chooseIcon="pi pi-pencil" accept="image/*" maxFileSize="1000000" [customUpload]="true" [auto]="true" chooseLabel="" chooseStyleClass="p-button-icon-only p-button-text p-button-sm text-primary!" />
       </div>
       <img ngSrc="nicolaspaillard/profile" sizes="(max-width: 768px) 100vw, 30vw" priority placeholder fill />
     </div>
@@ -11,7 +11,9 @@
       <ngx-typed-js [strings]="strings" [loop]="true" [shuffle]="true" [backSpeed]="30" [typeSpeed]="30">
         <i class="block truncate text-lg lg:text-2xl">
           Développeur
-          <span class="typing text-primary relative inline-block after:absolute after:block after:w-full after:border-0 after:border-b-[1px] after:border-solid after:border-[#0f0] after:content-['']"></span>
+          <span class="*:text-primary!">
+            <span class="typing after:border-primary relative after:absolute after:left-0 after:top-full after:z-10 after:w-full after:-translate-y-full after:border-b-2 after:border-solid after:content-['']"></span>
+          </span>
         </i>
       </ngx-typed-js>
     </div>

@@ -141,7 +141,7 @@ function slideTo(direction: any) {
     group([query(":leave", [animate("600ms ease", style({ [direction]: "100%" }))], optional), query(":enter", [animate("600ms ease", style({ [direction]: "0%" }))])]),
   ];
 }
-export class CustomValidators {
+class CustomValidators {
   static matchPassword(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const password = control.get("password")?.value;

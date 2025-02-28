@@ -120,7 +120,7 @@ const surfaces = {
 
 export const aura: Preset<AuraBaseDesignTokens> = definePreset(Aura, {
   semantic: {
-    primary: Aura.primitive?.yellow,
+    primary: Aura.primitive?.amber,
     colorScheme: {
       dark: {
         // Aura.semantic?.colorScheme?.dark?.surface
