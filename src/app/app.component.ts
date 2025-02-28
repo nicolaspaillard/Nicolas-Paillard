@@ -22,7 +22,6 @@ import { matrix } from "src/themes/matrix.preset";
 
 export const routes: Routes = [
   { path: "", title: "Nicolas Paillard", loadComponent: () => import("@routes/home/home.component").then((m) => m.HomeComponent), data: { animation: 0 } },
-  { path: "about", title: "Présentation", loadComponent: () => import("@routes/about/about.component").then((m) => m.AboutComponent), data: { animation: 1 } },
   { path: "career", title: "Carrière", loadComponent: () => import("@routes/career/career.component").then((m) => m.CareerComponent), data: { animation: 2 } },
   { path: "skills", title: "Compétences", loadComponent: () => import("@routes/skills/skills.component").then((m) => m.SkillsComponent), data: { animation: 3 } },
   { path: "projects", title: "Projets", loadComponent: () => import("@routes/projects/projects.component").then((m) => m.ProjectsComponent), data: { animation: 4 } },
@@ -58,13 +57,16 @@ export class AppComponent {
     email: new FormControl("", [Validators.required, Validators.email]),
     password: new FormControl("", [Validators.required]),
   });
-  matrixEnabled: boolean = false;
+  enableMatrix: boolean = false;
+  enableDarkMode: boolean = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
   constructor(
     private router: Router,
     private authService: AuthService,
     private designerService: DesignerService,
   ) {
     if (location.pathname.split("/").pop() === "cv") this.designerService.downloadPDF({ editing: false, replace: true });
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => (this.enableDarkMode = this.toggleDarkMode(e.matches)));
+    this.toggleDarkMode(this.enableDarkMode);
     this.authService.user().subscribe((user) => (this.user = user));
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
@@ -76,13 +78,11 @@ export class AppComponent {
       }
     });
   }
-
   downloadCV = () => this.designerService.downloadPDF({ editing: false, replace: true });
-
-  switchPreset = () => {
-    this.matrixEnabled = !this.matrixEnabled;
-    if (this.matrixEnabled) usePreset(matrix);
-    else usePreset(aura);
+  toggleDarkMode = (active: boolean) => document.querySelector("html")!.classList.toggle("app-dark", active);
+  applyPreset = () => {
+    this.toggleDarkMode(this.enableMatrix || this.enableDarkMode);
+    usePreset(this.enableMatrix ? matrix : aura);
     this.matrix();
   };
   private interval: NodeJS.Timeout | undefined;
@@ -91,7 +91,7 @@ export class AppComponent {
     let context: CanvasRenderingContext2D = canvas.getContext("2d")!;
     context.reset();
     clearInterval(this.interval);
-    if (!this.matrixEnabled) return;
+    if (!this.enableMatrix) return;
     let drops: number[] = [];
     let fontSize: number = 10;
     canvas.width = window.innerWidth;

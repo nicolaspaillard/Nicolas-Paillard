@@ -1,13 +1,15 @@
 <div class="flex min-h-full flex-col justify-center p-5 lg:p-10">
-  <p-button *ngIf="user && user['roles'].includes('admin')" size="large" class="block text-center" icon="pi pi-plus" [text]="true" (onClick)="openDialog()"></p-button>
-  <div class="border-b-primary mx-auto w-fit border-t-0 border-r-[7px] border-b-[15px] border-l-[7px] border-solid border-transparent"></div>
+  <div class="border-b-primary mx-auto w-fit border-b-[15px] border-l-[7px] border-r-[7px] border-t-0 border-solid border-transparent"></div>
   <div class="relative w-full grow py-5">
-    <div class="bg-primary absolute top-0 left-1/2 h-full w-[2px] -translate-x-[calc(100%-1px)] rounded-b-sm"></div>
-    <app-experience (onExperienceRemoved)="deleteExperience(experience)" (onExperienceEdit)="openDialog(experience)" *ngFor="let experience of experiences; let index = index" [experience]="experience" [right]="index % 2 != 0" class="block nth-[n+3]:mt-5 lg:nth-[n+3]:-mt-10"></app-experience>
+    <div class="bg-primary absolute left-1/2 top-0 h-full w-[2px] -translate-x-[calc(100%-1px)] rounded-b-sm"></div>
+    <div *ngIf="user && user['roles'].includes('admin')" class="card lg:before:bg-primary flex w-full justify-center p-5 lg:ml-auto lg:w-[calc(50%-(--spacing(10)))] lg:p-10 lg:before:absolute lg:before:-left-[calc(--spacing(10)+1px)] lg:before:top-1/2 lg:before:h-[2px] lg:before:w-10 lg:before:-translate-y-full lg:before:content-['']">
+      <p-button size="large" class="block text-center" icon="pi pi-plus" [text]="true" (onClick)="openDialog()"></p-button>
+    </div>
+    <app-experience (onExperienceRemoved)="deleteExperience(experience)" (onExperienceEdit)="openDialog(experience)" *ngFor="let experience of experiences; let index = index" [experience]="experience" [right]="index % 2 != 0" class="nth-[n+3]:mt-5 lg:nth-[n+3]:-mt-10 block"></app-experience>
   </div>
 </div>
 <p-dialog [modal]="true" [header]="(idEdit.length ? 'Modifier' : 'Ajouter') + ' une expérience'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isDialogShown">
-  <form [formGroup]="formExperience" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&_label]:flex [&_label]:w-full [&_label]:flex-col [&>label]:gap-0">
+  <form [formGroup]="formExperience" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
     <div>
       <label>
         Début

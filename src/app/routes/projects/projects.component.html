@@ -1,12 +1,13 @@
 <div class="flex min-h-full flex-col justify-center p-5 lg:p-10">
-  <p-button *ngIf="user && user['roles'].includes('admin')" size="large" class="block text-center" icon="pi pi-plus" [text]="true" (onClick)="openDialog()"></p-button>
   <div class="grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
     <app-project *ngFor="let project of projects" [project]="project" (onProjectEdit)="openDialog(project)" (onProjectRemoved)="deleteProject(project)"></app-project>
+    <div *ngIf="user && user['roles'].includes('admin')" class="card flex items-center justify-center p-5 lg:p-10">
+      <p-button size="large" class="block text-center" icon="pi pi-plus" [text]="true" (onClick)="openDialog()"></p-button>
+    </div>
   </div>
 </div>
-
 <p-dialog [modal]="true" [header]="(editing.id.length ? 'Modifier' : 'Ajouter') + ' un projet'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isDialogShown">
-  <form [formGroup]="formProject" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&_label]:flex [&_label]:w-full [&_label]:flex-col [&>label]:gap-0">
+  <form [formGroup]="formProject" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
     <div>
       <label>
         Début

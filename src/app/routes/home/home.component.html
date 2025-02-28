@@ -1,15 +1,15 @@
-<div class="flex min-h-full flex-col items-center justify-center p-5 lg:p-10">
-  <div class="flex max-w-full flex-col lg:flex-row">
-    <div class="group relative aspect-square w-full max-w-[400px] overflow-hidden rounded-t-[var(--p-overlay-modal-border-radius)] sm:w-[400px] lg:rounded-l-[var(--p-overlay-modal-border-radius)] lg:rounded-t-none">
+<div class="flex min-h-full flex-col items-center justify-center gap-5 p-5 lg:gap-10 lg:p-10">
+  <div class="flex w-[300px] max-w-full flex-col lg:w-auto lg:flex-row">
+    <div class="group relative aspect-square w-[300px] max-w-full overflow-hidden rounded-t-[var(--p-overlay-modal-border-radius)] lg:rounded-l-[var(--p-overlay-modal-border-radius)] lg:rounded-t-none">
       <div *ngIf="user && user['roles'].includes('admin')" class="absolute right-0 top-0 z-10">
-        <p-fileupload (uploadHandler)="(null)" class="transition-opacity group-hover:opacity-100 lg:opacity-0" mode="basic" chooseIcon="pi pi-pencil" accept="image/*" maxFileSize="1000000" [customUpload]="true" [auto]="true" chooseLabel="" chooseStyleClass="p-button-icon-only p-button-text p-button-sm text-primary!" />
+        <p-fileupload (uploadHandler)="(null)" class="mix-blend-overlay transition-opacity group-hover:opacity-100 lg:opacity-0" mode="basic" chooseIcon="pi pi-pencil" accept="image/*" maxFileSize="1000000" [customUpload]="true" [auto]="true" chooseLabel="" chooseStyleClass="p-button-icon-only p-button-text p-button-sm text-primary!" />
       </div>
       <img ngSrc="nicolaspaillard/profile" sizes="(max-width: 768px) 100vw, 30vw" priority placeholder fill />
     </div>
-    <div class="card flex flex-col justify-center rounded-t-none border-t-0 p-5 sm:p-10 lg:rounded-l-none lg:rounded-t-[var(--p-overlay-modal-border-radius)] lg:border-l-0 lg:border-t-2">
-      <h1 class="m-0 -mb-2 truncate text-3xl font-light tracking-wider lg:text-5xl">Nicolas Paillard</h1>
-      <ngx-typed-js [strings]="strings" [loop]="true" [shuffle]="true" [backSpeed]="30" [typeSpeed]="30">
-        <i class="block truncate text-lg lg:text-2xl">
+    <div class="card flex flex-col justify-center rounded-t-none border-t-0 p-5 lg:rounded-l-none lg:rounded-t-[var(--p-overlay-modal-border-radius)] lg:border-l-0 lg:border-t-2 lg:p-10">
+      <h1 class="m-0 -mb-2 truncate text-2xl font-light tracking-wider lg:text-4xl">Nicolas Paillard</h1>
+      <ngx-typed-js class="text-lg lg:text-xl" [strings]="strings" [loop]="true" [shuffle]="true" [backSpeed]="30" [typeSpeed]="30">
+        <i class="block truncate">
           Développeur
           <span class="[&>span]:text-primary!">
             <span class="typing after:border-primary relative after:absolute after:left-0 after:top-full after:z-10 after:w-full after:-translate-y-full after:border-b-2 after:border-solid after:content-['']"></span>
@@ -18,4 +18,28 @@
       </ngx-typed-js>
     </div>
   </div>
+  <div>
+    <div class="flex flex-wrap justify-center gap-5 lg:gap-10">
+      <app-section class="flex-[0_0_100%] sm:flex-[0_0_calc(50%-calc(var(--spacing)*calc(5/2)))] lg:flex-[0_0_calc(50%-calc(var(--spacing)*calc(10/2)))]" *ngFor="let section of sections" [section]="section" (onSectionEdit)="openDialog(section)" (onSectionRemoved)="deleteSection(section)"></app-section>
+      <div *ngIf="user && user['roles'].includes('admin')" class="card flex flex-[0_0_100%] items-center justify-center sm:flex-[0_0_calc(50%-calc(var(--spacing)*calc(5/2)))] lg:flex-[0_0_calc(50%-calc(var(--spacing)*calc(10/2)))]">
+        <p-button size="large" class="block text-center" icon="pi pi-plus" [text]="true" (onClick)="openDialog()"></p-button>
+      </div>
+    </div>
+  </div>
 </div>
+<p-dialog [modal]="true" [header]="(idEdit.length ? 'Modifier' : 'Ajouter') + ' un paragraphe'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isDialogSectionShown">
+  <form [formGroup]="formSection" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+    <label>
+      Rang
+      <p-inputnumber formControlName="rank" [showButtons]="true" />
+    </label>
+    <label>
+      Texte
+      <textarea pTextarea formControlName="text" class="w-2xl h-40"></textarea>
+    </label>
+  </form>
+  <div class="flex justify-end gap-2">
+    <p-button (onClick)="isDialogSectionShown = false" [text]="true">Annuler</p-button>
+    <p-button (onClick)="idEdit.length ? updateSection() : createSection()" [disabled]="!formSection.valid">{{ idEdit.length ? "Modifier" : "Ajouter" }}</p-button>
+  </div>
+</p-dialog>

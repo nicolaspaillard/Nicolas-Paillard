@@ -5,7 +5,7 @@
 
 @layer components {
   .card {
-    @apply border-primary backdrop-blur-xs rounded-[var(--p-overlay-modal-border-radius)] border-2 bg-[rgba(20,20,20,0.1)];
+    @apply border-primary backdrop-blur-xs rounded-[var(--p-overlay-modal-border-radius)] border-2 bg-[rgba(0,0,0,0.05)];
   }
 }
 

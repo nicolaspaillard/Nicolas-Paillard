@@ -1,10 +1,4 @@
-<div
-  class="group card relative flex w-full p-5 text-wrap break-words lg:w-[calc(50%-(--spacing(10)))] lg:p-10 lg:before:content-['']"
-  [ngClass]="{
-    'lg:before:bg-primary lg:before:absolute lg:before:top-1/2 lg:before:h-[2px] lg:before:w-10 lg:before:-translate-y-full': true,
-    'lg:ml-auto lg:before:-left-[calc(--spacing(10)+1px)]': right,
-    'lg:before:-right-[calc(--spacing(10)+1px)]': !right,
-  }">
+<div class="card group relative flex w-full text-wrap break-words p-5 lg:w-[calc(50%-(--spacing(10)))] lg:p-10 lg:before:content-['']" [ngClass]="['lg:before:bg-primary lg:before:absolute lg:before:top-1/2 lg:before:h-[2px] lg:before:w-10 lg:before:-translate-y-full', right ? 'lg:ml-auto lg:before:-left-[calc(--spacing(10)+1px)]' : 'lg:before:-right-[calc(--spacing(10)+1px)]']">
   <div class="absolute top-0 transition-opacity group-hover:opacity-100 lg:opacity-0" [ngClass]="right ? 'right-0 lg:left-0' : 'right-0'">
     <p-button *ngIf="user && user['roles'].includes('admin')" icon="pi pi-pencil" [text]="true" size="small" (onClick)="onExperienceEdit.emit(experience)" />
     <p-button *ngIf="user && user['roles'].includes('admin')" icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="onExperienceRemoved.emit(experience)" />
@@ -14,12 +8,12 @@
       <ng-container *ngIf="experience.end; else day">{{ experience.start | date: "MM/yyyy" }} - {{ experience.end | date: "MM/yyyy" }}</ng-container>
       <ng-template #day>{{ experience.start | date: "dd/MM/yyyy" }}</ng-template>
     </i>
-    <h3 class="mb-2 block text-lg leading-none font-bold" *ngIf="experience.company">{{ experience.company }}</h3>
+    <h3 class="mb-2 block text-lg font-bold leading-none" *ngIf="experience.company">{{ experience.company }}</h3>
     <span *ngIf="experience.address">{{ experience.address }}</span>
     <span *ngIf="experience.city || experience.postcode">{{ experience.city }} {{ experience.postcode }}</span>
   </div>
   <div class="pl-5">
-    <h2 class="text-xl leading-none font-bold">{{ experience.title }}</h2>
+    <h2 class="text-xl font-bold leading-none">{{ experience.title }}</h2>
     <p class="mt-3" *ngIf="experience.text">{{ experience.text }}</p>
     <ng-container *ngIf="experience.activities">
       <h3 class="mt-2 text-lg">Activités</h3>

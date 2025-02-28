@@ -5,5 +5,5 @@
   "printWidth": 400,
   "semi": true,
   "tailwindStylesheet": "./src/styles.scss",
-  "tailwindAttributes": ["contentStyleClass", "tabStyleClass", "headerStyleClass", "styleClass", "routerLinkActive"]
+  "tailwindAttributes": ["contentStyleClass", "tabStyleClass", "chooseStyleClass", "ngClass", "headerStyleClass", "styleClass", "routerLinkActive"]
 }
