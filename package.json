@@ -4,8 +4,7 @@
   "scripts": {
     "start": "ng serve",
     "build": "ng build",
-    "update": "ng update",
-    "deploy": "ng build & firebase deploy"
+    "update": "ng update"
   },
   "private": true,
   "dependencies": {
