@@ -3,24 +3,6 @@ import { addDoc, collection, deleteDoc, doc, Firestore, getDoc, getDocs, orderBy
 import { ReplaySubject, Subject } from "rxjs";
 import { cloudinaryConfig } from "src/main";
 
-export class Project {
-  id?: string;
-  start: Date;
-  end: Date;
-  title: string;
-  text: string;
-  company: string;
-  address: string;
-  postcode: string;
-  city: string;
-  activities: string;
-  images: string;
-  url: string;
-  constructor(project: Project) {
-    Object.assign(this, project);
-  }
-}
-
 @Injectable({
   providedIn: "root",
 })

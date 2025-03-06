@@ -2,24 +2,6 @@ import { Injectable } from "@angular/core";
 import { addDoc, collection, deleteDoc, doc, Firestore, getDocs, query, setDoc } from "@angular/fire/firestore";
 import { ReplaySubject, Subject } from "rxjs";
 
-export class Application {
-  id?: string;
-  title: string;
-  company: string;
-  activity: string;
-  address: string;
-  links: string;
-  comments: string;
-  contacts: string;
-  contactDate: Date;
-  relaunchDate: Date;
-  answerDate: Date;
-  answer: string;
-  constructor(application: Application) {
-    Object.assign(this, application);
-  }
-}
-
 @Injectable({
   providedIn: "root",
 })

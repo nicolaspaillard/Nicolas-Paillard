@@ -8,26 +8,23 @@ import { ToastService } from "./frontend/toast.service";
 })
 export class AuthService {
   private auth = inject(Auth);
-  private _user: Subject<{ user: User; roles: string[] } | null> = new ReplaySubject(1);
+  private _user: Subject<User | null> = new ReplaySubject(1);
+  private _admin: Subject<boolean> = new ReplaySubject(1);
   constructor(private toastService: ToastService) {
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
-        let roles: string[] = [];
+        this._user.next(user);
         // prettier-ignore
-        user.getIdTokenResult().then((idTokenResult) => {
-          if(idTokenResult.claims["admin"]) roles.push("admin")
-        }).catch((error) => console.error(error));
-        let userWithRoles = {
-          user: user,
-          roles: roles,
-        };
-        this._user.next(userWithRoles);
+        user.getIdTokenResult().then((idTokenResult) => this._admin.next(idTokenResult.claims["admin"] ? true : false)).catch(error=>console.error(error));
       } else {
         this._user.next(null);
+        this._admin.next(false);
       }
     });
   }
   user = (): Observable<any> => this._user.asObservable();
+  admin = (): Observable<any> => this._admin.asObservable();
+
   signup = async (email: string, password: string) => {
     const status = await validatePassword(this.auth, password);
     if (!status.isValid) {

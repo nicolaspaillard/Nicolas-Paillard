@@ -1,6 +1,5 @@
 import { Injectable, isDevMode } from "@angular/core";
 import { doc, Firestore, getDoc, setDoc } from "@angular/fire/firestore";
-import { CareerService, Experience } from "@app/shared/services/career.service";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { cloneDeep, Font, mm2pt, PDFRenderProps, Plugin, Schema, Template } from "@pdfme/common";
@@ -9,12 +8,13 @@ import { degrees, degreesToRadians, PDFString } from "@pdfme/pdf-lib";
 import { date, dateTime, ellipse, image, line, multiVariableText, rectangle, svg, table, text, time } from "@pdfme/schemas";
 import { TextSchema } from "@pdfme/schemas/dist/types/src/text/types";
 import { Designer } from "@pdfme/ui";
+import { CareerService, Experience } from "@services/old/career.service";
 import { IconNode, Link } from "lucide";
 import { cloudinaryConfig } from "src/main";
 import { AnimationService } from "./frontend/animation.service";
 import { ToastService } from "./frontend/toast.service";
-import { Section, SectionsService } from "./sections.service";
-import { Category, SkillsService } from "./skills.service";
+import { Section, SectionsService } from "./old/sections.service";
+import { Category, SkillsService } from "./old/skills.service";
 
 @Injectable({
   providedIn: "root",

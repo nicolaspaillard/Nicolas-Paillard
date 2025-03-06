@@ -2,15 +2,6 @@ import { Injectable } from "@angular/core";
 import { addDoc, collection, deleteDoc, doc, Firestore, getDocs, orderBy, query, setDoc } from "@angular/fire/firestore";
 import { ReplaySubject, Subject } from "rxjs";
 
-export class Section {
-  id?: string;
-  rank: number;
-  text: string;
-  constructor(section: Section) {
-    Object.assign(this, section);
-  }
-}
-
 @Injectable({
   providedIn: "root",
 })

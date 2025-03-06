@@ -4,7 +4,7 @@ import { User } from "@angular/fire/auth";
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/frontend/confirm.service";
-import { Section, SectionsService } from "@services/sections.service";
+import { Section, SectionsService } from "@services/old/sections.service";
 import { NgxTypedJsModule } from "ngx-typed-js";
 import { ButtonModule } from "primeng/button";
 import { DialogModule } from "primeng/dialog";

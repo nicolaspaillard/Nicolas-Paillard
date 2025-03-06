@@ -1,11 +1,11 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { CareerService, Experience } from "@app/shared/services/career.service";
-import { Section, SectionsService } from "@app/shared/services/sections.service";
-import { Category, SkillsService } from "@app/shared/services/skills.service";
 import { AuthService } from "@services/auth.service";
 import { DesignerService } from "@services/designer.service";
+import { CareerService, Experience } from "@services/old/career.service";
+import { Section, SectionsService } from "@services/old/sections.service";
+import { Category, SkillsService } from "@services/old/skills.service";
 import { MenuItem } from "primeng/api";
 import { ButtonModule } from "primeng/button";
 import { FileUploadHandlerEvent, FileUploadModule } from "primeng/fileupload";

@@ -1,9 +1,11 @@
 import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { Application, ApplicationsService } from "@services/applications.service";
+import { Application } from "@app/shared/classes/application";
 import { AuthService } from "@services/auth.service";
+import { CrudService, SERVICE_CONFIG } from "@services/crud.service";
 import { ConfirmService } from "@services/frontend/confirm.service";
+import { ApplicationsService } from "@services/old/applications.service";
 import { ButtonModule } from "primeng/button";
 import { DatePickerModule } from "primeng/datepicker";
 import { DialogModule } from "primeng/dialog";
@@ -17,6 +19,13 @@ import { TextareaModule } from "primeng/textarea";
   selector: "app-applications",
   imports: [DialogModule, DatePickerModule, ReactiveFormsModule, ButtonModule, InputGroupModule, FileUploadModule, CommonModule, InputTextModule, TextareaModule, DialogModule, DatePickerModule, TableModule],
   templateUrl: "./applications.component.html",
+  providers: [
+    CrudService<Application>,
+    {
+      provide: SERVICE_CONFIG,
+      useValue: { type: Application, collection: "applications", order: ["title"] },
+    },
+  ],
   styles: ``,
 })
 export class ApplicationsComponent {
@@ -39,6 +48,7 @@ export class ApplicationsComponent {
   applications: Application[] = [];
   expandedRows = {};
   constructor(
+    private crudService: CrudService<Application>,
     private confirmService: ConfirmService,
     private authService: AuthService,
     private applicationsService: ApplicationsService,

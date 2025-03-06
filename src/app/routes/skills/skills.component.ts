@@ -1,25 +1,40 @@
 import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { AuthService } from "@app/shared/services/auth.service";
-import { ConfirmService } from "@app/shared/services/frontend/confirm.service";
-import { Category, Skill, SkillsService } from "@app/shared/services/skills.service";
+import { Skill } from "@app/shared/classes/skill";
+import { AuthService } from "@services/auth.service";
+import { CrudService, SERVICE_CONFIG } from "@services/crud.service";
 import { ButtonModule } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
 import { InputTextModule } from "primeng/inputtext";
 import { SelectModule } from "primeng/select";
 import { CategoryComponent } from "./category/category.component";
 
+class Category {
+  title: string;
+  skills: Skill[];
+  constructor(category: Category) {
+    Object.assign(this, category);
+  }
+}
+
 @Component({
   selector: "app-skills",
   imports: [ReactiveFormsModule, CommonModule, CategoryComponent, ButtonModule, DialogModule, InputTextModule, SelectModule],
   templateUrl: "./skills.component.html",
+  providers: [
+    CrudService<Skill>,
+    {
+      provide: SERVICE_CONFIG,
+      useValue: { type: Skill, collection: "skills", order: ["title"] },
+    },
+  ],
 })
 export class SkillsComponent {
-  isDialogCategoryShown: boolean = false;
-  isDialogSkillShown: boolean = false;
-  user: any = null;
-  activities: string[] = [];
+  editing: string;
+  skills: Skill[] = [];
+  categories: Category[] = [];
   devIcons: string[] = [
     "aarch64-line",
     "aarch64-original",
@@ -1542,60 +1557,63 @@ export class SkillsComponent {
     "zig-original",
     "zig-plain-wordmark",
   ];
-  formCategory: FormGroup = new FormGroup({
-    title: new FormControl("", [Validators.required]),
-  });
-  formSkill = new FormGroup({
+  isAdmin: boolean = false;
+  isShown: boolean = false;
+  isShownCategory: boolean = false;
+  form = new FormGroup({
     title: new FormControl("", [Validators.required]),
     icon: new FormControl("", [Validators.required]),
     category: new FormControl("", [Validators.required]),
   });
-  editing: string = "";
-  categories: Category[] = [];
-
+  formCategory: FormGroup = new FormGroup({
+    title: new FormControl("", [Validators.required]),
+  });
   constructor(
-    private skillsService: SkillsService,
+    private crudService: CrudService<Skill>,
     private authService: AuthService,
-    private confirmService: ConfirmService,
   ) {
-    this.authService.user().subscribe((user) => (this.user = user));
-    this.skillsService.categories().subscribe((categories) => (this.categories = categories));
+    authService
+      .admin()
+      .pipe(takeUntilDestroyed())
+      .subscribe((isAdmin) => (this.isAdmin = isAdmin));
+    crudService
+      .items()
+      .pipe(takeUntilDestroyed())
+      .subscribe((skills) => {
+        this.skills = skills;
+        this.categories = [];
+        for (let skill of skills) {
+          const categoryId = this.categories.findIndex((tmp) => tmp.title === skill.category);
+          if (categoryId === -1) this.categories.push(new Category({ title: skill.category, skills: [skill] }));
+          else {
+            this.categories[categoryId].skills.push(skill);
+            this.categories[categoryId].skills.sort((skill1, skill2) => (skill1.title < skill2.title ? -1 : skill.title > skill2.title ? 1 : 0));
+          }
+        }
+        this.categories.sort((category1, category2) => (category1.title < category2.title ? -1 : category1.title > category2.title ? 1 : 0));
+      });
   }
-
-  openDialog = (skill?: Skill) => {
+  create = async () => await this.crudService.create(this.form.value as Skill).then(() => this.crudService.sort());
+  update = async () => await this.crudService.update(this.form.value as Skill).then(() => this.crudService.sort());
+  delete = async (skill: Skill) => await this.crudService.delete(skill).then(() => this.crudService.sort());
+  updateCategory = async () => {
+    this.skills.filter((skill) => skill.category === this.editing).map(async (skill) => await this.crudService.update({ ...skill, category: this.formCategory.get("title")!.value }));
+    this.crudService.sort();
+  };
+  deleteCategory = async (category: string) => {
+    this.skills.filter((skill) => skill.category === category).map(async (skill) => await this.crudService.delete(skill));
+    this.crudService.sort();
+  };
+  open = (skill?: Skill) => {
     if (skill) {
       this.editing = skill.id!;
       let tmp = new Skill(skill);
       delete tmp.id;
-      this.formSkill.setValue(tmp);
+      this.form.setValue(tmp);
     } else {
       this.editing = "";
-      this.formSkill.reset();
-      this.activities = [];
+      this.form.reset();
     }
-    this.isDialogSkillShown = true;
-  };
-  createSkill = async () => this.skillsService.createSkill(this.formSkill.value as Skill);
-  updateSkill = async () => {
-    let skill: Skill = this.formSkill.value as Skill;
-    skill.id = this.editing;
-    this.skillsService.updateSkill(skill);
-  };
-  deleteSkill = async (skill: Skill) => {
-    this.confirmService.confirm({
-      message: `Voulez-vous vraiment supprimer '${skill.title}' ?`,
-      accept: async () => {
-        this.skillsService.deleteSkill(skill);
-      },
-    });
-  };
-  updateCategory = async () => this.skillsService.updateCategory(this.editing, this.formCategory.value as Category);
-  deleteCategory = async (category: string) => {
-    this.confirmService.confirm({
-      message: `Voulez-vous vraiment supprimer '${category}' ?`,
-      accept: async () => {
-        this.skillsService.deleteCategory(category);
-      },
-    });
+    this.isShown = true;
   };
 }

@@ -5,17 +5,17 @@
       *ngFor="let category of categories"
       [skills]="category.skills"
       [title]="category.title"
-      (onCategoryEdit)="editing = category.title; formCategory.setValue({ title: category.title }); isDialogCategoryShown = true"
+      (onCategoryEdit)="editing = category.title; formCategory.setValue({ title: category.title }); isShownCategory = true"
       (onCategoryRemoved)="deleteCategory($event)"
-      (onSkillEdit)="openDialog($event)"
-      (onSkillRemoved)="deleteSkill($event)"></app-category>
-    <div *ngIf="user && user['roles'].includes('admin')" class="card flex-[0_0_100%] p-5 md:flex-[0_0_calc(50%-calc(var(--spacing)*5))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))] lg:p-10">
-      <p-button size="large" class="block text-center" icon="pi pi-plus" [text]="true" (onClick)="openDialog()"></p-button>
+      (onSkillEdit)="open($event)"
+      (onSkillRemoved)="delete($event)"></app-category>
+    <div *ngIf="isAdmin" class="card flex-[0_0_100%] p-5 md:flex-[0_0_calc(50%-calc(var(--spacing)*5))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))] lg:p-10">
+      <p-button size="large" class="block text-center" icon="pi pi-plus" [text]="true" (onClick)="open()"></p-button>
     </div>
   </div>
 </div>
 
-<p-dialog [modal]="true" header="Modifier une catégorie" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isDialogCategoryShown">
+<p-dialog [modal]="true" header="Modifier une catégorie" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShownCategory">
   <form [formGroup]="formCategory" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
     <label>
       Titre
@@ -23,12 +23,12 @@
     </label>
   </form>
   <div class="flex justify-end gap-2">
-    <p-button (onClick)="isDialogCategoryShown = false" [text]="true">Annuler</p-button>
-    <p-button (onClick)="updateCategory(); isDialogCategoryShown = false" [disabled]="!formCategory.valid">Modifier</p-button>
+    <p-button (onClick)="isShownCategory = false" [text]="true">Annuler</p-button>
+    <p-button (onClick)="updateCategory(); isShownCategory = false" [disabled]="!formCategory.valid">Modifier</p-button>
   </div>
 </p-dialog>
-<p-dialog [modal]="true" [header]="(editing.length ? 'Modifier' : 'Ajouter') + ' une compétence'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isDialogSkillShown">
-  <form [formGroup]="formSkill" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+<p-dialog [modal]="true" [header]="(editing.length ? 'Modifier' : 'Ajouter') + ' une compétence'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShownCategory">
+  <form [formGroup]="form" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
     <label>
       Titre
       <input pInputText type="text" formControlName="title" />
@@ -42,9 +42,9 @@
         Icône
         <p-select [options]="devIcons" formControlName="icon" [showClear]="true" placeholder="Icône" appendTo="body" [filter]="true" [virtualScroll]="true" [virtualScrollItemSize]="38">
           <ng-template pTemplate="selectedItem">
-            <div class="flex items-center gap-2" *ngIf="formSkill.value.icon">
-              <img width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ formSkill.value.icon.includes('dot-net') ? 'dot-net' : formSkill.value.icon.split('-')[0] }}/{{ formSkill.value.icon }}.svg" />
-              <span class="w-full truncate">{{ formSkill.value.icon }}</span>
+            <div class="flex items-center gap-2" *ngIf="form.value.icon">
+              <img width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ form.value.icon.includes('dot-net') ? 'dot-net' : form.value.icon.split('-')[0] }}/{{ form.value.icon }}.svg" />
+              <span class="w-full truncate">{{ form.value.icon }}</span>
             </div>
           </ng-template>
           <ng-template let-icon pTemplate="item">
@@ -58,7 +58,7 @@
     </div>
   </form>
   <div class="flex justify-end gap-2">
-    <p-button (onClick)="isDialogSkillShown = false" [text]="true">Annuler</p-button>
-    <p-button (onClick)="editing.length ? updateSkill() : createSkill(); isDialogSkillShown = false" [disabled]="!formSkill.valid">{{ editing.length ? "Modifier" : "Ajouter" }}</p-button>
+    <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
+    <p-button (onClick)="editing.length ? update() : create(); isShown = false" [disabled]="!form.valid">{{ editing.length ? "Modifier" : "Ajouter" }}</p-button>
   </div>
 </p-dialog>
