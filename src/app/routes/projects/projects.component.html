@@ -1,13 +1,13 @@
 <div class="flex min-h-full flex-col justify-center p-5 lg:p-10">
   <div class="grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-    <app-project *ngFor="let project of projects" [project]="project" (onProjectEdit)="openDialog(project)" (onProjectRemoved)="deleteProject(project)"></app-project>
-    <div *ngIf="user && user['roles'].includes('admin')" class="card flex items-center justify-center p-5 lg:p-10">
-      <p-button size="large" class="block text-center" icon="pi pi-plus" [text]="true" (onClick)="openDialog()"></p-button>
+    <app-project *ngFor="let project of items" [project]="project" (onProjectEdit)="open(project)" (onProjectRemoved)="delete(project, 'title')"></app-project>
+    <div *ngIf="isAdmin" class="card flex items-center justify-center p-5 lg:p-10">
+      <p-button size="large" class="block text-center" icon="pi pi-plus" [text]="true" (onClick)="open()"></p-button>
     </div>
   </div>
 </div>
-<p-dialog [modal]="true" [header]="(editing.id.length ? 'Modifier' : 'Ajouter') + ' un projet'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isDialogShown">
-  <form [formGroup]="formProject" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+<p-dialog [modal]="true" [header]="(editing.length ? 'Modifier' : 'Ajouter') + ' un projet'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShown">
+  <form [formGroup]="form" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
     <div>
       <label>
         Début
@@ -57,12 +57,11 @@
       Activités
       <span *ngIf="!activities.length" class="opacity-50">&nbsp;(Aucune activité)</span>
       <div *ngFor="let activity of activities" class="group relative flex items-center justify-between ps-6 transition-colors after:absolute after:left-2 after:h-[6px] after:w-[6px] after:rounded-full after:bg-white after:opacity-50 after:content-[''] hover:bg-black/10">
-        <!-- [pTooltip]="activity" tooltipPosition="bottom" -->
         <span class="block max-w-[400px] truncate pe-2 opacity-50">{{ activity }}</span>
         <div class="opacity-0 transition-opacity group-hover:opacity-100">
-          <p-button icon="pi pi-angle-up" styleClass="w-auto" [disabled]="activities[0] == activity" [text]="true" size="small" severity="secondary" (onClick)="moveActivity(activity, true)" />
-          <p-button icon="pi pi-angle-down" styleClass="w-auto" [disabled]="activities[activities.length - 1] == activity" [text]="true" size="small" severity="secondary" (onClick)="moveActivity(activity)" />
-          <p-button icon="pi pi-trash" styleClass="w-auto" [text]="true" size="small" severity="danger" (onClick)="removeActivity(activity)" />
+          <p-button icon="pi pi-angle-up" styleClass="w-auto" [disabled]="activities[0] == activity" [text]="true" size="small" severity="secondary" (onClick)="move(activity, true)" />
+          <p-button icon="pi pi-angle-down" styleClass="w-auto" [disabled]="activities[activities.length - 1] == activity" [text]="true" size="small" severity="secondary" (onClick)="move(activity)" />
+          <p-button icon="pi pi-trash" styleClass="w-auto" [text]="true" size="small" severity="danger" (onClick)="remove(activity)" />
         </div>
       </div>
     </label>
@@ -70,12 +69,12 @@
       Ajouter une activité
       <p-inputGroup>
         <input #activity pInputText placeholder="Activité" />
-        <button [disabled]="!activity.value" type="button" pButton icon="pi pi-plus" (click)="addActivity(activity.value)"></button>
+        <button [disabled]="!activity.value" type="button" pButton icon="pi pi-plus" (click)="add(activity.value)"></button>
       </p-inputGroup>
     </label>
     <label class="block!">
       Images
-      <span *ngIf="editing.id && !images._files.length" class="opacity-50">&nbsp;(Aucune modification)</span>
+      <span *ngIf="editing && !images._files.length" class="opacity-50">&nbsp;(Aucune modification)</span>
       <p-fileUpload #images [multiple]="true" accept="image/*">
         <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
           <p-button (onClick)="chooseCallback()" icon="pi pi-images" [outlined]="true"></p-button>
@@ -85,7 +84,7 @@
     </label>
   </form>
   <div class="flex justify-end gap-2">
-    <p-button (onClick)="isDialogShown = false" [text]="true">Annuler</p-button>
-    <p-button (onClick)="editing.id.length ? updateProject(images._files) : createProject(images._files); isDialogShown = false" [disabled]="!formProject.valid">{{ editing.id.length ? "Modifier" : "Ajouter" }}</p-button>
+    <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
+    <p-button (onClick)="editing.length ? update(images._files) : create(images._files); isShown = false" [disabled]="!form.valid">{{ editing.length ? "Modifier" : "Ajouter" }}</p-button>
   </div>
 </p-dialog>

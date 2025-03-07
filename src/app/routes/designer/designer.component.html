@@ -1,13 +1,13 @@
 <div class="flex h-full flex-col items-center justify-center">
   <div class="mx-auto my-2 hidden items-center gap-2 lg:flex">
-    <p-button (onClick)="resetTemplate()" icon="pi pi-trash" label="Réinitialiser"></p-button>
-    <p-button (onClick)="loadTemplate()" icon="pi pi-refresh" label="Recharger"></p-button>
-    <p-button (onClick)="uploadTemplate()" *ngIf="user && user['roles'].includes('admin')" icon="pi pi-save" label="Sauvegarder"></p-button>
-    <p-fileupload (uploadHandler)="importModel($event)" chooseIcon="pi pi-upload" chooseLabel="Importer modèle" id="upload-model" class="inline-flex" mode="basic" accept=".pdf" maxFileSize="1000000" [customUpload]="true" [auto]="true" />
+    <p-button (onClick)="clear()" icon="pi pi-trash" label="Réinitialiser"></p-button>
+    <p-button (onClick)="load()" icon="pi pi-refresh" label="Recharger"></p-button>
+    <p-button (onClick)="save()" *ngIf="isAdmin" icon="pi pi-save" label="Sauvegarder"></p-button>
+    <p-fileupload (uploadHandler)="import($event)" chooseIcon="pi pi-upload" chooseLabel="Importer modèle" id="upload-model" class="inline-flex" mode="basic" accept=".pdf" maxFileSize="1000000" [customUpload]="true" [auto]="true" />
     <p-fileupload (uploadHandler)="importTemplate($event)" chooseIcon="pi pi-upload" chooseLabel="Importer template" id="upload-template" class="inline-flex" mode="basic" accept=".json" maxFileSize="1000000" [customUpload]="true" [auto]="true" />
-    <p-button (onClick)="downloadTemplate()" icon="pi pi-download" label="Télécharger"></p-button>
-    <p-button (onClick)="downloadPDF()" icon="pi pi-file-pdf" label="Générer"></p-button>
+    <p-button (onClick)="exportTemplate()" icon="pi pi-download" label="Télécharger"></p-button>
+    <p-button (onClick)="export()" icon="pi pi-file-pdf" label="Générer"></p-button>
   </div>
-  <p-splitbutton menuStyleClass="absolute!" class="mx-auto lg:hidden" label="Sauvegarder" (onClick)="uploadTemplate()" [model]="menuItems" />
+  <p-splitbutton menuStyleClass="absolute!" class="mx-auto lg:hidden" label="Sauvegarder" (onClick)="save()" [model]="menuItems" />
   <div id="container" class="h-full w-full overflow-hidden"></div>
 </div>

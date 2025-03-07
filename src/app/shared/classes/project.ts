@@ -1,5 +1,6 @@
-export class Project {
-  id?: string;
+import { Base } from "./base";
+
+export class Project extends Base {
   start: Date;
   end: Date;
   title: string;
@@ -14,6 +15,6 @@ export class Project {
   constructor(project: Project) {
     if (project.start && !(project.start instanceof Date)) project.start = (project.start as any).toDate();
     if (project.end && !(project.end instanceof Date)) project.end = (project.end as any).toDate();
-    Object.assign(this, project);
+    super(project);
   }
 }

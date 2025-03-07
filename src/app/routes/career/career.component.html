@@ -2,14 +2,14 @@
   <div class="border-b-primary mx-auto w-fit border-b-[15px] border-l-[7px] border-r-[7px] border-t-0 border-solid border-transparent"></div>
   <div class="relative w-full grow py-5">
     <div class="bg-primary absolute left-1/2 top-0 h-full w-[2px] -translate-x-[calc(100%-1px)] rounded-b-sm"></div>
-    <div *ngIf="user && user['roles'].includes('admin')" class="card lg:before:bg-primary flex w-full justify-center p-5 lg:ml-auto lg:w-[calc(50%-(--spacing(10)))] lg:p-10 lg:before:absolute lg:before:-left-[calc(--spacing(10)+1px)] lg:before:top-1/2 lg:before:h-[2px] lg:before:w-10 lg:before:-translate-y-full lg:before:content-['']">
-      <p-button size="large" class="block text-center" icon="pi pi-plus" [text]="true" (onClick)="openDialog()"></p-button>
+    <div *ngIf="isAdmin" class="card lg:before:bg-primary flex w-full justify-center p-5 lg:ml-auto lg:w-[calc(50%-(--spacing(10)))] lg:p-10 lg:before:absolute lg:before:-left-[calc(--spacing(10)+1px)] lg:before:top-1/2 lg:before:h-[2px] lg:before:w-10 lg:before:-translate-y-full lg:before:content-['']">
+      <p-button size="large" class="block text-center" icon="pi pi-plus" [text]="true" (onClick)="open()"></p-button>
     </div>
-    <app-experience (onExperienceRemoved)="deleteExperience(experience)" (onExperienceEdit)="openDialog(experience)" *ngFor="let experience of experiences; let index = index" [experience]="experience" [right]="index % 2 != 0" class="nth-[n+3]:mt-5 lg:nth-[n+3]:-mt-10 block"></app-experience>
+    <app-experience (onExperienceRemoved)="delete(experience, 'title')" (onExperienceEdit)="open(experience)" *ngFor="let experience of items; let index = index" [experience]="experience" [right]="index % 2 != 0" class="nth-[n+3]:mt-5 lg:nth-[n+3]:-mt-10 block"></app-experience>
   </div>
 </div>
-<p-dialog [modal]="true" [header]="(idEdit.length ? 'Modifier' : 'Ajouter') + ' une expérience'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isDialogShown">
-  <form [formGroup]="formExperience" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+<p-dialog [modal]="true" [header]="(editing.length ? 'Modifier' : 'Ajouter') + ' une expérience'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShown">
+  <form [formGroup]="form" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
     <div>
       <label>
         Début
@@ -54,9 +54,9 @@
       <div *ngFor="let activity of activities" class="group relative flex items-center justify-between ps-6 transition-colors after:absolute after:left-2 after:h-[6px] after:w-[6px] after:rounded-full after:bg-white after:opacity-50 after:content-[''] hover:bg-black/10">
         <span class="block max-w-[400px] truncate pe-2 opacity-50">{{ activity }}</span>
         <div class="opacity-0 transition-opacity group-hover:opacity-100">
-          <p-button icon="pi pi-angle-up" styleClass="w-auto" [disabled]="activities[0] == activity" [text]="true" size="small" severity="secondary" (onClick)="moveActivity(activity, true)" />
-          <p-button icon="pi pi-angle-down" styleClass="w-auto" [disabled]="activities[activities.length - 1] == activity" [text]="true" size="small" severity="secondary" (onClick)="moveActivity(activity)" />
-          <p-button icon="pi pi-trash" styleClass="w-auto" [text]="true" size="small" severity="danger" (onClick)="removeActivity(activity)" />
+          <p-button icon="pi pi-angle-up" styleClass="w-auto" [disabled]="activities[0] == activity" [text]="true" size="small" severity="secondary" (onClick)="move(activity, true)" />
+          <p-button icon="pi pi-angle-down" styleClass="w-auto" [disabled]="activities[activities.length - 1] == activity" [text]="true" size="small" severity="secondary" (onClick)="move(activity)" />
+          <p-button icon="pi pi-trash" styleClass="w-auto" [text]="true" size="small" severity="danger" (onClick)="remove(activity)" />
         </div>
       </div>
     </label>
@@ -64,12 +64,12 @@
       Ajouter une activité
       <p-inputGroup>
         <input #activity pInputText placeholder="Activité" />
-        <p-button [disabled]="!activity.value" icon="pi pi-plus" (onClick)="addActivity(activity.value)" />
+        <p-button [disabled]="!activity.value" icon="pi pi-plus" (onClick)="add(activity.value)" />
       </p-inputGroup>
     </label>
   </form>
   <div class="flex justify-end gap-2">
-    <p-button (onClick)="isDialogShown = false" [text]="true">Annuler</p-button>
-    <p-button (onClick)="idEdit.length ? updateExperience() : createExperience(); isDialogShown = false" [disabled]="!formExperience.valid">{{ idEdit.length ? "Modifier" : "Ajouter" }}</p-button>
+    <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
+    <p-button (onClick)="editing.length ? update() : create(); isShown = false" [disabled]="!form.valid">{{ editing.length ? "Modifier" : "Ajouter" }}</p-button>
   </div>
 </p-dialog>

@@ -1,10 +1,11 @@
 import { CommonModule, NgOptimizedImage } from "@angular/common";
 import { Component } from "@angular/core";
-import { User } from "@angular/fire/auth";
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { Section } from "@app/shared/classes/section";
+import { CrudComponent } from "@components/crud.component";
 import { AuthService } from "@services/auth.service";
+import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
 import { ConfirmService } from "@services/frontend/confirm.service";
-import { Section, SectionsService } from "@services/old/sections.service";
 import { NgxTypedJsModule } from "ngx-typed-js";
 import { ButtonModule } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
@@ -14,54 +15,41 @@ import { InputTextModule } from "primeng/inputtext";
 import { TextareaModule } from "primeng/textarea";
 import { SectionComponent } from "./section/section.component";
 
+const SERVICE_VARIABLE: ServiceConfig<Section> = {
+  type: Section,
+  collection: "sections",
+  order: ["rank"],
+  compareFn: (a, b) => a.rank - b.rank,
+};
+
 @Component({
   selector: "app-home",
   imports: [CommonModule, NgxTypedJsModule, ButtonModule, FileUpload, NgOptimizedImage, CommonModule, SectionComponent, ReactiveFormsModule, DialogModule, ButtonModule, InputTextModule, TextareaModule, InputNumberModule],
   templateUrl: "./home.component.html",
+  providers: [CrudService<Section>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
-export class HomeComponent {
+export class HomeComponent extends CrudComponent<Section> {
   strings: string[] = ["Web", "Backend", "Frontend", "FullStack", "SQL", "TypeScript", ".NET", "Angular", "Java", "Python"];
-  user?: User;
-  isDialogSectionShown: boolean = false;
-  idEdit: string = "";
-  formSection = new FormGroup({
+  // user?: User;
+  // isDialogSectionShown: boolean = false;
+  // idEdit: string = "";
+  form = new FormGroup({
     rank: new FormControl(0, [Validators.required]),
     text: new FormControl("", [Validators.required]),
   });
-  sections: Section[] = [];
-
-  constructor(
-    private authService: AuthService,
-    private sectionsService: SectionsService,
-    private confirmService: ConfirmService,
-  ) {
-    this.authService.user().subscribe((user: User) => (this.user = user));
-    this.sectionsService.sections().subscribe((sections) => (this.sections = sections));
+  constructor(crudService: CrudService<Section>, authService: AuthService, confirmService: ConfirmService) {
+    super(crudService, authService, confirmService);
   }
-  openDialog = (section?: Section) => {
-    if (section) {
-      this.idEdit = section.id!;
-      let tmp = new Section(section);
-      delete tmp.id;
-      this.formSection.setValue(tmp);
-    } else {
-      this.idEdit = "";
-      this.formSection.setValue({ rank: this.sections[this.sections.length - 1].rank + 1, text: "" });
-    }
-    this.isDialogSectionShown = true;
-  };
-  createSection = () => this.sectionsService.createSection(this.formSection.value as Section).then(() => (this.isDialogSectionShown = false));
-  updateSection = () => {
-    let section: Section = this.formSection.value as Section;
-    section.id = this.idEdit;
-    this.sectionsService.updateSection(section).then(() => (this.isDialogSectionShown = false));
-  };
-  deleteSection = (section: Section) => {
-    this.confirmService.confirm({
-      message: `Voulez-vous vraiment supprimer '${section.text}' ?`,
-      accept: async () => {
-        this.sectionsService.deleteSection(section);
-      },
+  override open(item?: Section): void {
+    super.open(item);
+    this.form.controls["rank"].setValue(item ? item.rank : this.items[this.items.length - 1].rank + 1);
+  }
+  moveSections = (rank: number) => {
+    let previousRank: number = rank;
+    this.items.slice(rank).forEach((section) => {
+      if (section.rank > previousRank) return;
+      this.items[this.items.indexOf(section)].rank++;
+      this.update({ ...section, rank: section.rank + 1 });
     });
   };
 }

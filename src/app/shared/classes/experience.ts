@@ -1,5 +1,6 @@
-export class Experience {
-  id?: string;
+import { Base } from "./base";
+
+export class Experience extends Base {
   start: Date;
   end: Date;
   title: string;
@@ -13,6 +14,6 @@ export class Experience {
   constructor(experience: Experience) {
     if (experience.start && !(experience.start instanceof Date)) experience.start = (experience.start as any).toDate();
     if (experience.end && !(experience.end instanceof Date)) experience.end = (experience.end as any).toDate();
-    Object.assign(this, experience);
+    super(experience);
   }
 }

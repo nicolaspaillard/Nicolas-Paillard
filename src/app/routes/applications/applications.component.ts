@@ -2,10 +2,10 @@ import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { Application } from "@app/shared/classes/application";
+import { CrudComponent } from "@components/crud.component";
 import { AuthService } from "@services/auth.service";
-import { CrudService, SERVICE_CONFIG } from "@services/crud.service";
+import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
 import { ConfirmService } from "@services/frontend/confirm.service";
-import { ApplicationsService } from "@services/old/applications.service";
 import { ButtonModule } from "primeng/button";
 import { DatePickerModule } from "primeng/datepicker";
 import { DialogModule } from "primeng/dialog";
@@ -14,6 +14,13 @@ import { InputGroupModule } from "primeng/inputgroup";
 import { InputTextModule } from "primeng/inputtext";
 import { TableModule } from "primeng/table";
 import { TextareaModule } from "primeng/textarea";
+
+const SERVICE_VARIABLE: ServiceConfig<Application> = {
+  type: Application,
+  collection: "applications",
+  order: ["title"],
+  compareFn: (a, b) => (a.title < b.title ? -1 : a.title > b.title ? 1 : 0),
+};
 
 @Component({
   selector: "app-applications",
@@ -28,10 +35,8 @@ import { TextareaModule } from "primeng/textarea";
   ],
   styles: ``,
 })
-export class ApplicationsComponent {
-  isDialogShown: boolean = false;
-  user: any = null;
-  formApplication = new FormGroup({
+export class ApplicationsComponent extends CrudComponent<Application> {
+  form = new FormGroup({
     title: new FormControl("", [Validators.required]),
     company: new FormControl("", [Validators.required]),
     activity: new FormControl("", [Validators.required]),
@@ -44,47 +49,8 @@ export class ApplicationsComponent {
     answerDate: new FormControl(new Date(), []),
     answer: new FormControl("", []),
   });
-  editing: { id: string } = { id: "" };
-  applications: Application[] = [];
   expandedRows = {};
-  constructor(
-    private crudService: CrudService<Application>,
-    private confirmService: ConfirmService,
-    private authService: AuthService,
-    private applicationsService: ApplicationsService,
-  ) {
-    this.authService.user().subscribe((user) => (this.user = user));
-    this.applicationsService.applications().subscribe((applications) => {
-      this.applications = applications;
-      console.log(applications);
-    });
+  constructor(crudService: CrudService<Application>, authService: AuthService, confirmService: ConfirmService) {
+    super(crudService, authService, confirmService);
   }
-  openDialog = (application?: Application) => {
-    if (application) {
-      this.editing = { id: application.id! };
-      let tmp = new Application(application);
-      delete tmp.id;
-      this.formApplication.setValue(tmp);
-    } else {
-      this.editing = { id: "" };
-      this.formApplication.reset();
-    }
-    this.isDialogShown = true;
-  };
-  createApplication = async () => {
-    this.applicationsService.createApplication(this.formApplication.value as Application);
-  };
-  updateApplication = async () => {
-    let application: Application = this.formApplication.value as Application;
-    application.id = this.editing.id;
-    this.applicationsService.updateApplication(application);
-  };
-  deleteApplication = async (application: Application) => {
-    this.confirmService.confirm({
-      message: `Voulez-vous vraiment supprimer '${application.title}' ?`,
-      accept: async () => {
-        this.applicationsService.deleteApplication(application);
-      },
-    });
-  };
 }

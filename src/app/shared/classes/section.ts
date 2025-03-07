@@ -1,8 +1,9 @@
-export class Section {
-  id?: string;
+import { Base } from "./base";
+
+export class Section extends Base {
   rank: number;
   text: string;
   constructor(section: Section) {
-    Object.assign(this, section);
+    super(section);
   }
 }

@@ -9,7 +9,7 @@ export const AuthGuard: CanActivateFn = (route, state) => {
   let canActivate: boolean = false;
   inject(AuthService)
     .user()
-    .subscribe((user: { user: User; roles: string[] } | null) => {
+    .subscribe((user: { user: User; roles: string[] } | undefined) => {
       canActivate = user != null && (!route.data["role"] || user.roles.includes(route.data["role"]));
     });
   if (!canActivate) {

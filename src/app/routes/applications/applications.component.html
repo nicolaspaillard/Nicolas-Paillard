@@ -1,6 +1,6 @@
 <div class="flex min-h-full flex-col">
-  <p-button *ngIf="user && user['roles'].includes('admin')" size="large" class="mt-2 block text-center" icon="pi pi-plus" [text]="true" (onClick)="openDialog()"></p-button>
-  <p-table dataKey="id" [value]="applications" size="small" [expandedRowKeys]="expandedRows">
+  <p-button *ngIf="isAdmin" size="large" class="mt-2 block text-center" icon="pi pi-plus" [text]="true" (onClick)="open()"></p-button>
+  <p-table dataKey="id" [value]="items" size="small" [expandedRowKeys]="expandedRows">
     <ng-template #header>
       <tr>
         <th></th>
@@ -68,8 +68,8 @@
               {{ application.comments }}
             </div>
             <div>
-              <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="openDialog(application)" />
-              <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="deleteApplication(application)" />
+              <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="open(application)" />
+              <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="delete(application, 'title')" />
             </div>
           </div>
         </td>
@@ -77,8 +77,8 @@
     </ng-template>
   </p-table>
 </div>
-<p-dialog [modal]="true" [header]="(editing.id.length ? 'Modifier' : 'Ajouter') + ' une candidature'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isDialogShown">
-  <form [formGroup]="formApplication" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&_label]:flex [&_label]:w-full [&_label]:flex-col [&>label]:gap-0">
+<p-dialog [modal]="true" [header]="(editing.length ? 'Modifier' : 'Ajouter') + ' une candidature'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShown">
+  <form [formGroup]="form" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
     <div>
       <label>
         Titre
@@ -137,7 +137,7 @@
     </div>
   </form>
   <div class="flex justify-end gap-2">
-    <p-button (onClick)="isDialogShown = false" [text]="true">Annuler</p-button>
-    <p-button (onClick)="editing.id.length ? updateApplication() : createApplication(); isDialogShown = false" [disabled]="!formApplication.valid">{{ editing.id.length ? "Modifier" : "Ajouter" }}</p-button>
+    <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
+    <p-button (onClick)="editing.length ? update() : create(); isShown = false" [disabled]="!form.valid">{{ editing.length ? "Modifier" : "Ajouter" }}</p-button>
   </div>
 </p-dialog>

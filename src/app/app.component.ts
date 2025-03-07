@@ -1,6 +1,7 @@
 import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
+import { User } from "@angular/fire/auth";
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { NavigationEnd, NavigationStart, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
 import { AnimationComponent } from "@components/animation/animation.component";
@@ -41,7 +42,7 @@ export class AppComponent {
   isSignupShown: boolean = false;
   isSigninShown: boolean = false;
   isTransitioning: boolean = false;
-  user: any = null;
+  user: { user: User; roles: string[] } | undefined;
   routes: Route[] = routes.filter((route) => route.path && route.data);
   formSignup = new FormGroup(
     {
@@ -58,15 +59,16 @@ export class AppComponent {
     password: new FormControl("", [Validators.required]),
   });
   enableMatrix: boolean = false;
-  enableDarkMode: boolean = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  private enableDarkMode: boolean = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  private interval: NodeJS.Timeout;
   constructor(
     private router: Router,
     private authService: AuthService,
     private designerService: DesignerService,
   ) {
-    if (location.pathname.split("/").pop() === "cv") this.designerService.downloadPDF({ editing: false, replace: true });
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => (this.enableDarkMode = this.toggleDarkMode(e.matches)));
-    this.toggleDarkMode(this.enableDarkMode);
+    if (location.pathname.split("/").pop() === "cv") this.designerService.export({ editing: false, replace: true });
+    document.querySelector("html")!.classList.toggle("app-dark", this.enableDarkMode);
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => (this.enableDarkMode = document.querySelector("html")!.classList.toggle("app-dark", e.matches)));
     this.authService.user().subscribe((user) => (this.user = user));
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
@@ -78,14 +80,21 @@ export class AppComponent {
       }
     });
   }
-  downloadCV = () => this.designerService.downloadPDF({ editing: false, replace: true });
-  toggleDarkMode = (active: boolean) => document.querySelector("html")!.classList.toggle("app-dark", active);
+  prepareRoute = (outlet: RouterOutlet) => outlet && outlet.activatedRouteData && outlet.activatedRouteData["animation"];
+  signup = () =>
+    this.authService.signup(this.formSignup.value.email!, this.formSignup.value.password!).then(() => {
+      this.formSignin.setValue({ email: this.formSignup.value.email!, password: this.formSignup.value.password! });
+      this.isSignupShown = false;
+      this.isSigninShown = true;
+    });
+  signin = () => this.authService.signin(this.formSignin.value.email!, this.formSignin.value.password!).then(() => (this.isSigninShown = false));
+  signout = () => this.authService.signout();
+  downloadCV = () => this.designerService.export({ editing: false, replace: true });
   applyPreset = () => {
-    this.toggleDarkMode(this.enableMatrix || this.enableDarkMode);
+    document.querySelector("html")!.classList.toggle("app-dark", this.enableMatrix || this.enableDarkMode);
     usePreset(this.enableMatrix ? matrix : aura);
     this.matrix();
   };
-  private interval: NodeJS.Timeout | undefined;
   matrix = () => {
     let canvas: HTMLCanvasElement = document.querySelector("canvas")!;
     let context: CanvasRenderingContext2D = canvas.getContext("2d")!;
@@ -100,7 +109,7 @@ export class AppComponent {
     this.interval = setInterval(() => drawLetter(drops), 33);
     let letters: string[] = "ABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZ".split("");
     function drawLetter(drp: number[]) {
-      context.fillStyle = "rgba(0, 0, 0, .03)";
+      context.fillStyle = "rgba(0, 0, 0, .08)";
       context.fillRect(0, 0, canvas.width, canvas.height);
       for (let i = 0; i < drp.length; i++) {
         let text = letters[Math.floor(Math.random() * letters.length)];
@@ -111,16 +120,6 @@ export class AppComponent {
       }
     }
   };
-  prepareRoute = (outlet: RouterOutlet) => outlet && outlet.activatedRouteData && outlet.activatedRouteData["animation"];
-
-  signup = () =>
-    this.authService.signup(this.formSignup.value.email!, this.formSignup.value.password!).then(() => {
-      this.formSignin.setValue({ email: this.formSignup.value.email!, password: this.formSignup.value.password! });
-      this.isSignupShown = false;
-      this.isSigninShown = true;
-    });
-  signin = () => this.authService.signin(this.formSignin.value.email!, this.formSignin.value.password!).then(() => (this.isSigninShown = false));
-  signout = () => this.authService.signout();
 }
 function slideTo(direction: any) {
   const optional = { optional: true };
