@@ -25,14 +25,17 @@ const SERVICE_VARIABLE: ServiceConfig<Skill> = {
   providers: [CrudService<Skill>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class SkillsComponent extends CrudComponent<Skill> {
+  // editing: string = "";
   categories: Category[] = [];
   isShownCategory: boolean = false;
   form: FormGroup = new FormGroup({
+    id: new FormControl(""),
     title: new FormControl("", [Validators.required]),
     icon: new FormControl("", [Validators.required]),
     category: new FormControl("", [Validators.required]),
   });
   formCategory: FormGroup = new FormGroup({
+    oldTitle: new FormControl(""),
     title: new FormControl("", [Validators.required]),
   });
   devIcons: string[] = [
@@ -1572,6 +1575,6 @@ export class SkillsComponent extends CrudComponent<Skill> {
     }
     this.categories.sort((category1, category2) => (category1.title < category2.title ? -1 : category1.title > category2.title ? 1 : 0));
   }
-  updateCategory = async () => this.items.filter((skill) => skill.category === this.editing).map(async (skill) => await this.update({ ...skill, category: this.formCategory.get("title")!.value }));
+  updateCategory = async () => Promise.all(this.items.filter((skill) => skill.category === this.formCategory.get("oldTitle")!.value).map(async (skill) => await this.update({ ...skill, category: this.formCategory.get("title")!.value }))).then(() => (this.isShownCategory = false));
   deleteCategory = (category: string) => this.confirmService.confirm({ message: `Voulez-vous vraiment supprimer ${category}`, accept: () => this.items.filter((skill) => skill.category === category).map((skill) => this.delete(skill)) });
 }

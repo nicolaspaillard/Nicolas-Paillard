@@ -8,8 +8,9 @@
     <app-experience (onExperienceRemoved)="delete(experience, 'title')" (onExperienceEdit)="open(experience)" *ngFor="let experience of items; let index = index" [experience]="experience" [right]="index % 2 != 0" class="nth-[n+3]:mt-5 lg:nth-[n+3]:-mt-10 block"></app-experience>
   </div>
 </div>
-<p-dialog [modal]="true" [header]="(editing.length ? 'Modifier' : 'Ajouter') + ' une expérience'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShown">
+<p-dialog [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une expérience'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShown">
   <form [formGroup]="form" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+    <input type="hidden" formControlName="id" />
     <div>
       <label>
         Début
@@ -70,6 +71,6 @@
   </form>
   <div class="flex justify-end gap-2">
     <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
-    <p-button (onClick)="editing.length ? update() : create(); isShown = false" [disabled]="!form.valid">{{ editing.length ? "Modifier" : "Ajouter" }}</p-button>
+    <p-button (onClick)="isEditing ? update() : create(); isShown = false" [disabled]="!form.valid">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
   </div>
 </p-dialog>

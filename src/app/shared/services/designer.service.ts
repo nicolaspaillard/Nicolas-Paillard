@@ -31,7 +31,7 @@ export class DesignerService {
     this.designer = new Designer({ domContainer: document.getElementById(containerId)!, template: await this.getTemplate(), plugins: plugins, options: { font: fonts } });
     this.designer.onChangeTemplate(() => {
       clearTimeout(this.timer);
-      this.timer = setTimeout(() => this.save(), 10000);
+      this.timer = setTimeout(() => this.save(true), 10000);
     });
   };
   destroy = () => this.designer.destroy();
@@ -105,14 +105,14 @@ export class DesignerService {
       });
     }
   };
-  save = async () => {
+  save = async (auto: boolean = false) => {
     let template = this.designer.getTemplate();
     template.basePdf = this.blank.basePdf;
     try {
       await setDoc(doc(this.db, "data", "template"), { template: JSON.stringify(template) });
-      this.toastService.success("Succès", "Sauvegarde effectuée");
+      this.toastService.success("Succès", `Sauvegarde${auto ? " automatique" : ""} effectuée`);
     } catch (error) {
-      this.toastService.error("Erreur", "Sauvegarde échouée");
+      this.toastService.error("Erreur", `Sauvegarde${auto ? " automatique" : ""} échouée`);
       console.error(error);
     }
   };

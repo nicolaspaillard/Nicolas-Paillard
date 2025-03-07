@@ -31,9 +31,7 @@ export class CrudService<T extends Base> {
     try {
       getDocs(query(collection(db, "data", config.collection, config.collection), orderBy(...config.order))).then((items) => {
         items.docs.forEach((doc) => {
-          let item: T = new config.type(doc.data() as any);
-          item.id = doc.id;
-          this.__items.push(item);
+          this.__items.push(new config.type({ ...doc.data(), id: doc.id }));
           this._items.next(this.__items);
         });
       });
@@ -54,9 +52,9 @@ export class CrudService<T extends Base> {
   };
   update = async (item: T) => {
     try {
-      let newItem = new this.type(item);
+      let newItem: any = new this.type(item);
       delete newItem.id;
-      setDoc(doc(this.db, "data", this.collection, this.collection, item.id!), Object.assign({}, newItem));
+      setDoc(doc(this.db, "data", this.collection, this.collection, item.id), Object.assign({}, newItem));
       this.__items[this.__items.findIndex((tmp) => tmp.id === item.id)] = item;
       if (this.compareFn) this.__items.sort(this.compareFn);
       this._items.next(this.__items);

@@ -6,8 +6,9 @@
     </div>
   </div>
 </div>
-<p-dialog [modal]="true" [header]="(editing.length ? 'Modifier' : 'Ajouter') + ' un projet'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShown">
+<p-dialog [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' un projet'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShown">
   <form [formGroup]="form" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+    <input type="hidden" formControlName="id" />
     <div>
       <label>
         Début
@@ -74,7 +75,7 @@
     </label>
     <label class="block!">
       Images
-      <span *ngIf="editing && !images._files.length" class="opacity-50">&nbsp;(Aucune modification)</span>
+      <span *ngIf="isEditing && !images._files.length" class="opacity-50">&nbsp;(Aucune modification)</span>
       <p-fileUpload #images [multiple]="true" accept="image/*">
         <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
           <p-button (onClick)="chooseCallback()" icon="pi pi-images" [outlined]="true"></p-button>
@@ -85,6 +86,6 @@
   </form>
   <div class="flex justify-end gap-2">
     <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
-    <p-button (onClick)="editing.length ? update(images._files) : create(images._files); isShown = false" [disabled]="!form.valid">{{ editing.length ? "Modifier" : "Ajouter" }}</p-button>
+    <p-button (onClick)="isEditing ? update(images._files) : create(images._files); isShown = false" [disabled]="!form.valid">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
   </div>
 </p-dialog>

@@ -6,9 +6,9 @@ import { ConfirmService } from "@services/frontend/confirm.service";
 import { Base } from "../classes/base";
 
 export abstract class CrudComponent<T extends Base> {
-  editing: string = "";
   isAdmin: boolean = false;
   isShown: boolean = false;
+  isEditing: boolean = false;
   items: T[];
   abstract form: FormGroup;
   constructor(
@@ -42,12 +42,9 @@ export abstract class CrudComponent<T extends Base> {
   }
 
   open(item?: T) {
-    this.editing = item ? item.id! : "";
-    if (item) {
-      let tmp = new this.crudService.type(item);
-      delete tmp.id;
-      this.form.setValue(tmp as any);
-    } else this.form.reset();
+    this.isEditing = item ? true : false;
+    if (item) this.form.setValue(new this.crudService.type(item));
+    else this.form.reset();
     this.isShown = true;
   }
 }

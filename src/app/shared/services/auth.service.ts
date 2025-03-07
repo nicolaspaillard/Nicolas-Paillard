@@ -13,13 +13,13 @@ export class AuthService {
   constructor(private toastService: ToastService) {
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
-        // prettier-ignore
-        user.getIdTokenResult().then((idTokenResult) => {
-          console.log(idTokenResult.claims);
-          this._admin.next(idTokenResult.claims["admin"] ? true : false);
-        this._user.next({user:user,roles:idTokenResult.claims["admin"]?["admin"]:[]});
-
-        }).catch(error=>console.error(error));
+        user
+          .getIdTokenResult()
+          .then((idTokenResult) => {
+            this._user.next({ user: user, roles: idTokenResult.claims["admin"] ? ["admin"] : [] });
+            this._admin.next(idTokenResult.claims["admin"] ? true : false);
+          })
+          .catch((error) => console.error(error));
       } else {
         this._admin.next(false);
         this._user.next(undefined);

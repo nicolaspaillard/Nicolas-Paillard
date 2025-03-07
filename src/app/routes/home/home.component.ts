@@ -34,6 +34,7 @@ export class HomeComponent extends CrudComponent<Section> {
   // isDialogSectionShown: boolean = false;
   // idEdit: string = "";
   form = new FormGroup({
+    id: new FormControl(""),
     rank: new FormControl(0, [Validators.required]),
     text: new FormControl("", [Validators.required]),
   });

@@ -5,7 +5,7 @@
       *ngFor="let category of categories"
       [skills]="category.skills"
       [title]="category.title"
-      (onCategoryEdit)="editing = category.title; formCategory.setValue({ title: category.title }); isShownCategory = true"
+      (onCategoryEdit)="formCategory.setValue({ oldTitle: category.title, title: category.title }); isShownCategory = true"
       (onCategoryRemoved)="deleteCategory($event)"
       (onSkillEdit)="open($event)"
       (onSkillRemoved)="delete($event, 'title')"></app-category>
@@ -17,6 +17,7 @@
 
 <p-dialog [modal]="true" header="Modifier une catégorie" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShownCategory">
   <form [formGroup]="formCategory" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+    <input type="hidden" formControlName="oldTitle" />
     <label>
       Titre
       <p-select [options]="categories" formControlName="title" placeholder="Catégorie" [editable]="true" optionLabel="title" optionValue="title" appendTo="body" />
@@ -27,8 +28,9 @@
     <p-button (onClick)="updateCategory(); isShownCategory = false" [disabled]="!formCategory.valid">Modifier</p-button>
   </div>
 </p-dialog>
-<p-dialog [modal]="true" [header]="(editing.length ? 'Modifier' : 'Ajouter') + ' une compétence'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShownCategory">
+<p-dialog [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une compétence'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShownCategory">
   <form [formGroup]="form" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+    <input type="hidden" formControlName="id" />
     <label>
       Titre
       <input pInputText type="text" formControlName="title" />
@@ -59,6 +61,6 @@
   </form>
   <div class="flex justify-end gap-2">
     <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
-    <p-button (onClick)="editing.length ? update() : create(); isShown = false" [disabled]="!form.valid">{{ editing.length ? "Modifier" : "Ajouter" }}</p-button>
+    <p-button (onClick)="isEditing ? update() : create(); isShown = false" [disabled]="!form.valid">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
   </div>
 </p-dialog>

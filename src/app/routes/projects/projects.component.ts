@@ -32,6 +32,7 @@ const SERVICE_VARIABLE: ServiceConfig<Project> = {
 })
 export class ProjectsComponent extends CrudComponent<Project> {
   form: FormGroup = new FormGroup({
+    id: new FormControl(""),
     start: new FormControl(new Date(), [Validators.required]),
     end: new FormControl(new Date(), [Validators.required]),
     title: new FormControl("", [Validators.required]),
@@ -58,7 +59,7 @@ export class ProjectsComponent extends CrudComponent<Project> {
   override async update(images: File[]) {
     const result = (await this.deleteImages(this.images)) && (await this.uploadImages(images));
     if (!result) return false;
-    super.update({ ...this.form.value, id: this.editing, images: result } as Project);
+    super.update({ ...this.form.value, images: result } as Project);
     return true;
   }
   override open(item?: Project) {

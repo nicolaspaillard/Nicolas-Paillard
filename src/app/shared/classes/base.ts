@@ -1,5 +1,5 @@
 export class Base {
-  id?: string;
+  id: string;
   constructor(item: any) {
     Object.assign(this, item);
   }

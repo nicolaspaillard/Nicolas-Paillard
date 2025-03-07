@@ -37,6 +37,7 @@ const SERVICE_VARIABLE: ServiceConfig<Application> = {
 })
 export class ApplicationsComponent extends CrudComponent<Application> {
   form = new FormGroup({
+    id: new FormControl(""),
     title: new FormControl("", [Validators.required]),
     company: new FormControl("", [Validators.required]),
     activity: new FormControl("", [Validators.required]),

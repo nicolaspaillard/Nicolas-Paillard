@@ -27,8 +27,9 @@
     </div>
   </div>
 </div>
-<p-dialog [modal]="true" [header]="(editing.length ? 'Modifier' : 'Ajouter') + ' un paragraphe'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShown">
+<p-dialog [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' un paragraphe'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShown">
   <form [formGroup]="form" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+    <input type="hidden" formControlName="id" />
     <label>
       Rang
       <p-inputnumber formControlName="rank" [showButtons]="true" />
@@ -40,6 +41,6 @@
   </form>
   <div class="flex justify-end gap-2">
     <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
-    <p-button (onClick)="editing.length ? update() : create()" [disabled]="!form.valid">{{ editing.length ? "Modifier" : "Ajouter" }}</p-button>
+    <p-button (onClick)="isEditing ? update() : create()" [disabled]="!form.valid">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
   </div>
 </p-dialog>
