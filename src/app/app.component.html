@@ -38,7 +38,7 @@
 <p-toast [life]="5000" position="bottom-right"></p-toast>
 <p-confirmDialog [dismissableMask]="true"></p-confirmDialog>
 <p-dialog header="Connexion" [modal]="true" [(visible)]="isSigninShown" [dismissableMask]="true">
-  <form [formGroup]="formSignin" class="mb-2 flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+  <form [formGroup]="formSignin" class="mb-2 flex flex-col gap-2 [&>*]:flex [&>*]:justify-evenly [&>*]:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
     <label>
       Email
       <input pInputText type="text" formControlName="email" />
@@ -55,7 +55,7 @@
   </div>
 </p-dialog>
 <p-dialog header="Inscription" [modal]="true" [(visible)]="isSignupShown" [dismissableMask]="true">
-  <form [formGroup]="formSignup" class="mb-2 flex flex-col gap-2 *:flex *:w-full *:flex-col">
+  <form [formGroup]="formSignup" class="mb-2 flex flex-col gap-2 [&>*]:flex [&>*]:w-full [&>*]:flex-col">
     <label>
       Email
       <input pInputText type="text" formControlName="email" />

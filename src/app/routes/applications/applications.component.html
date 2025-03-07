@@ -78,7 +78,7 @@
   </p-table>
 </div>
 <p-dialog [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une candidature'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShown">
-  <form [formGroup]="form" class="flex flex-col gap-2 *:flex *:justify-evenly *:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+  <form [formGroup]="form" class="flex flex-col gap-2 [&>*]:flex [&>*]:justify-evenly [&>*]:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
     <input type="hidden" formControlName="id" />
     <div>
       <label>
