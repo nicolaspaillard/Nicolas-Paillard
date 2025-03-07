@@ -23,11 +23,11 @@ import { matrix } from "src/themes/matrix.preset";
 
 export const routes: Routes = [
   { path: "", title: "Nicolas Paillard", loadComponent: () => import("@routes/home/home.component").then((m) => m.HomeComponent), data: { animation: 0 } },
-  { path: "career", title: "Carrière", loadComponent: () => import("@routes/career/career.component").then((m) => m.CareerComponent), data: { animation: 2 } },
-  { path: "skills", title: "Compétences", loadComponent: () => import("@routes/skills/skills.component").then((m) => m.SkillsComponent), data: { animation: 3 } },
-  { path: "projects", title: "Projets", loadComponent: () => import("@routes/projects/projects.component").then((m) => m.ProjectsComponent), data: { animation: 4 } },
-  { path: "designer", title: "Designer", loadComponent: () => import("@routes/designer/designer.component").then((m) => m.DesignerComponent), data: { animation: 5 } },
-  { path: "applications", title: "Candidatures", loadComponent: () => import("@routes/applications/applications.component").then((m) => m.ApplicationsComponent), data: { animation: 6, role: "admin" }, canActivate: [AuthGuard] },
+  { path: "career", title: "Carrière", loadComponent: () => import("@routes/career/career.component").then((m) => m.CareerComponent), data: { animation: 1 } },
+  { path: "skills", title: "Compétences", loadComponent: () => import("@routes/skills/skills.component").then((m) => m.SkillsComponent), data: { animation: 2 } },
+  { path: "projects", title: "Projets", loadComponent: () => import("@routes/projects/projects.component").then((m) => m.ProjectsComponent), data: { animation: 3 } },
+  { path: "designer", title: "Designer", loadComponent: () => import("@routes/designer/designer.component").then((m) => m.DesignerComponent), data: { animation: 4 } },
+  { path: "applications", title: "Candidatures", loadComponent: () => import("@routes/applications/applications.component").then((m) => m.ApplicationsComponent), data: { animation: 5, role: "admin" }, canActivate: [AuthGuard] },
   { path: "cv", children: [] },
   { path: "**", redirectTo: "" },
 ];
