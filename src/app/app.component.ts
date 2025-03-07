@@ -106,19 +106,18 @@ export class AppComponent {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     for (let i = 0; i < canvas.width / fontSize; i++) drops[i] = canvas.height + 1;
-    this.interval = setInterval(() => drawLetter(drops), 33);
-    let letters: string[] = "ABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZ".split("");
-    function drawLetter(drp: number[]) {
-      context.fillStyle = "rgba(0, 0, 0, .08)";
+    this.interval = setInterval(() => {
+      let letters: string[] = "ABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZ".split("");
+      context.fillStyle = "rgba(0, 0, 0, .25)";
       context.fillRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < drp.length; i++) {
+      for (let i = 0; i < drops.length; i++) {
         let text = letters[Math.floor(Math.random() * letters.length)];
         context.fillStyle = "rgba(0,200,0,0.8)";
-        context.fillText(text, i * fontSize, drp[i] * fontSize);
-        drp[i]++;
-        if (drp[i] * fontSize > canvas.height && Math.random() > 0.99) drp[i] = 0;
+        context.fillText(text, i * fontSize, drops[i] * fontSize);
+        drops[i]++;
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.99) drops[i] = 0;
       }
-    }
+    }, 50);
   };
 }
 function slideTo(direction: any) {
