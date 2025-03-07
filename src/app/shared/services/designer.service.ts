@@ -13,8 +13,8 @@ import { cloudinaryConfig } from "src/main";
 import { Experience } from "../classes/experience";
 import { Section } from "../classes/section";
 import { Category, Skill } from "../classes/skill";
-import { AnimationService } from "./frontend/animation.service";
-import { ToastService } from "./frontend/toast.service";
+import { AnimationService } from "./animation.service";
+import { ToastService } from "./toast.service";
 @Injectable({
   providedIn: "root",
 })

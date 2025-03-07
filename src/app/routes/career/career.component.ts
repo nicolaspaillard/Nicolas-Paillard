@@ -1,11 +1,11 @@
 import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { Experience } from "@app/shared/classes/experience";
+import { Experience } from "@classes/experience";
 import { CrudComponent } from "@components/crud.component";
 import { AuthService } from "@services/auth.service";
+import { ConfirmService } from "@services/confirm.service";
 import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
-import { ConfirmService } from "@services/frontend/confirm.service";
 import { ButtonModule } from "primeng/button";
 import { DatePickerModule } from "primeng/datepicker";
 import { DialogModule } from "primeng/dialog";

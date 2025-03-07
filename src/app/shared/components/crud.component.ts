@@ -1,8 +1,8 @@
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormGroup } from "@angular/forms";
 import { AuthService } from "@services/auth.service";
+import { ConfirmService } from "@services/confirm.service";
 import { CrudService } from "@services/crud.service";
-import { ConfirmService } from "@services/frontend/confirm.service";
 import { Base } from "../classes/base";
 
 export abstract class CrudComponent<T extends Base> {

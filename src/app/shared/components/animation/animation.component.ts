@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { Component, Input, OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
 import { SafeHtmlPipe } from "@helpers/safehtml.pipe";
-import { Animation, AnimationService } from "@services/frontend/animation.service";
+import { Animation, AnimationService } from "@services/animation.service";
 import { ButtonModule } from "primeng/button";
 import { Subscription } from "rxjs";
 

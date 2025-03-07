@@ -29,6 +29,7 @@
       "@helpers/*": ["src/app/shared/helpers/*"],
       "@services/*": ["src/app/shared/services/*"],
       "@models/*": ["src/app/shared/models/*"],
+      "@classes/*": ["src/app/shared/classes/*"],
       "@routes/*": ["src/app/routes/*"],
       "@app/*": ["src/app/*"]
     }

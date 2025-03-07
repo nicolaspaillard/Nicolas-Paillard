@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { Auth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, User, validatePassword } from "@angular/fire/auth";
 import { Observable, ReplaySubject, Subject } from "rxjs";
-import { ToastService } from "./frontend/toast.service";
+import { ToastService } from "./toast.service";
 
 @Injectable({
   providedIn: "root",

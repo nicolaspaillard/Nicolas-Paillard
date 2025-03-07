@@ -1,11 +1,11 @@
 import { CommonModule, NgOptimizedImage } from "@angular/common";
 import { Component } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { Section } from "@app/shared/classes/section";
+import { Section } from "@classes/section";
 import { CrudComponent } from "@components/crud.component";
 import { AuthService } from "@services/auth.service";
+import { ConfirmService } from "@services/confirm.service";
 import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
-import { ConfirmService } from "@services/frontend/confirm.service";
 import { NgxTypedJsModule } from "ngx-typed-js";
 import { ButtonModule } from "primeng/button";
 import { DialogModule } from "primeng/dialog";

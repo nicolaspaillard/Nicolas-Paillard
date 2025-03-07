@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { Section } from "@app/shared/classes/section";
 import { AuthService } from "@app/shared/services/auth.service";
+import { Section } from "@classes/section";
 import { ButtonModule } from "primeng/button";
 
 @Component({
