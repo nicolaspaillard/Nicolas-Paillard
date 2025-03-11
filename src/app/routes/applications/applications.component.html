@@ -3,29 +3,24 @@
   <p-table dataKey="id" [value]="items" size="small" [expandedRowKeys]="expandedRows">
     <ng-template #header>
       <tr>
-        <th></th>
         <th pSortableColumn="title">
           Titre
           <p-sortIcon field="title" />
-        </th>
-        <th pSortableColumn="company">
-          Société
-          <p-sortIcon field="company" />
         </th>
         <th pSortableColumn="activity">
           Activité
           <p-sortIcon field="activity" />
         </th>
         <th pSortableColumn="contactDate">
-          Date de contact
+          Contact
           <p-sortIcon field="contactDate" />
         </th>
         <th pSortableColumn="relaunchDate">
-          Date de relance
+          Relance
           <p-sortIcon field="relaunchDate" />
         </th>
         <th pSortableColumn="answerDate">
-          Date de réponse
+          Réponse
           <p-sortIcon field="answerDate" />
         </th>
         <th pSortableColumn="answer">
@@ -36,15 +31,14 @@
     </ng-template>
     <ng-template #body let-application let-expanded="expanded">
       <tr class="group relative">
-        <td class="w-0">
-          <div class="flex">
+        <td>
+          <div class="me-2 inline-block">
             <p-button type="button" pRipple [pRowToggler]="application" [text]="true" [plain]="true" size="small" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
             <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="open(application)" />
             <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="delete(application, 'title')" />
           </div>
+          <span class="inline-block">{{ application.title }}</span>
         </td>
-        <td>{{ application.title }}</td>
-        <td>{{ application.company }}</td>
         <td>{{ application.activity }}</td>
         <td>{{ application.contactDate | date: "dd/MM/yyyy" }}</td>
         <td>{{ application.relaunchDate | date: "dd/MM/yyyy" }}</td>
@@ -55,24 +49,29 @@
     <ng-template #expandedrow let-application>
       <tr>
         <td colspan="8">
-          <div class="flex items-center justify-between">
+          <div class="grid grid-cols-2 md:grid-cols-5">
             <div>
-              Adresse
+              Société :
+              <br />
+              {{ application.company }}
+            </div>
+            <div>
+              Adresse :
               <br />
               {{ application.address }}
             </div>
             <div>
-              Contacts
+              Contacts :
               <br />
               {{ application.contacts }}
             </div>
             <div>
-              Liens
+              Liens :
               <br />
               <a *ngFor="let link of application.links.split(';'); let index = index" [href]="link">{{ index + 1 }}</a>
             </div>
             <div>
-              Commentaires
+              Commentaires :
               <br />
               {{ application.comments }}
             </div>
@@ -93,7 +92,6 @@
       Société
       <input pInputText formControlName="company" />
     </label>
-
     <label>
       Activité
       <input pInputText formControlName="activity" />
@@ -113,7 +111,7 @@
     <label for="lnk">
       Liens
       <div *ngFor="let link of links" class="relative flex items-center justify-between">
-        <span class="p-button-sm p-button-text p-button-contrast cursor-pointer truncate rounded-md" (click)="lnk.value = link">•&nbsp;&nbsp;{{ link }}</span>
+        <span class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="lnk.value = link">•&nbsp;&nbsp;{{ link }}</span>
         <div class="flex">
           <p-button icon="pi pi-angle-up" [disabled]="links[0] == link" [text]="true" size="small" severity="secondary" (onClick)="move(link, 'links', true)" />
           <p-button icon="pi pi-angle-down" [disabled]="links[links.length - 1] == link" [text]="true" size="small" severity="secondary" (onClick)="move(link, 'links')" />
@@ -128,7 +126,7 @@
     <label for="ctt">
       Contacts
       <div *ngFor="let contact of contacts" class="relative flex items-center justify-between">
-        <span class="p-button-sm p-button-text p-button-contrast cursor-pointer truncate rounded-md" (click)="ctt.value = contact">•&nbsp;&nbsp;{{ contact }}</span>
+        <span class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="ctt.value = contact">•&nbsp;&nbsp;{{ contact }}</span>
         <div class="flex">
           <p-button icon="pi pi-angle-up" [disabled]="contacts[0] == contact" [text]="true" size="small" severity="secondary" (onClick)="move(contact, 'contacts', true)" />
           <p-button icon="pi pi-angle-down" [disabled]="contacts[contacts.length - 1] == contact" [text]="true" size="small" severity="secondary" (onClick)="move(contact, 'contacts')" />

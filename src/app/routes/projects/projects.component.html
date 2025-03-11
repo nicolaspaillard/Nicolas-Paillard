@@ -48,7 +48,7 @@
     <label class="md:col-span-2">
       Activités
       <div *ngFor="let activity of activities" class="relative flex items-center justify-between">
-        <span class="p-button-sm p-button-text p-button-contrast cursor-pointer truncate rounded-md" (click)="act.value = activity">•&nbsp;&nbsp;{{ activity }}</span>
+        <span class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="act.value = activity">•&nbsp;&nbsp;{{ activity }}</span>
         <div class="flex">
           <p-button icon="pi pi-angle-up" styleClass="w-auto" [disabled]="activities[0] == activity" [text]="true" size="small" severity="secondary" (onClick)="move(activity, true)" />
           <p-button icon="pi pi-angle-down" styleClass="w-auto" [disabled]="activities[activities.length - 1] == activity" [text]="true" size="small" severity="secondary" (onClick)="move(activity)" />
