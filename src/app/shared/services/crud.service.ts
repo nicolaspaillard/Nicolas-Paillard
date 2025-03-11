@@ -1,4 +1,5 @@
 import { Inject, Injectable, InjectionToken } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { addDoc, collection, deleteDoc, doc, Firestore, getDoc, getDocs, orderBy, OrderByDirection, query, setDoc } from "@angular/fire/firestore";
 import { ReplaySubject, Subject } from "rxjs";
 import { Base } from "../classes/base";
@@ -39,7 +40,7 @@ export class CrudService<T extends Base> {
       console.error(error);
     }
   }
-  items = () => this._items.asObservable();
+  items = () => this._items.pipe(takeUntilDestroyed());
   create = async (item: T) => {
     try {
       item.id = (await addDoc(collection(this.db, "data", this.collection, this.collection), Object.assign({}, item))).id;

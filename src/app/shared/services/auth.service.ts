@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Auth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, User, validatePassword } from "@angular/fire/auth";
 import { Observable, ReplaySubject, Subject } from "rxjs";
 import { ToastService } from "./toast.service";
@@ -26,9 +27,8 @@ export class AuthService {
       }
     });
   }
-  user = (): Observable<{ user: User; roles: string[] } | undefined> => this._user.asObservable();
-  admin = (): Observable<boolean> => this._admin.asObservable();
-
+  user = (): Observable<{ user: User; roles: string[] } | undefined> => this._user.pipe(takeUntilDestroyed());
+  admin = (): Observable<boolean> => this._admin.pipe(takeUntilDestroyed());
   signup = async (email: string, password: string) => {
     const status = await validatePassword(this.auth, password);
     if (!status.isValid) {

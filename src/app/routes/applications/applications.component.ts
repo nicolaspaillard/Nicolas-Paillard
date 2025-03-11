@@ -50,8 +50,31 @@ export class ApplicationsComponent extends CrudComponent<Application> {
     answerDate: new FormControl(new Date(), []),
     answer: new FormControl("", []),
   });
+  links: string[] = [];
+  contacts: string[] = [];
   expandedRows = {};
   constructor(crudService: CrudService<Application>, authService: AuthService, confirmService: ConfirmService) {
     super(crudService, authService, confirmService);
   }
+  override open(item?: Application): void {
+    this.links = item && item.links ? item.links.split(";") : [];
+    this.contacts = item && item.contacts ? item.contacts.split(";") : [];
+    super.open(item);
+  }
+  add = (item: string, field: string) => {
+    this[field].push(item);
+    this.form.patchValue({ [field]: this[field].join(";") });
+  };
+  remove = (item: string, field: string) => {
+    this[field] = this[field].filter((itm: string) => itm != item);
+    this.form.patchValue({ links: this.links.join(";") });
+  };
+  move = (item: string, field: string, up: boolean = false) => {
+    let fromIndex = this[field].indexOf(item);
+    if ((fromIndex == 0 && up) || (fromIndex == this.links.length - 1 && !up)) return;
+    var element = this.links[fromIndex];
+    this[field].splice(fromIndex, 1);
+    this[field].splice(fromIndex + (up ? -1 : 1), 0, element);
+    this.form.patchValue({ [field]: this[field].join(";") });
+  };
 }
