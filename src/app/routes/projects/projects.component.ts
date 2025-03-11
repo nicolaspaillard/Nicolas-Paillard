@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { Project } from "@classes/project";
+import { ReactiveFormsModule } from "@angular/forms";
+import { formProject, Project } from "@classes/project";
 import { CrudComponent } from "@components/crud.component";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
@@ -19,6 +19,7 @@ import { ProjectComponent } from "./project/project.component";
 
 const SERVICE_VARIABLE: ServiceConfig<Project> = {
   type: Project,
+  form: formProject,
   collection: "projects",
   order: ["start", "desc"],
   compareFn: (a, b) => b.start.getTime() - a.start.getTime(),
@@ -31,34 +32,20 @@ const SERVICE_VARIABLE: ServiceConfig<Project> = {
   providers: [CrudService<Project>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class ProjectsComponent extends CrudComponent<Project> {
-  form: FormGroup = new FormGroup({
-    id: new FormControl(""),
-    start: new FormControl(new Date(), [Validators.required]),
-    end: new FormControl(new Date(), [Validators.required]),
-    title: new FormControl("", [Validators.required]),
-    text: new FormControl("", []),
-    company: new FormControl("", []),
-    address: new FormControl("", []),
-    postcode: new FormControl("", []),
-    city: new FormControl("", []),
-    activities: new FormControl("", []),
-    url: new FormControl("", []),
-    images: new FormControl("", []),
-  });
   images: string;
   activities: string[] = [];
   constructor(crudService: CrudService<Project>, authService: AuthService, confirmService: ConfirmService) {
     super(crudService, authService, confirmService);
   }
   override async create(images: File[]) {
-    const result = await this.uploadImages(images);
-    if (!result) return false;
+    const result = images.length ? await this.uploadImages(images) : "";
+    if (result === false) return false;
     super.create({ ...this.form.value, images: result } as Project);
     return true;
   }
   override async update(images: File[]) {
-    const result = (await this.deleteImages(this.images)) && (await this.uploadImages(images));
-    if (!result) return false;
+    const result = images.length ? (await this.deleteImages(this.images)) && (await this.uploadImages(images)) : (this.form.value as Project).images;
+    if (result === false) return false;
     super.update({ ...this.form.value, images: result } as Project);
     return true;
   }
@@ -140,48 +127,6 @@ export class ProjectsComponent extends CrudComponent<Project> {
     this.activities.splice(fromIndex + (up ? -1 : 1), 0, element);
     this.form.patchValue({ activities: this.activities.join(";") });
   };
-  // user: any = null;
-  // activities: string[] = [];
-  // projects: Project[] = [];
-  // constructor(
-  //   private confirmService: ConfirmService,
-  //   private authService: AuthService,
-  //   private projectsService: ProjectsService,
-  // ) {
-  //   this.authService.user().subscribe((user) => (this.user = user));
-  //   this.projectsService.projects().subscribe((projects) => (this.projects = projects));
-  // }
-  // openDialog = (project?: Project) => {
-  //   if (project) {
-  //     this.editing = { id: project.id!, images: project.images };
-  //     this.activities = project.activities.split(";");
-  //     let tmp = new Project(project);
-  //     delete tmp.id;
-  //     this.formProject.setValue(tmp);
-  //   } else {
-  //     this.editing = { id: "", images: "" };
-  //     this.formProject.reset();
-  //     this.activities = [];
-  //   }
-  //   this.isDialogShown = true;
-  // };
-  // createProject = async (images: File[]) => {
-  //   this.projectsService.createProject(this.formProject.value as Project, images);
-  // };
-  // updateProject = async (images: File[]) => {
-  //   let project: Project = this.formProject.value as Project;
-  //   project.id = this.editing.id;
-  //   project.images = this.editing.images;
-  //   this.projectsService.updateProject(project, images);
-  // };
-  // deleteProject = async (project: Project) => {
-  //   this.confirmService.confirm({
-  //     message: `Voulez-vous vraiment supprimer '${project.title}' ?`,
-  //     accept: async () => {
-  //       this.projectsService.deleteProject(project);
-  //     },
-  //   });
-  // };
 }
 namespace sha1 {
   var POW_2_24 = Math.pow(2, 24);

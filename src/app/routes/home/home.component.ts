@@ -1,7 +1,7 @@
 import { CommonModule, NgOptimizedImage } from "@angular/common";
 import { Component } from "@angular/core";
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { Section } from "@classes/section";
+import { ReactiveFormsModule } from "@angular/forms";
+import { formSection, Section } from "@classes/section";
 import { CrudComponent } from "@components/crud.component";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
@@ -17,6 +17,7 @@ import { SectionComponent } from "./section/section.component";
 
 const SERVICE_VARIABLE: ServiceConfig<Section> = {
   type: Section,
+  form: formSection,
   collection: "sections",
   order: ["rank"],
   compareFn: (a, b) => a.rank - b.rank,
@@ -30,14 +31,6 @@ const SERVICE_VARIABLE: ServiceConfig<Section> = {
 })
 export class HomeComponent extends CrudComponent<Section> {
   strings: string[] = ["Web", "Backend", "Frontend", "FullStack", "SQL", "TypeScript", ".NET", "Angular", "Java", "Python"];
-  // user?: User;
-  // isDialogSectionShown: boolean = false;
-  // idEdit: string = "";
-  form = new FormGroup({
-    id: new FormControl(""),
-    rank: new FormControl(0, [Validators.required]),
-    text: new FormControl("", [Validators.required]),
-  });
   constructor(crudService: CrudService<Section>, authService: AuthService, confirmService: ConfirmService) {
     super(crudService, authService, confirmService);
   }

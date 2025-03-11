@@ -15,52 +15,50 @@
   </div>
 </div>
 
-<p-dialog [modal]="true" header="Modifier une catégorie" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShownCategory">
-  <form [formGroup]="formCategory" class="flex flex-col gap-2 [&>*]:flex [&>*]:justify-evenly [&>*]:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+<p-dialog [modal]="true" header="Modifier une catégorie" [dismissableMask]="true" [(visible)]="isShownCategory">
+  <form [formGroup]="formCategory" class="flex flex-col gap-2">
     <input type="hidden" formControlName="oldTitle" />
     <label>
       Titre
       <p-select [options]="categories" formControlName="title" placeholder="Catégorie" [editable]="true" optionLabel="title" optionValue="title" appendTo="body" />
     </label>
+    <div class="flex justify-end gap-2">
+      <p-button (onClick)="isShownCategory = false" [text]="true">Annuler</p-button>
+      <p-button (onClick)="updateCategory(); isShownCategory = false" [disabled]="!formCategory.valid">Modifier</p-button>
+    </div>
   </form>
-  <div class="flex justify-end gap-2">
-    <p-button (onClick)="isShownCategory = false" [text]="true">Annuler</p-button>
-    <p-button (onClick)="updateCategory(); isShownCategory = false" [disabled]="!formCategory.valid">Modifier</p-button>
-  </div>
 </p-dialog>
-<p-dialog [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une compétence'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShown">
-  <form [formGroup]="form" class="flex flex-col gap-2 [&>*]:flex [&>*]:justify-evenly [&>*]:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+<p-dialog [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une compétence'" [dismissableMask]="true" [(visible)]="isShown">
+  <form [formGroup]="form" class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col">
     <input type="hidden" formControlName="id" />
-    <label>
+    <label class="md:col-span-2">
       Titre
       <input pInputText type="text" formControlName="title" />
     </label>
-    <div>
-      <label>
-        Catégorie
-        <p-select [options]="categories" formControlName="category" placeholder="Catégorie" [editable]="true" optionLabel="title" optionValue="title" appendTo="body" />
-      </label>
-      <label>
-        Icône
-        <p-select [options]="devIcons" formControlName="icon" [showClear]="true" placeholder="Icône" appendTo="body" [filter]="true" [virtualScroll]="true" [virtualScrollItemSize]="38">
-          <ng-template pTemplate="selectedItem">
-            <div class="flex items-center gap-2" *ngIf="form.value.icon">
-              <img width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ form.value.icon.includes('dot-net') ? 'dot-net' : form.value.icon.split('-')[0] }}/{{ form.value.icon }}.svg" />
-              <span class="w-full truncate">{{ form.value.icon }}</span>
-            </div>
-          </ng-template>
-          <ng-template let-icon pTemplate="item">
-            <div class="flex items-center gap-2">
-              <img width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ icon.includes('dot-net') ? 'dot-net' : icon.split('-')[0] }}/{{ icon }}.svg" />
-              <span class="w-full truncate">{{ icon }}</span>
-            </div>
-          </ng-template>
-        </p-select>
-      </label>
+    <label>
+      Catégorie
+      <p-select [options]="categories" formControlName="category" placeholder="Catégorie" [editable]="true" optionLabel="title" optionValue="title" appendTo="body" />
+    </label>
+    <label>
+      Icône
+      <p-select [options]="devIcons" formControlName="icon" [showClear]="true" placeholder="Icône" appendTo="body" [filter]="true" [virtualScroll]="true" [virtualScrollItemSize]="38">
+        <ng-template pTemplate="selectedItem">
+          <div class="flex items-center gap-2" *ngIf="form.value.icon">
+            <img width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ form.value.icon.includes('dot-net') ? 'dot-net' : form.value.icon.split('-')[0] }}/{{ form.value.icon }}.svg" />
+            <span class="w-full truncate">{{ form.value.icon }}</span>
+          </div>
+        </ng-template>
+        <ng-template let-icon pTemplate="item">
+          <div class="flex items-center gap-2">
+            <img width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ icon.includes('dot-net') ? 'dot-net' : icon.split('-')[0] }}/{{ icon }}.svg" />
+            <span class="w-full truncate">{{ icon }}</span>
+          </div>
+        </ng-template>
+      </p-select>
+    </label>
+    <div class="flex justify-end gap-2 md:col-span-2">
+      <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
+      <p-button (onClick)="isEditing ? update() : create(); isShown = false" [disabled]="!form.valid">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
     </div>
   </form>
-  <div class="flex justify-end gap-2">
-    <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
-    <p-button (onClick)="isEditing ? update() : create(); isShown = false" [disabled]="!form.valid">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
-  </div>
 </p-dialog>

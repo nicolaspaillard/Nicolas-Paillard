@@ -8,38 +8,34 @@
     <app-experience (onExperienceRemoved)="delete(experience, 'title')" (onExperienceEdit)="open(experience)" *ngFor="let experience of items; let index = index" [experience]="experience" [right]="index % 2 != 0" class="nth-[n+3]:mt-5 lg:nth-[n+3]:-mt-10 block"></app-experience>
   </div>
 </div>
-<p-dialog [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une expérience'" contentStyleClass="flex flex-col gap-2" [dismissableMask]="true" [(visible)]="isShown">
-  <form [formGroup]="form" class="flex flex-col gap-2 [&>*]:flex [&>*]:justify-evenly [&>*]:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+<p-dialog [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une expérience'" [dismissableMask]="true" [(visible)]="isShown">
+  <form [formGroup]="form" class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col">
     <input type="hidden" formControlName="id" />
-    <div>
-      <label>
-        Début
-        <p-datepicker formControlName="start" appendTo="body" dateFormat="dd/mm/yy" />
-      </label>
-      <label>
-        Fin
-        <p-datepicker formControlName="end" appendTo="body" dateFormat="dd/mm/yy" />
-      </label>
-    </div>
+    <label>
+      Début
+      <p-datepicker styleClass="w-full" formControlName="start" appendTo="body" dateFormat="dd/mm/yy" />
+    </label>
+    <label>
+      Fin
+      <p-datepicker styleClass="w-full" formControlName="end" appendTo="body" dateFormat="dd/mm/yy" />
+    </label>
     <label>
       Titre
       <input pInputText type="text" formControlName="title" />
     </label>
     <label>
+      Société
+      <input pInputText formControlName="company" />
+    </label>
+    <label class="md:col-span-2">
       Texte
       <textarea pTextarea formControlName="text"></textarea>
     </label>
-    <div>
-      <label>
-        Société
-        <input pInputText formControlName="company" />
-      </label>
+    <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
       <label>
         Adresse
         <input pInputText formControlName="address" />
       </label>
-    </div>
-    <div>
       <label>
         Code postal
         <input pInputText formControlName="postcode" />
@@ -49,28 +45,24 @@
         <input pInputText formControlName="city" />
       </label>
     </div>
-    <label class="block!">
+    <label class="md:col-span-2">
       Activités
-      <span *ngIf="!activities.length" class="opacity-50">&nbsp;(Aucune activité)</span>
-      <div *ngFor="let activity of activities" class="group relative flex items-center justify-between ps-6 transition-colors after:absolute after:left-2 after:h-[6px] after:w-[6px] after:rounded-full after:bg-white after:opacity-50 after:content-[''] hover:bg-black/10">
-        <span class="block max-w-[400px] truncate pe-2 opacity-50">{{ activity }}</span>
-        <div class="opacity-0 transition-opacity group-hover:opacity-100">
+      <div *ngFor="let activity of activities" class="relative flex items-center justify-between">
+        <span class="p-button-sm p-button-text p-button-contrast cursor-pointer truncate rounded-md" (click)="act.value = activity">•&nbsp;&nbsp;{{ activity }}</span>
+        <div class="flex">
           <p-button icon="pi pi-angle-up" styleClass="w-auto" [disabled]="activities[0] == activity" [text]="true" size="small" severity="secondary" (onClick)="move(activity, true)" />
           <p-button icon="pi pi-angle-down" styleClass="w-auto" [disabled]="activities[activities.length - 1] == activity" [text]="true" size="small" severity="secondary" (onClick)="move(activity)" />
           <p-button icon="pi pi-trash" styleClass="w-auto" [text]="true" size="small" severity="danger" (onClick)="remove(activity)" />
         </div>
       </div>
-    </label>
-    <label>
-      Ajouter une activité
       <p-inputGroup>
-        <input #activity pInputText placeholder="Activité" />
-        <p-button [disabled]="!activity.value" icon="pi pi-plus" (onClick)="add(activity.value)" />
+        <input #act pInputText placeholder="Activité" />
+        <p-button [disabled]="!act.value" icon="pi pi-plus" (onClick)="add(act.value)" />
       </p-inputGroup>
     </label>
+    <div class="flex justify-end gap-2 md:col-span-2">
+      <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
+      <p-button (onClick)="isEditing ? update() : create(); isShown = false" [disabled]="!form.valid">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
+    </div>
   </form>
-  <div class="flex justify-end gap-2">
-    <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
-    <p-button (onClick)="isEditing ? update() : create(); isShown = false" [disabled]="!form.valid">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
-  </div>
 </p-dialog>

@@ -1,11 +1,13 @@
 import { Inject, Injectable, InjectionToken } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { addDoc, collection, deleteDoc, doc, Firestore, getDoc, getDocs, orderBy, OrderByDirection, query, setDoc } from "@angular/fire/firestore";
+import { FormGroup } from "@angular/forms";
 import { ReplaySubject, Subject } from "rxjs";
 import { Base } from "../classes/base";
 
 export interface ServiceConfig<T> {
   type: { new (...args: any[]): T };
+  form: FormGroup;
   collection: string;
   order: [string, OrderByDirection?];
   compareFn?: (a: T, b: T) => number;
@@ -18,6 +20,7 @@ export const SERVICE_CONFIG = new InjectionToken<ServiceConfig<any>>("sets param
 })
 export class CrudService<T extends Base> {
   type: { new (...args: any[]): T };
+  form: FormGroup;
   private collection: string;
   private _items: Subject<T[]> = new ReplaySubject(1);
   private __items: T[] = [];
@@ -27,6 +30,7 @@ export class CrudService<T extends Base> {
     private db: Firestore,
   ) {
     this.type = config.type;
+    this.form = config.form;
     this.collection = config.collection;
     if (config.compareFn) this.compareFn = config.compareFn;
     try {

@@ -83,95 +83,7 @@
   </p-table>
 </div>
 <p-dialog [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une candidature'" [dismissableMask]="true" [(visible)]="isShown">
-  <!-- <form [formGroup]="form" class="flex flex-col gap-2 [&>*]:flex [&>*]:justify-evenly [&>*]:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
-    <input type="hidden" formControlName="id" />
-    <div>
-      <label>
-        Titre
-        <input pInputText formControlName="title" />
-      </label>
-      <label>
-        Société
-        <input pInputText formControlName="company" />
-      </label>
-    </div>
-
-    <div>
-      <label>
-        Activité
-        <input pInputText formControlName="activity" />
-      </label>
-      <label>
-        Adresse
-        <input pInputText formControlName="address" />
-      </label>
-    </div>
-    <div>
-      <label>
-        Commentaires
-        <textarea pTextarea formControlName="comments"></textarea>
-      </label>
-    </div>
-    <div>
-      <label>
-        Réponse
-        <textarea pTextarea formControlName="answer"></textarea>
-      </label>
-    </div>
-    <div>
-      <label>
-        Date de contact
-        <p-datepicker formControlName="contactDate" appendTo="body" dateFormat="dd/mm/yy"></p-datepicker>
-      </label>
-      <label>
-        Date de relance
-        <p-datepicker formControlName="relaunchDate" appendTo="body" dateFormat="dd/mm/yy"></p-datepicker>
-      </label>
-      <label>
-        Date de réponse
-        <p-datepicker formControlName="answerDate" appendTo="body" dateFormat="dd/mm/yy"></p-datepicker>
-      </label>
-    </div>
-    <label class="block!">
-      Liens
-      <span *ngIf="!links.length" class="opacity-50">&nbsp;(Aucun lien)</span>
-      <div *ngFor="let link of links" class="group relative flex items-center justify-between ps-6 transition-colors after:absolute after:left-2 after:h-[6px] after:w-[6px] after:rounded-full after:bg-white after:opacity-50 after:content-[''] hover:bg-black/10">
-        <span class="block truncate bg-black/5 pe-2 opacity-50" (click)="lnk.value = link">{{ link }}</span>
-        <div class="flex opacity-0 transition-opacity group-hover:opacity-100">
-          <p-button icon="pi pi-angle-up" styleClass="w-auto" [disabled]="links[0] == link" [text]="true" size="small" severity="secondary" (onClick)="move(link, 'links', true)" />
-          <p-button icon="pi pi-angle-down" styleClass="w-auto" [disabled]="links[links.length - 1] == link" [text]="true" size="small" severity="secondary" (onClick)="move(link, 'links')" />
-          <p-button icon="pi pi-trash" styleClass="w-auto" [text]="true" size="small" severity="danger" (onClick)="remove(link, 'links')" />
-        </div>
-      </div>
-    </label>
-    <label>
-      Ajouter un lien
-      <p-inputGroup>
-        <input #lnk pInputText placeholder="Lien" />
-        <button [disabled]="!lnk.value" type="button" pButton icon="pi pi-plus" (click)="add(lnk.value, 'links')"></button>
-      </p-inputGroup>
-    </label>
-    <label class="block!">
-      Contacts
-      <span *ngIf="!contacts.length" class="opacity-50">&nbsp;(Aucun contact)</span>
-      <div *ngFor="let contact of contacts" class="group relative flex items-center justify-between ps-6 transition-colors after:absolute after:left-2 after:h-[6px] after:w-[6px] after:rounded-full after:bg-white after:opacity-50 after:content-[''] hover:bg-black/10">
-        <span class="block max-w-[400px] truncate pe-2 opacity-50" (click)="ctt.value = contact">{{ contact }}</span>
-        <div class="flex opacity-0 transition-opacity group-hover:opacity-100">
-          <p-button icon="pi pi-angle-up" styleClass="w-auto" [disabled]="contacts[0] == contact" [text]="true" size="small" severity="secondary" (onClick)="move(contact, 'contacts', true)" />
-          <p-button icon="pi pi-angle-down" styleClass="w-auto" [disabled]="contacts[contacts.length - 1] == contact" [text]="true" size="small" severity="secondary" (onClick)="move(contact, 'contacts')" />
-          <p-button icon="pi pi-trash" styleClass="w-auto" [text]="true" size="small" severity="danger" (onClick)="remove(contact, 'contacts')" />
-        </div>
-      </div>
-    </label>
-    <label>
-      Ajouter un contact
-      <p-inputGroup>
-        <input #ctt pInputText placeholder="Contact" />
-        <button [disabled]="!ctt.value" type="button" pButton icon="pi pi-plus" (click)="add(ctt.value, 'contacts')"></button>
-      </p-inputGroup>
-    </label>
-  </form> -->
-  <form [formGroup]="form" class="flex flex-wrap gap-2 [&>*]:flex-[0_0_calc(50%-calc(var(--spacing)*2))] [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+  <form [formGroup]="form" class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col">
     <input type="hidden" formControlName="id" />
     <label>
       Titre
@@ -198,59 +110,53 @@
       Réponse
       <textarea pTextarea formControlName="answer"></textarea>
     </label>
-    <label>
-      Date de contact
-      <p-datepicker formControlName="contactDate" appendTo="body" dateFormat="dd/mm/yy"></p-datepicker>
-    </label>
-    <label>
-      Date de relance
-      <p-datepicker formControlName="relaunchDate" appendTo="body" dateFormat="dd/mm/yy"></p-datepicker>
-    </label>
-    <label>
-      Date de réponse
-      <p-datepicker formControlName="answerDate" appendTo="body" dateFormat="dd/mm/yy"></p-datepicker>
-    </label>
-    <label class="flex-[0_0_100%]!">
+    <label for="lnk">
       Liens
-      <span *ngIf="!links.length" class="opacity-50">&nbsp;(Aucun lien)</span>
-      <div *ngFor="let link of links" class="group relative flex items-center justify-between ps-6 transition-colors after:absolute after:left-2 after:h-[6px] after:w-[6px] after:rounded-full after:bg-white after:opacity-50 after:content-[''] hover:bg-black/10">
-        <span class="block truncate bg-black/5 pe-2 opacity-50" (click)="lnk.value = link">{{ link }}</span>
-        <div class="flex opacity-0 transition-opacity group-hover:opacity-100">
-          <p-button icon="pi pi-angle-up" styleClass="w-auto" [disabled]="links[0] == link" [text]="true" size="small" severity="secondary" (onClick)="move(link, 'links', true)" />
-          <p-button icon="pi pi-angle-down" styleClass="w-auto" [disabled]="links[links.length - 1] == link" [text]="true" size="small" severity="secondary" (onClick)="move(link, 'links')" />
-          <p-button icon="pi pi-trash" styleClass="w-auto" [text]="true" size="small" severity="danger" (onClick)="remove(link, 'links')" />
+      <div *ngFor="let link of links" class="relative flex items-center justify-between">
+        <span class="p-button-sm p-button-text p-button-contrast cursor-pointer truncate rounded-md" (click)="lnk.value = link">•&nbsp;&nbsp;{{ link }}</span>
+        <div class="flex">
+          <p-button icon="pi pi-angle-up" [disabled]="links[0] == link" [text]="true" size="small" severity="secondary" (onClick)="move(link, 'links', true)" />
+          <p-button icon="pi pi-angle-down" [disabled]="links[links.length - 1] == link" [text]="true" size="small" severity="secondary" (onClick)="move(link, 'links')" />
+          <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="remove(link, 'links')" />
         </div>
       </div>
-    </label>
-    <label>
-      Ajouter un lien
       <p-inputGroup>
-        <input #lnk pInputText placeholder="Lien" />
+        <input id="lnk" #lnk pInputText placeholder="Lien" />
         <button [disabled]="!lnk.value" type="button" pButton icon="pi pi-plus" (click)="add(lnk.value, 'links')"></button>
       </p-inputGroup>
     </label>
-    <label class="block!">
+    <label for="ctt">
       Contacts
-      <span *ngIf="!contacts.length" class="opacity-50">&nbsp;(Aucun contact)</span>
-      <div *ngFor="let contact of contacts" class="group relative flex items-center justify-between ps-6 transition-colors after:absolute after:left-2 after:h-[6px] after:w-[6px] after:rounded-full after:bg-white after:opacity-50 after:content-[''] hover:bg-black/10">
-        <span class="block max-w-[400px] truncate pe-2 opacity-50" (click)="ctt.value = contact">{{ contact }}</span>
-        <div class="flex opacity-0 transition-opacity group-hover:opacity-100">
-          <p-button icon="pi pi-angle-up" styleClass="w-auto" [disabled]="contacts[0] == contact" [text]="true" size="small" severity="secondary" (onClick)="move(contact, 'contacts', true)" />
-          <p-button icon="pi pi-angle-down" styleClass="w-auto" [disabled]="contacts[contacts.length - 1] == contact" [text]="true" size="small" severity="secondary" (onClick)="move(contact, 'contacts')" />
-          <p-button icon="pi pi-trash" styleClass="w-auto" [text]="true" size="small" severity="danger" (onClick)="remove(contact, 'contacts')" />
+      <div *ngFor="let contact of contacts" class="relative flex items-center justify-between">
+        <span class="p-button-sm p-button-text p-button-contrast cursor-pointer truncate rounded-md" (click)="ctt.value = contact">•&nbsp;&nbsp;{{ contact }}</span>
+        <div class="flex">
+          <p-button icon="pi pi-angle-up" [disabled]="contacts[0] == contact" [text]="true" size="small" severity="secondary" (onClick)="move(contact, 'contacts', true)" />
+          <p-button icon="pi pi-angle-down" [disabled]="contacts[contacts.length - 1] == contact" [text]="true" size="small" severity="secondary" (onClick)="move(contact, 'contacts')" />
+          <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="remove(contact, 'contacts')" />
         </div>
       </div>
-    </label>
-    <label>
-      Ajouter un contact
       <p-inputGroup>
-        <input #ctt pInputText placeholder="Contact" />
+        <input id="ctt" #ctt pInputText placeholder="Contact" />
         <button [disabled]="!ctt.value" type="button" pButton icon="pi pi-plus" (click)="add(ctt.value, 'contacts')"></button>
       </p-inputGroup>
     </label>
+    <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
+      <label>
+        Contact
+        <p-datepicker styleClass="w-full" formControlName="contactDate" appendTo="body" dateFormat="dd/mm/yy"></p-datepicker>
+      </label>
+      <label>
+        Relance
+        <p-datepicker styleClass="w-full" formControlName="relaunchDate" appendTo="body" dateFormat="dd/mm/yy"></p-datepicker>
+      </label>
+      <label>
+        Réponse
+        <p-datepicker styleClass="w-full" formControlName="answerDate" appendTo="body" dateFormat="dd/mm/yy"></p-datepicker>
+      </label>
+    </div>
+    <div class="flex justify-end gap-2 md:col-span-2">
+      <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
+      <p-button (onClick)="isEditing ? update() : create(); isShown = false" [disabled]="!form.valid">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
+    </div>
   </form>
-  <div class="flex justify-end gap-2">
-    <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
-    <p-button (onClick)="isEditing ? update() : create(); isShown = false" [disabled]="!form.valid">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
-  </div>
 </p-dialog>

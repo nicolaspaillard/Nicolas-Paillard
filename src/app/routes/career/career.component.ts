@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { Experience } from "@classes/experience";
+import { ReactiveFormsModule } from "@angular/forms";
+import { Experience, formExperience } from "@classes/experience";
 import { CrudComponent } from "@components/crud.component";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
@@ -17,6 +17,7 @@ import { ExperienceComponent } from "./experience/experience.component";
 
 const SERVICE_VARIABLE: ServiceConfig<Experience> = {
   type: Experience,
+  form: formExperience,
   collection: "experiences",
   order: ["start", "desc"],
   compareFn: (a, b) => b.start.getTime() - a.start.getTime(),
@@ -29,18 +30,6 @@ const SERVICE_VARIABLE: ServiceConfig<Experience> = {
   providers: [CrudService<Experience>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class CareerComponent extends CrudComponent<Experience> {
-  form = new FormGroup({
-    id: new FormControl(""),
-    start: new FormControl(new Date(), [Validators.required]),
-    end: new FormControl(new Date(), []),
-    title: new FormControl("", [Validators.required]),
-    text: new FormControl("", []),
-    company: new FormControl("", []),
-    address: new FormControl("", []),
-    postcode: new FormControl("", []),
-    city: new FormControl("", []),
-    activities: new FormControl("", []),
-  });
   activities: string[] = [];
   constructor(crudService: CrudService<Experience>, authService: AuthService, confirmService: ConfirmService) {
     super(crudService, authService, confirmService);

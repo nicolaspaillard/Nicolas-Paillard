@@ -1,6 +1,6 @@
 import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, isDevMode } from "@angular/core";
 import { User } from "@angular/fire/auth";
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { NavigationEnd, NavigationStart, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
@@ -27,7 +27,7 @@ export const routes: Routes = [
   { path: "skills", title: "Compétences", loadComponent: () => import("@routes/skills/skills.component").then((m) => m.SkillsComponent), data: { animation: 2 } },
   { path: "projects", title: "Projets", loadComponent: () => import("@routes/projects/projects.component").then((m) => m.ProjectsComponent), data: { animation: 3 } },
   { path: "designer", title: "Designer", loadComponent: () => import("@routes/designer/designer.component").then((m) => m.DesignerComponent), data: { animation: 4 } },
-  { path: "applications", title: "Candidatures", loadComponent: () => import("@routes/applications/applications.component").then((m) => m.ApplicationsComponent), data: { animation: 5, role: "admin" }, canActivate: [AuthGuard] },
+  { path: "applications", title: "Candidatures", loadComponent: () => import("@routes/applications/applications.component").then((m) => m.ApplicationsComponent), data: { animation: 5, role: "admin" }, canActivate: isDevMode() ? undefined : [AuthGuard] },
   { path: "cv", children: [] },
   { path: "**", redirectTo: "" },
 ];

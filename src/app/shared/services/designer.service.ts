@@ -189,7 +189,7 @@ const rotatePoint = (point: { x: number; y: number }, pivot: { x: number; y: num
 const createSvgStr = (icon: IconNode, attrs?: Record<string, string>): string => {
   const createElementString = (node: IconNode): string => {
     const [tag, attributes, children = []] = node;
-    const mergedAttributes = tag === "svg" ? { ...attributes, ...attrs } : attributes;
+    const mergedAttributes = tag[0] === "svg" ? { ...attributes, ...attrs } : attributes;
     const attrString = Object.entries(mergedAttributes)
       .map(([key, value]) => `${key}="${value}"`)
       .join(" ");

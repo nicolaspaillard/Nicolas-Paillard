@@ -1,3 +1,4 @@
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { Base } from "./base";
 
 export class Skill extends Base {
@@ -16,3 +17,10 @@ export class Category {
     Object.assign(this, category);
   }
 }
+
+export const formSkill: FormGroup = new FormGroup({
+  id: new FormControl(""),
+  title: new FormControl("", [Validators.required]),
+  icon: new FormControl("", [Validators.required]),
+  category: new FormControl("", [Validators.required]),
+});

@@ -5,12 +5,12 @@ import { ConfirmService } from "@services/confirm.service";
 import { CrudService } from "@services/crud.service";
 import { Base } from "../classes/base";
 
-export abstract class CrudComponent<T extends Base> {
+export class CrudComponent<T extends Base> {
   isAdmin: boolean = false;
   isShown: boolean = false;
   isEditing: boolean = false;
   items: T[];
-  abstract form: FormGroup;
+  form: FormGroup;
   constructor(
     private crudService: CrudService<T>,
     private authService: AuthService,
@@ -27,6 +27,7 @@ export abstract class CrudComponent<T extends Base> {
         if (this.sort) this.sort(items);
         this.items = items;
       });
+    this.form = crudService.form;
   }
   protected sort?(items: T[]): void;
   protected cloudinary = async () => await this.crudService.cloudinary().then((cloudinary) => cloudinary);

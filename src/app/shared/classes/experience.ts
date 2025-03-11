@@ -1,3 +1,4 @@
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { Base } from "./base";
 
 export class Experience extends Base {
@@ -17,3 +18,16 @@ export class Experience extends Base {
     super(experience);
   }
 }
+
+export const formExperience = new FormGroup({
+  id: new FormControl(""),
+  start: new FormControl(new Date(), [Validators.required]),
+  end: new FormControl(new Date(), []),
+  title: new FormControl("", [Validators.required]),
+  text: new FormControl("", []),
+  company: new FormControl("", []),
+  address: new FormControl("", []),
+  postcode: new FormControl("", []),
+  city: new FormControl("", []),
+  activities: new FormControl("", []),
+});

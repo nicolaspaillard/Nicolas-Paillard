@@ -1,3 +1,4 @@
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { Base } from "./base";
 
 export class Section extends Base {
@@ -7,3 +8,9 @@ export class Section extends Base {
     super(section);
   }
 }
+
+export const formSection = new FormGroup({
+  id: new FormControl(""),
+  rank: new FormControl(0, [Validators.required]),
+  text: new FormControl("", [Validators.required]),
+});

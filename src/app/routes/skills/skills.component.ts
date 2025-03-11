@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { Category, Skill } from "@classes/skill";
+import { Category, formSkill, Skill } from "@classes/skill";
 import { CrudComponent } from "@components/crud.component";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
@@ -14,6 +14,7 @@ import { CategoryComponent } from "./category/category.component";
 
 const SERVICE_VARIABLE: ServiceConfig<Skill> = {
   type: Skill,
+  form: formSkill,
   collection: "skills",
   order: ["title"],
 };
@@ -28,12 +29,7 @@ export class SkillsComponent extends CrudComponent<Skill> {
   // editing: string = "";
   categories: Category[] = [];
   isShownCategory: boolean = false;
-  form: FormGroup = new FormGroup({
-    id: new FormControl(""),
-    title: new FormControl("", [Validators.required]),
-    icon: new FormControl("", [Validators.required]),
-    category: new FormControl("", [Validators.required]),
-  });
+
   formCategory: FormGroup = new FormGroup({
     oldTitle: new FormControl(""),
     title: new FormControl("", [Validators.required]),
