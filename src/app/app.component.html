@@ -9,7 +9,7 @@
         <input #menuShown type="checkbox" class="peer hidden" />
         <div class="hidden gap-2 overflow-hidden lg:flex">
           <ng-container *ngFor="let route of routes">
-            <p-button class="mb-2 lg:mb-0" *ngIf="!route.canActivate || !route.data!['role'] || (user && user['roles'].includes(route.data!['role']))" size="large" (onClick)="menuShown.checked = false" [routerLink]="route.path" routerLinkActive="[&>button]:border-primary!" [label]="route.title + ''" [text]="true"></p-button>
+            <p-button class="mb-2 lg:mb-0" *ngIf="!route.canActivate || user?.admin" size="large" (onClick)="menuShown.checked = false" [routerLink]="route.path" routerLinkActive="[&>button]:border-primary!" [label]="route.title + ''" [text]="true"></p-button>
           </ng-container>
         </div>
       </div>

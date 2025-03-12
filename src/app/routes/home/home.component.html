@@ -1,7 +1,7 @@
 <div class="flex min-h-full flex-col items-center justify-center gap-5 p-5 lg:gap-10 lg:p-10">
   <div class="flex w-[300px] max-w-full flex-col lg:w-auto lg:flex-row">
     <div class="group relative aspect-square w-[300px] max-w-full overflow-hidden rounded-t-[var(--p-overlay-modal-border-radius)] lg:rounded-l-[var(--p-overlay-modal-border-radius)] lg:rounded-t-none">
-      <div *ngIf="isAdmin" class="absolute right-0 top-0 z-10">
+      <div *ngIf="user?.admin" class="absolute right-0 top-0 z-10">
         <p-fileupload (uploadHandler)="(null)" class="mix-blend-overlay transition-opacity group-hover:opacity-100 lg:opacity-0" mode="basic" chooseIcon="pi pi-pencil" accept="image/*" maxFileSize="1000000" [customUpload]="true" [auto]="true" chooseLabel="" chooseStyleClass="p-button-icon-only p-button-text p-button-sm text-primary!" />
       </div>
       <img ngSrc="nicolaspaillard/profile" sizes="(max-width: 768px) 100vw, 30vw" priority placeholder fill />
@@ -21,7 +21,7 @@
   <div>
     <div class="flex flex-wrap justify-center gap-5 lg:gap-10">
       <app-section class="flex-[0_0_100%] sm:flex-[0_0_calc(50%-calc(var(--spacing)*calc(5/2)))] lg:flex-[0_0_calc(50%-calc(var(--spacing)*calc(10/2)))]" *ngFor="let section of items" [section]="section" (onSectionEdit)="open(section)" (onSectionRemoved)="delete(section, 'text')"></app-section>
-      <div *ngIf="isAdmin" class="card flex flex-[0_0_100%] items-center justify-center sm:flex-[0_0_calc(50%-calc(var(--spacing)*calc(5/2)))] lg:flex-[0_0_calc(50%-calc(var(--spacing)*calc(10/2)))]">
+      <div *ngIf="user?.admin" class="card flex flex-[0_0_100%] items-center justify-center sm:flex-[0_0_calc(50%-calc(var(--spacing)*calc(5/2)))] lg:flex-[0_0_calc(50%-calc(var(--spacing)*calc(10/2)))]">
         <p-button size="large" class="block text-center" icon="pi pi-plus" [text]="true" (onClick)="open()"></p-button>
       </div>
     </div>

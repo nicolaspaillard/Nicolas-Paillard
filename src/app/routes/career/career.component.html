@@ -2,7 +2,7 @@
   <div class="border-b-primary mx-auto w-fit border-b-[15px] border-l-[7px] border-r-[7px] border-t-0 border-solid border-transparent"></div>
   <div class="relative w-full grow py-5">
     <div class="bg-primary absolute left-1/2 top-0 h-full w-[2px] -translate-x-[calc(100%-1px)] rounded-b-sm"></div>
-    <div *ngIf="isAdmin" class="card lg:before:bg-primary flex w-full justify-center p-5 lg:ml-auto lg:w-[calc(50%-(--spacing(10)))] lg:p-10 lg:before:absolute lg:before:-left-[calc(--spacing(10)+1px)] lg:before:top-1/2 lg:before:h-[2px] lg:before:w-10 lg:before:-translate-y-full lg:before:content-['']">
+    <div *ngIf="user?.admin" class="card lg:before:bg-primary flex w-full justify-center p-5 lg:ml-auto lg:w-[calc(50%-(--spacing(10)))] lg:p-10 lg:before:absolute lg:before:-left-[calc(--spacing(10)+1px)] lg:before:top-1/2 lg:before:h-[2px] lg:before:w-10 lg:before:-translate-y-full lg:before:content-['']">
       <p-button size="large" class="block text-center" icon="pi pi-plus" [text]="true" (onClick)="open()"></p-button>
     </div>
     <app-experience (onExperienceRemoved)="delete(experience, 'title')" (onExperienceEdit)="open(experience)" *ngFor="let experience of items; let index = index" [experience]="experience" [right]="index % 2 != 0" class="nth-[n+3]:mt-5 lg:nth-[n+3]:-mt-10 block"></app-experience>

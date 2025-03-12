@@ -1,5 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnDestroy, OnInit } from "@angular/core";
+import { User } from "@angular/fire/auth";
 import { AuthService } from "@services/auth.service";
 import { DesignerService } from "@services/designer.service";
 import { MenuItem } from "primeng/api";
@@ -13,7 +14,7 @@ import { SplitButton } from "primeng/splitbutton";
   templateUrl: "./designer.component.html",
 })
 export class DesignerComponent implements OnInit, OnDestroy {
-  isAdmin: boolean = false;
+  user: { user: User; admin: boolean } | undefined;
   menuItems: MenuItem[] = [
     {
       label: "Réinitialiser",
@@ -50,7 +51,7 @@ export class DesignerComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private designerService: DesignerService,
   ) {
-    this.authService.admin().subscribe((isAdmin) => (this.isAdmin = isAdmin));
+    this.authService.user().subscribe((user) => (this.user = user));
   }
   ngOnInit() {
     this.load();

@@ -1,4 +1,5 @@
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { User } from "@angular/fire/auth";
 import { FormGroup } from "@angular/forms";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
@@ -6,7 +7,7 @@ import { CrudService } from "@services/crud.service";
 import { Base } from "../classes/base";
 
 export class CrudComponent<T extends Base> {
-  isAdmin: boolean = false;
+  user: { user: User; admin: boolean } | undefined;
   isShown: boolean = false;
   isEditing: boolean = false;
   items: T[];
@@ -17,9 +18,9 @@ export class CrudComponent<T extends Base> {
     protected confirmService: ConfirmService,
   ) {
     authService
-      .admin()
+      .user()
       .pipe(takeUntilDestroyed())
-      .subscribe((isAdmin) => (this.isAdmin = isAdmin));
+      .subscribe((user) => (this.user = user));
     crudService
       .items()
       .pipe(takeUntilDestroyed())

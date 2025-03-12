@@ -1,11 +1,11 @@
 import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
-import { Component, isDevMode } from "@angular/core";
+import { Component } from "@angular/core";
 import { User } from "@angular/fire/auth";
+import { AuthGuard, AuthPipe, customClaims, loggedIn } from "@angular/fire/auth-guard";
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { NavigationEnd, NavigationStart, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
 import { AnimationComponent } from "@components/animation/animation.component";
-import { AuthGuard } from "@helpers/auth.guard";
 import { usePreset } from "@primeng/themes";
 import { AuthService } from "@services/auth.service";
 import { DesignerService } from "@services/designer.service";
@@ -18,8 +18,14 @@ import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { ToastModule } from "primeng/toast";
 import { ToggleSwitchModule } from "primeng/toggleswitch";
 import { TooltipModule } from "primeng/tooltip";
+import { forkJoin, map, mergeMap, of, pipe } from "rxjs";
 import { aura } from "src/themes/aura.preset";
 import { matrix } from "src/themes/matrix.preset";
+
+const combined: AuthPipe = pipe(
+  mergeMap((user) => forkJoin([loggedIn(of(user)), customClaims(of(user!))])),
+  map(([isLoggedIn, claims]) => (isLoggedIn && claims["admin"] ? true : "")),
+);
 
 export const routes: Routes = [
   { path: "", title: "Nicolas Paillard", loadComponent: () => import("@routes/home/home.component").then((m) => m.HomeComponent), data: { animation: 0 } },
@@ -27,7 +33,7 @@ export const routes: Routes = [
   { path: "skills", title: "Compétences", loadComponent: () => import("@routes/skills/skills.component").then((m) => m.SkillsComponent), data: { animation: 2 } },
   { path: "projects", title: "Projets", loadComponent: () => import("@routes/projects/projects.component").then((m) => m.ProjectsComponent), data: { animation: 3 } },
   { path: "designer", title: "Designer", loadComponent: () => import("@routes/designer/designer.component").then((m) => m.DesignerComponent), data: { animation: 4 } },
-  { path: "applications", title: "Candidatures", loadComponent: () => import("@routes/applications/applications.component").then((m) => m.ApplicationsComponent), data: { animation: 5, role: "admin" }, canActivate: isDevMode() ? undefined : [AuthGuard] },
+  { path: "applications", title: "Candidatures", loadComponent: () => import("@routes/applications/applications.component").then((m) => m.ApplicationsComponent), canActivate: [AuthGuard], data: { animation: 5, authGuardPipe: () => combined } },
   { path: "cv", children: [] },
   { path: "**", redirectTo: "" },
 ];
@@ -42,7 +48,7 @@ export class AppComponent {
   isSignupShown: boolean = false;
   isSigninShown: boolean = false;
   isTransitioning: boolean = false;
-  user: { user: User; roles: string[] } | undefined;
+  user: { user: User; admin: boolean } | undefined;
   routes: Route[] = routes.filter((route) => route.path && route.data);
   formSignup = new FormGroup(
     {

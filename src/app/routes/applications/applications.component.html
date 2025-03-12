@@ -1,5 +1,5 @@
 <div class="flex min-h-full flex-col">
-  <p-button *ngIf="isAdmin" size="large" class="mt-2 block text-center" icon="pi pi-plus" [text]="true" (onClick)="open()"></p-button>
+  <p-button *ngIf="user?.admin" size="large" class="mt-2 block text-center" icon="pi pi-plus" [text]="true" (onClick)="open()"></p-button>
   <p-table dataKey="id" [value]="items" size="small" [expandedRowKeys]="expandedRows">
     <ng-template #header>
       <tr>

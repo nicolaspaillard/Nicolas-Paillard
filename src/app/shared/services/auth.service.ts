@@ -1,6 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Auth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, User, validatePassword } from "@angular/fire/auth";
+import { Router } from "@angular/router";
 import { Observable, ReplaySubject, Subject } from "rxjs";
 import { ToastService } from "./toast.service";
 
@@ -9,26 +10,21 @@ import { ToastService } from "./toast.service";
 })
 export class AuthService {
   private auth = inject(Auth);
-  private _user: Subject<{ user: User; roles: string[] } | undefined> = new ReplaySubject(1);
-  private _admin: Subject<boolean> = new ReplaySubject(1);
-  constructor(private toastService: ToastService) {
+  private _user: Subject<{ user: User; admin: boolean } | undefined> = new ReplaySubject(1);
+  constructor(
+    private toastService: ToastService,
+    private router: Router,
+  ) {
     onAuthStateChanged(this.auth, (user) => {
-      if (user) {
+      if (user)
         user
           .getIdTokenResult()
-          .then((idTokenResult) => {
-            this._user.next({ user: user, roles: idTokenResult.claims["admin"] ? ["admin"] : [] });
-            this._admin.next(idTokenResult.claims["admin"] ? true : false);
-          })
+          .then((idTokenResult) => this._user.next({ user: user, admin: !!idTokenResult.claims["admin"] }))
           .catch((error) => console.error(error));
-      } else {
-        this._admin.next(false);
-        this._user.next(undefined);
-      }
+      else this._user.next(undefined);
     });
   }
-  user = (): Observable<{ user: User; roles: string[] } | undefined> => this._user.pipe(takeUntilDestroyed());
-  admin = (): Observable<boolean> => this._admin.pipe(takeUntilDestroyed());
+  user = (): Observable<{ user: User; admin: boolean } | undefined> => this._user.pipe(takeUntilDestroyed());
   signup = async (email: string, password: string) => {
     const status = await validatePassword(this.auth, password);
     if (!status.isValid) {
@@ -41,6 +37,9 @@ export class AuthService {
   signin = async (email: string, password: string) => signInWithEmailAndPassword(this.auth, email, password).catch((error) => console.error(error));
   signout = () =>
     signOut(this.auth)
-      .then(() => this._user.next(undefined))
+      .then(() => {
+        this._user.next(undefined);
+        this.router.navigate([""]);
+      })
       .catch((error) => console.error(error));
 }

@@ -9,7 +9,7 @@
       (onCategoryRemoved)="deleteCategory($event)"
       (onSkillEdit)="open($event)"
       (onSkillRemoved)="delete($event, 'title')"></app-category>
-    <div *ngIf="isAdmin" class="card flex-[0_0_100%] p-5 md:flex-[0_0_calc(50%-calc(var(--spacing)*5))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))] lg:p-10">
+    <div *ngIf="user?.admin" class="card flex-[0_0_100%] p-5 md:flex-[0_0_calc(50%-calc(var(--spacing)*5))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))] lg:p-10">
       <p-button size="large" class="block text-center" icon="pi pi-plus" [text]="true" (onClick)="open()"></p-button>
     </div>
   </div>
