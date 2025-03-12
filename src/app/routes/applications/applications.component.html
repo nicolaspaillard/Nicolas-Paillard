@@ -56,6 +56,11 @@
               {{ application.company }}
             </div>
             <div>
+              Secteur :
+              <br />
+              {{ application.sector }}
+            </div>
+            <div>
               Adresse :
               <br />
               {{ application.address }}
@@ -91,6 +96,10 @@
     <label>
       Société
       <input pInputText formControlName="company" />
+    </label>
+    <label>
+      Secteur
+      <input pInputText formControlName="sector" />
     </label>
     <label>
       Activité

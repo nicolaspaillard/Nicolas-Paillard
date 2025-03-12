@@ -4,6 +4,7 @@ export class Application extends Base {
   title: string;
   company: string;
   activity: string;
+  sector: string;
   address: string;
   links: string;
   comments: string;
@@ -25,6 +26,7 @@ export const formApplication = new FormGroup({
   title: new FormControl("", [Validators.required]),
   company: new FormControl("", [Validators.required]),
   activity: new FormControl("", [Validators.required]),
+  sector: new FormControl("", [Validators.required]),
   address: new FormControl("", [Validators.required]),
   links: new FormControl("", []),
   comments: new FormControl("", []),
