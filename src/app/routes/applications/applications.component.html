@@ -44,7 +44,7 @@
             <p-button type="button" pRipple [pRowToggler]="application" [text]="true" [plain]="true" size="small" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
             <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="open(application)" />
             <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="delete(application, 'title')" />
-            <a pButton [text]="true" size="small" severity="success" icon="pi pi-send" target="_blank" href="mailto:{{ application.contacts.split(',') }}?subject=Candidature {{ application.title }} Nicolas Paillard"></a>
+            <p-button *ngIf="application.contacts" [text]="true" size="small" severity="success" icon="pi pi-send" (onClick)="mail('mailto:' + application.contacts.split(',') + '?subject=Candidature ' + application.title + ' Nicolas Paillard')" />
           </div>
           <span class="inline-block">{{ application.title }}</span>
         </td>
@@ -60,7 +60,7 @@
     <ng-template #expandedrow let-application>
       <tr>
         <td colspan="8">
-          <div class="grid grid-cols-2 md:grid-cols-4">
+          <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
             <div>
               Adresse :
               <br />
@@ -68,12 +68,12 @@
             </div>
             <div>
               Contacts :
-              <div *ngFor="let contact of application.contacts.split(';')">contact</div>
+              <div *ngFor="let contact of application.contacts.split(';')">{{ contact }}</div>
             </div>
             <div>
               Liens :
               <br />
-              <a *ngFor="let link of application.links.split(';'); let index = index" [href]="link">{{ index + 1 }}&nbsp;</a>
+              <a *ngFor="let link of application.links.split(';'); let index = index" [href]="link" target="_blank">{{ index + 1 }}&nbsp;</a>
             </div>
             <div>
               Commentaires :

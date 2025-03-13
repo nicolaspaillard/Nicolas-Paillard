@@ -57,4 +57,5 @@ export class ApplicationsComponent extends CrudComponent<Application> {
     this[field].splice(fromIndex + (up ? -1 : 1), 0, element);
     this.form.patchValue({ [field]: this[field].join(";") });
   };
+  mail = (mailto: string) => open(mailto, "_blank");
 }

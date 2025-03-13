@@ -46,6 +46,7 @@ export class CrudService<T extends Base> {
   }
   items = () => this._items.pipe(takeUntilDestroyed());
   create = async (item: T) => {
+    console.log(item);
     try {
       item.id = (await addDoc(collection(this.db, "data", this.collection, this.collection), Object.assign({}, item))).id;
       this.__items.push(item);
