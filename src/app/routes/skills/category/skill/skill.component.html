@@ -1,8 +1,8 @@
 <span class="group/skill relative flex h-full items-center">
-  <div *ngIf="user && user['roles'].includes('admin')" class="absolute z-10 flex w-full justify-end transition-opacity group-hover/skill:opacity-100 lg:opacity-0">
+  <div *ngIf="user?.admin" class="absolute z-10 flex w-full justify-end transition-opacity group-hover/skill:opacity-100 lg:opacity-0">
     <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="onSkillEdit.emit(skill)" />
     <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="onSkillRemoved.emit(skill)" />
   </div>
   <img *ngIf="skill.icon.length" width="24" height="24" class="me-1" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
-  <span [ngClass]="{ 'transition-opacity group-hover/skill:opacity-50': user && user['roles'].includes('admin') }">{{ skill.title }}</span>
+  <span [ngClass]="{ 'transition-opacity group-hover/skill:opacity-50': user?.admin }">{{ skill.title }}</span>
 </span>

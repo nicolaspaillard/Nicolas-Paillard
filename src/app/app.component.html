@@ -25,7 +25,7 @@
     </div>
     <div class="flex max-h-0 w-full flex-col overflow-hidden px-2 transition-[max-height] lg:hidden" [ngClass]="{ 'max-h-[999px]!': menuShown.checked }">
       <ng-container *ngFor="let route of routes">
-        <p-button class="mb-2" *ngIf="!route.canActivate || !route.data!['role'] || (user && user['roles'].includes(route.data!['role']))" size="large" (onClick)="menuShown.checked = false" [routerLink]="route.path" routerLinkActive="[&>button]:border-primary!" [label]="route.title + ''" [text]="true"></p-button>
+        <p-button class="mb-2" *ngIf="!route.canActivate || user?.admin" size="large" (onClick)="menuShown.checked = false" [routerLink]="route.path" routerLinkActive="[&>button]:border-primary!" [label]="route.title + ''" [text]="true"></p-button>
       </ng-container>
     </div>
   </nav>
