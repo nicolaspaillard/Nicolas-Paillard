@@ -44,6 +44,7 @@
             <p-button type="button" pRipple [pRowToggler]="application" [text]="true" [plain]="true" size="small" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
             <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="open(application)" />
             <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="delete(application, 'title')" />
+            <a pButton [text]="true" size="small" severity="success" icon="pi pi-send" href="mailto:info@w3docs.com?cc=secondemail@example.com, anotheremail@example.com, &bcc=lastemail@example.com&subject=Mail from our Website&body=Chèr equipe  W3docs ">Envoyer Email</a>
           </div>
           <span class="inline-block">{{ application.title }}</span>
         </td>
@@ -67,8 +68,7 @@
             </div>
             <div>
               Contacts :
-              <br />
-              {{ application.contacts }}
+              <div *ngFor="let contact of application.contacts.split(';')">contact</div>
             </div>
             <div>
               Liens :

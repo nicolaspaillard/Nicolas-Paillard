@@ -96,9 +96,9 @@ export class DesignerService {
                       reader.readAsDataURL(await response.blob());
                     }),
                 )),
+              ...sections.map((section) => `nicolaspaillard.fr/about# ` + section.text),
             ],
           },
-          { route: "about", lines: ["A propos", ...sections.map((section) => `nicolaspaillard.fr/about# ` + section.text)] },
           { route: "career", lines: ["Carrière", ...experiences.map((experience) => `nicolaspaillard.fr/career# ` + experience.title)] },
           { route: "skills", lines: ["Compétences", ...categories.map((category) => `nicolaspaillard.fr/skills# ` + category.title)] },
         ],
