@@ -11,6 +11,14 @@
           Activité
           <p-sortIcon field="activity" />
         </th>
+        <th pSortableColumn="company">
+          Société
+          <p-sortIcon field="company" />
+        </th>
+        <th pSortableColumn="sector">
+          Secteur
+          <p-sortIcon field="sector" />
+        </th>
         <th pSortableColumn="contactDate">
           Contact
           <p-sortIcon field="contactDate" />
@@ -40,6 +48,8 @@
           <span class="inline-block">{{ application.title }}</span>
         </td>
         <td>{{ application.activity }}</td>
+        <td>{{ application.company }}</td>
+        <td>{{ application.sector }}</td>
         <td>{{ application.contactDate | date: "dd/MM/yyyy" }}</td>
         <td>{{ application.relaunchDate | date: "dd/MM/yyyy" }}</td>
         <td>{{ application.answerDate | date: "dd/MM/yyyy" }}</td>
@@ -50,16 +60,6 @@
       <tr>
         <td colspan="8">
           <div class="grid grid-cols-2 md:grid-cols-5">
-            <div>
-              Société :
-              <br />
-              {{ application.company }}
-            </div>
-            <div>
-              Secteur :
-              <br />
-              {{ application.sector }}
-            </div>
             <div>
               Adresse :
               <br />
