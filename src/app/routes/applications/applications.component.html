@@ -44,7 +44,7 @@
             <p-button type="button" pRipple [pRowToggler]="application" [text]="true" [plain]="true" size="small" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
             <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="open(application)" />
             <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="delete(application, 'title')" />
-            <a pButton [text]="true" size="small" severity="success" icon="pi pi-send" href="mailto:{{ application.contacts.split(',') }}?subject=Candidature {{ application.title }} Nicolas Paillard&body=Bonjour,"></a>
+            <a pButton [text]="true" size="small" severity="success" icon="pi pi-send" target="_blank" href="mailto:{{ application.contacts.split(',') }}?subject=Candidature {{ application.title }} Nicolas Paillard&body=Bonjour,"></a>
           </div>
           <span class="inline-block">{{ application.title }}</span>
         </td>
