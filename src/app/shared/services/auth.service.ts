@@ -25,16 +25,39 @@ export class AuthService {
     });
   }
   user = (): Observable<{ user: User; admin: boolean } | undefined> => this._user.pipe(takeUntilDestroyed());
-  signup = async (email: string, password: string) => {
-    const status = await validatePassword(this.auth, password);
-    if (!status.isValid) {
-      this.toastService.error("Erreur", "Mot de passe invalide");
-      console.error(status);
-    } else {
-      createUserWithEmailAndPassword(this.auth, email, password).catch((error) => console.error(error));
-    }
+  signup = async (email: string, password: string): Promise<boolean | [string, any]> => {
+    return validatePassword(this.auth, password).then((status) => {
+      if (!status.isValid) {
+        let ret: any;
+        if (!status.containsLowercaseLetter) ret.pattern = true;
+        else if (!status.containsUppercaseLetter) ret.pattern = true;
+        else if (!status.containsNonAlphanumericCharacter) ret.pattern = true;
+        else if (!status.containsNumericCharacter) ret.pattern = true;
+        if (!status.meetsMaxPasswordLength) ret.maxlength = true;
+        if (!status.meetsMinPasswordLength) ret.minlength = true;
+        return ["password", ret];
+      } else
+        return createUserWithEmailAndPassword(this.auth, email, password)
+          .then((userCredentials) => true)
+          .catch((error) => {
+            switch (error.code) {
+              case "auth/email-already-in-use":
+                return ["email", { inuse: true }];
+              default:
+                console.error(error.code, error.message);
+                return ["email", { unknown: true }];
+            }
+          });
+    });
   };
-  signin = async (email: string, password: string) => signInWithEmailAndPassword(this.auth, email, password).catch((error) => console.error(error));
+  signin = async (email: string, password: string) =>
+    signInWithEmailAndPassword(this.auth, email, password)
+      .then(() => true)
+      .catch((error) => {
+        console.error(error.code);
+        // auth/invalid-credential
+        return false;
+      });
   signout = () =>
     signOut(this.auth)
       .then(() => {

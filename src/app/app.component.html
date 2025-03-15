@@ -38,39 +38,57 @@
 <p-toast [life]="5000" position="bottom-right"></p-toast>
 <p-confirmDialog [dismissableMask]="true"></p-confirmDialog>
 <p-dialog header="Connexion" [modal]="true" [(visible)]="isSigninShown" [dismissableMask]="true">
-  <form [formGroup]="formSignin" class="mb-2 flex flex-col gap-2 [&>*]:flex [&>*]:justify-evenly [&>*]:gap-2 [&>label]:gap-0 [&_label]:flex [&_label]:w-full [&_label]:flex-col">
+  <form [formGroup]="formSignin" class="flex flex-col gap-2 [&_input]:w-full">
     <label>
       Email
-      <input pInputText type="text" formControlName="email" />
+      <input pInputText type="text" formControlName="email" [ngClass]="{ 'ng-invalid ng-dirty': formSignin.controls.email.invalid && (formSignin.controls.email.dirty || formSignin.controls.email.touched) }" />
+      <small *ngIf="formSignin.controls.email.invalid && (formSignin.controls.email.dirty || formSignin.controls.email.touched) && formSignin.controls.email.hasError('required')" class="text-red-500">L'email est requis</small>
     </label>
     <label>
       Mot de passe
-      <input pInputText type="password" formControlName="password" />
+      <p-password formControlName="password" styleClass="w-full" inputStyleClass="w-full" [feedback]="false" [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': formSignin.controls.password.invalid && (formSignin.controls.password.dirty || formSignin.controls.password.touched) }"></p-password>
+      <small *ngIf="formSignin.controls.password.invalid && (formSignin.controls.password.dirty || formSignin.controls.password.touched) && formSignin.controls.password.hasError('required')" class="text-red-500">Le mot de passe est requis</small>
     </label>
+    <small *ngIf="formSignin.invalid && (formSignin.dirty || formSignin.touched) && formSignin.hasError('invalid')" class="text-red-500">Email ou mot de passe invalide</small>
+    <div class="flex justify-end gap-2">
+      <p-button (onClick)="isSigninShown = false" [text]="true">Annuler</p-button>
+      <p-button *ngIf="!user" (onClick)="isSigninShown = false; isSignupShown = true" [outlined]="true">Inscription</p-button>
+      <p-button (onClick)="isSigningIn = true; signin()" type="submit" [disabled]="!formSignin.valid || isSigningIn" [loading]="isSigningIn">Connexion</p-button>
+    </div>
   </form>
-  <div class="flex justify-end gap-2">
-    <p-button (onClick)="isSigninShown = false" [text]="true">Annuler</p-button>
-    <p-button *ngIf="!user" (onClick)="isSigninShown = false; isSignupShown = true" [outlined]="true">Inscription</p-button>
-    <p-button (onClick)="signin()" [disabled]="!formSignin.valid">Connexion</p-button>
-  </div>
 </p-dialog>
 <p-dialog header="Inscription" [modal]="true" [(visible)]="isSignupShown" [dismissableMask]="true">
-  <form [formGroup]="formSignup" class="mb-2 flex flex-col gap-2 [&>*]:flex [&>*]:w-full [&>*]:flex-col">
+  <form [formGroup]="formSignup" class="flex flex-col gap-2 [&_input]:w-full">
     <label>
       Email
-      <input pInputText type="text" formControlName="email" />
+      <input pInputText type="text" formControlName="email" [ngClass]="{ 'ng-invalid ng-dirty': formSignup.controls.email.invalid && (formSignup.controls.email.dirty || formSignup.controls.email.touched) }" />
+      <div *ngIf="formSignup.controls.email.invalid && (formSignup.controls.email.dirty || formSignup.controls.email.touched)" class="flex flex-col text-red-500">
+        <small *ngIf="formSignup.controls.email.hasError('required')">L'email est requis</small>
+        <small *ngIf="formSignup.controls.email.hasError('email')">L'email doit être de la forme xxxx&#64;gmail.com'</small>
+        <small *ngIf="formSignup.controls.email.hasError('inuse')">Cette adresse est déjà utilisée</small>
+        <small *ngIf="formSignup.controls.email.hasError('unknown')">Erreur inconnue, voir la console</small>
+      </div>
     </label>
     <label>
       Mot de passe
-      <p-password formControlName="password" [feedback]="false" />
+      <p-password formControlName="password" styleClass="w-full" inputStyleClass="w-full" [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': formSignup.controls.password.invalid && (formSignup.controls.password.dirty || formSignup.controls.password.touched) }" />
+      <div *ngIf="formSignup.controls.password.invalid && (formSignup.controls.password.dirty || formSignup.controls.password.touched)" class="flex flex-col text-red-500">
+        <small *ngIf="formSignup.controls.password.hasError('required')">Le mot de passe est requis</small>
+        <small *ngIf="formSignup.controls.password.hasError('pattern')">Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un caractère spécial</small>
+        <small *ngIf="formSignup.controls.password.hasError('minlength') || formSignup.controls.password.hasError('maxlength')">Le mot de passe doit faire de 8 à 4096 caractères</small>
+      </div>
     </label>
     <label>
       Répétez le mot de passe
-      <p-password formControlName="passwordrepeat" [feedback]="false" />
+      <p-password formControlName="passwordrepeat" styleClass="w-full" inputStyleClass="w-full" [feedback]="false" [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': formSignup.controls.passwordrepeat.invalid && (formSignup.controls.passwordrepeat.dirty || formSignup.controls.passwordrepeat.touched) }" />
+      <div *ngIf="formSignup.controls.passwordrepeat.invalid && (formSignup.controls.passwordrepeat.dirty || formSignup.controls.passwordrepeat.touched)" class="flex flex-col text-red-500">
+        <small *ngIf="formSignup.controls.passwordrepeat.hasError('required')">Le mot de passe est requis</small>
+        <small *ngIf="formSignup.controls.passwordrepeat.hasError('notmatching')">Les mots de passe doivent être identiques</small>
+      </div>
     </label>
+    <div class="flex justify-end gap-2">
+      <p-button (onClick)="isSignupShown = false" [text]="true">Annuler</p-button>
+      <p-button (onClick)="isSigningUp = true; signup()" type="submit" [disabled]="!formSignup.valid || isSigningUp" [loading]="isSigningUp">Inscription</p-button>
+    </div>
   </form>
-  <div class="flex justify-end gap-2">
-    <p-button (onClick)="isSignupShown = false" [text]="true">Annuler</p-button>
-    <p-button (onClick)="signup()" [disabled]="!formSignup.valid">Inscription</p-button>
-  </div>
 </p-dialog>

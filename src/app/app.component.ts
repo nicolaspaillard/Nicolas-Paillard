@@ -46,19 +46,19 @@ export const routes: Routes = [
 })
 export class AppComponent {
   isSignupShown: boolean = false;
+  isSigningUp: boolean = false;
   isSigninShown: boolean = false;
+  isSigningIn: boolean = false;
   isTransitioning: boolean = false;
   user: { user: User; admin: boolean } | undefined;
   routes: Route[] = routes.filter((route) => route.path && route.data);
   formSignup = new FormGroup(
     {
-      password: new FormControl("", [Validators.required, Validators.minLength(8)]),
+      email: new FormControl("", [Validators.required, Validators.email]),
+      password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]),
       passwordrepeat: new FormControl("", [Validators.required]),
-      email: new FormControl("", { validators: [Validators.required, Validators.email] }),
     },
-    {
-      validators: CustomValidators.matchPassword(),
-    },
+    { validators: CustomValidators.matchFields("password", "passwordrepeat") },
   );
   formSignin = new FormGroup({
     email: new FormControl("", [Validators.required, Validators.email]),
@@ -87,13 +87,26 @@ export class AppComponent {
     });
   }
   prepareRoute = (outlet: RouterOutlet) => outlet && outlet.activatedRouteData && outlet.activatedRouteData["animation"];
-  signup = () =>
-    this.authService.signup(this.formSignup.value.email!, this.formSignup.value.password!).then(() => {
-      this.formSignin.setValue({ email: this.formSignup.value.email!, password: this.formSignup.value.password! });
-      this.isSignupShown = false;
-      this.isSigninShown = true;
+  signup = () => {
+    this.isSigningUp = true;
+    this.authService.signup(this.formSignup.value.email!, this.formSignup.value.password!).then((result) => {
+      if (result === true) this.isSignupShown = false;
+      else {
+        this.formSignup.controls[result[0]].markAsTouched();
+        this.formSignup.controls[result[0]].markAsDirty();
+        this.formSignup.controls[result[0]].setErrors(result[1]);
+      }
+      this.isSigningUp = false;
     });
-  signin = () => this.authService.signin(this.formSignin.value.email!, this.formSignin.value.password!).then(() => (this.isSigninShown = false));
+  };
+  signin = () => {
+    this.isSigningIn = true;
+    this.authService.signin(this.formSignin.value.email!, this.formSignin.value.password!).then((valid: boolean) => {
+      if (!valid) this.formSignin.setErrors({ invalid: true });
+      else this.isSigninShown = false;
+      this.isSigningIn = false;
+    });
+  };
   signout = () => this.authService.signout();
   downloadCV = () => this.designerService.export({ editing: false, replace: true });
   applyPreset = () => {
@@ -146,11 +159,9 @@ function slideTo(direction: any) {
   ];
 }
 class CustomValidators {
-  static matchPassword(): ValidatorFn {
+  static matchFields(a: string, b: string): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      const password = control.get("password")?.value;
-      const passwordrepeat = control.get("passwordrepeat")?.value;
-      if (password && passwordrepeat && password != passwordrepeat) control.get("passwordrepeat")?.setErrors({ notmatching: true });
+      if (control.get(a)!.value && control.get(b)!.value && control.get(a)!.value != control.get(b)!.value) control.get(b)!.setErrors({ notmatching: true });
       return null;
     };
   }
