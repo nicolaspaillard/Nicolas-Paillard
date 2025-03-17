@@ -1,9 +1,8 @@
 import { inject, Injectable } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Auth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, User, validatePassword } from "@angular/fire/auth";
-import { Router } from "@angular/router";
+import { Auth, confirmPasswordReset, createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, User, validatePassword, verifyPasswordResetCode } from "@angular/fire/auth";
+import { handleError } from "@helpers/helpers";
 import { Observable, ReplaySubject, Subject } from "rxjs";
-import { ToastService } from "./toast.service";
 
 @Injectable({
   providedIn: "root",
@@ -11,16 +10,13 @@ import { ToastService } from "./toast.service";
 export class AuthService {
   private auth = inject(Auth);
   private _user: Subject<{ user: User; admin: boolean } | undefined> = new ReplaySubject(1);
-  constructor(
-    private toastService: ToastService,
-    private router: Router,
-  ) {
+  constructor() {
     onAuthStateChanged(this.auth, (user) => {
       if (user)
         user
           .getIdTokenResult()
           .then((idTokenResult) => this._user.next({ user: user, admin: !!idTokenResult.claims["admin"] }))
-          .catch((error) => console.error(error));
+          .catch((error) => handleError(error));
       else this._user.next(undefined);
     });
   }
@@ -38,31 +34,35 @@ export class AuthService {
         return ["password", ret];
       } else
         return createUserWithEmailAndPassword(this.auth, email, password)
-          .then((userCredentials) => true)
-          .catch((error) => {
-            switch (error.code) {
-              case "auth/email-already-in-use":
-                return ["email", { inuse: true }];
-              default:
-                console.error(error.code, error.message);
-                return ["email", { unknown: true }];
-            }
-          });
+          .then((userCredentials) =>
+            sendEmailVerification(userCredentials.user)
+              .then(() => true)
+              .catch((error) => handleError(error)),
+          )
+          .catch((error) => handleError(error, ["email", { inuse: true }]));
     });
   };
   signin = async (email: string, password: string) =>
     signInWithEmailAndPassword(this.auth, email, password)
       .then(() => true)
-      .catch((error) => {
-        console.error(error.code);
-        // auth/invalid-credential
-        return false;
-      });
+      .catch((error) => handleError(error));
+
   signout = () =>
     signOut(this.auth)
-      .then(() => {
-        this._user.next(undefined);
-        this.router.navigate([""]);
-      })
-      .catch((error) => console.error(error));
+      .then(() => true)
+      .catch((error) => handleError(error));
+
+  send = (email: string) =>
+    sendPasswordResetEmail(this.auth, email)
+      .then(() => true)
+      .catch((error) => handleError(error));
+
+  reset = (code: string, password: string) =>
+    verifyPasswordResetCode(this.auth, code)
+      .then(() =>
+        confirmPasswordReset(this.auth, code, password)
+          .then(() => true)
+          .catch((error) => handleError(error)),
+      )
+      .catch((error) => handleError(error));
 }

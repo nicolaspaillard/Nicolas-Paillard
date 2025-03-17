@@ -1,68 +1,70 @@
-<canvas id="matrix" class="absolute bottom-0 left-0 right-0 top-0 bg-black" [ngClass]="{ hidden: !enableMatrix }" (window:resize)="matrix()"></canvas>
+<canvas class="absolute bottom-0 left-0 right-0 top-0 bg-black" id="matrix" [ngClass]="{ hidden: !enableMatrix }" (window:resize)="matrix()"></canvas>
 <div class="flex h-full w-full flex-col overflow-hidden">
   <nav class="card container fixed left-1/2 z-20 -translate-x-1/2 [&_button]:h-full [&_button]:w-full">
-    <div #nav class="flex justify-between gap-2 p-2 lg:justify-center">
+    <div class="flex justify-between gap-2 p-2 lg:justify-center" #nav>
       <div class="flex gap-2">
-        <p-button class="lg:hidden" icon="pi pi-bars" [text]="true" [ngClass]="{ '[&>button]:border-primary!': menuShown.checked }" (onClick)="menuShown.checked = !menuShown.checked"></p-button>
-        <p-button routerLink="/" size="large" routerLinkActive="[&>button]:border-primary!" [ngClass]="{ '[&>button]:border-none!': menuShown.checked }" [routerLinkActiveOptions]="{ exact: true }" [text]="true" icon="pi pi-home"></p-button>
-        <p-button size="large" (onClick)="downloadCV()">CV</p-button>
-        <input #menuShown type="checkbox" class="peer hidden" />
+        <p-button class="lg:hidden" [text]="true" [ngClass]="{ '[&>button]:border-primary!': menuShown.checked }" (onClick)="menuShown.checked = !menuShown.checked" icon="pi pi-bars"></p-button>
+        <p-button [ngClass]="{ '[&>button]:border-none!': menuShown.checked }" [routerLinkActiveOptions]="{ exact: true }" [text]="true" routerLink="/" size="large" routerLinkActive="[&>button]:border-primary!" icon="pi pi-home"></p-button>
+        <p-button (onClick)="downloadCV()" size="large">CV</p-button>
+        <input class="peer hidden" #menuShown type="checkbox" />
         <div class="hidden gap-2 overflow-hidden lg:flex">
           <ng-container *ngFor="let route of routes">
-            <p-button class="mb-2 lg:mb-0" *ngIf="!route.canActivate || user?.admin" size="large" (onClick)="menuShown.checked = false" [routerLink]="route.path" routerLinkActive="[&>button]:border-primary!" [label]="route.title + ''" [text]="true"></p-button>
+            <p-button class="mb-2 lg:mb-0" *ngIf="!route.canActivate || user?.admin" [routerLink]="route.path" [label]="route.title + ''" [text]="true" (onClick)="menuShown.checked = false" size="large" routerLinkActive="[&>button]:border-primary!"></p-button>
           </ng-container>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <p-toggleswitch pTooltip="Red pill ?" tooltipPosition="bottom" class="flex" (onChange)="this.enableMatrix = !this.enableMatrix; applyPreset()">
+        <p-toggleswitch class="flex" (onChange)="this.enableMatrix = !this.enableMatrix; applyPreset()" pTooltip="Red pill ?" tooltipPosition="bottom">
           <ng-template #handle let-checked="checked">
             <i class="text-[10px]! pi" [ngClass]="[checked ? 'pi-check' : 'pi-times']"></i>
           </ng-template>
         </p-toggleswitch>
-        <p-button *ngIf="!user" size="large" (onClick)="isSigninShown = true">Connexion</p-button>
-        <p-button *ngIf="user" size="large" (onClick)="signout()">Déconnexion</p-button>
+        <p-button *ngIf="!user" (onClick)="isSigninShown = true" size="large">Connexion</p-button>
+        <p-button *ngIf="user" (onClick)="signout()" size="large">Déconnexion</p-button>
       </div>
     </div>
     <div class="flex max-h-0 w-full flex-col overflow-hidden px-2 transition-[max-height] lg:hidden" [ngClass]="{ 'max-h-[999px]!': menuShown.checked }">
       <ng-container *ngFor="let route of routes">
-        <p-button class="mb-2" *ngIf="!route.canActivate || user?.admin" size="large" (onClick)="menuShown.checked = false" [routerLink]="route.path" routerLinkActive="[&>button]:border-primary!" [label]="route.title + ''" [text]="true"></p-button>
+        <p-button class="mb-2" *ngIf="!route.canActivate || user?.admin" [routerLink]="route.path" [label]="route.title + ''" [text]="true" (onClick)="menuShown.checked = false" size="large" routerLinkActive="[&>button]:border-primary!"></p-button>
       </ng-container>
     </div>
   </nav>
   <div class="shrink-0" [style.height.px]="nav.getBoundingClientRect().height + 4"></div>
-  <div id="router-container" class="container relative mx-auto grow overflow-x-hidden" [ngClass]="{ 'overflow-hidden!': isTransitioning }" [@routeAnimations]="prepareRoute(outlet)">
+  <div class="container relative mx-auto grow overflow-x-hidden" id="router-container" [@routeAnimations]="prepareRoute(outlet)" [ngClass]="{ 'overflow-hidden!': isTransitioning }">
     <router-outlet #outlet="outlet"></router-outlet>
   </div>
 </div>
 <app-animation></app-animation>
 <p-toast [life]="5000" position="bottom-right"></p-toast>
 <p-confirmDialog [dismissableMask]="true"></p-confirmDialog>
-<p-dialog header="Connexion" [modal]="true" [(visible)]="isSigninShown" [dismissableMask]="true">
-  <form [formGroup]="formSignin" class="flex flex-col gap-2 [&_input]:w-full">
+<p-dialog [(visible)]="isSigninShown" [modal]="true" [dismissableMask]="true" header="Connexion">
+  <form class="flex flex-col gap-2 [&_input]:w-full" [formGroup]="formSignin">
     <label>
       Email
-      <input pInputText type="text" formControlName="email" [ngClass]="{ 'ng-invalid ng-dirty': formSignin.controls.email.invalid && (formSignin.controls.email.dirty || formSignin.controls.email.touched) }" />
-      <small *ngIf="formSignin.controls.email.invalid && (formSignin.controls.email.dirty || formSignin.controls.email.touched) && formSignin.controls.email.hasError('required')" class="text-red-500">L'email est requis</small>
+      <input [ngClass]="{ 'ng-invalid ng-dirty': formSignin.controls.email.invalid && (formSignin.controls.email.dirty || formSignin.controls.email.touched) }" type="text" pInputText formControlName="email" />
+      <small class="text-red-500" *ngIf="formSignin.controls.email.invalid && (formSignin.controls.email.dirty || formSignin.controls.email.touched) && formSignin.controls.email.hasError('required')">L'email est requis</small>
     </label>
     <label>
       Mot de passe
-      <p-password formControlName="password" styleClass="w-full" inputStyleClass="w-full" [feedback]="false" [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': formSignin.controls.password.invalid && (formSignin.controls.password.dirty || formSignin.controls.password.touched) }"></p-password>
-      <small *ngIf="formSignin.controls.password.invalid && (formSignin.controls.password.dirty || formSignin.controls.password.touched) && formSignin.controls.password.hasError('required')" class="text-red-500">Le mot de passe est requis</small>
+      <p-password [feedback]="false" [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': formSignin.controls.password.invalid && (formSignin.controls.password.dirty || formSignin.controls.password.touched) }" formControlName="password" styleClass="w-full" inputStyleClass="w-full"></p-password>
+      <small class="text-red-500" *ngIf="formSignin.controls.password.invalid && (formSignin.controls.password.dirty || formSignin.controls.password.touched) && formSignin.controls.password.hasError('required')">Le mot de passe est requis</small>
     </label>
-    <small *ngIf="formSignin.invalid && (formSignin.dirty || formSignin.touched) && formSignin.hasError('invalid')" class="text-red-500">Email ou mot de passe invalide</small>
-    <div class="flex justify-end gap-2">
-      <p-button (onClick)="isSigninShown = false" [text]="true">Annuler</p-button>
-      <p-button *ngIf="!user" (onClick)="isSigninShown = false; isSignupShown = true" [outlined]="true">Inscription</p-button>
-      <p-button (onClick)="isSigningIn = true; signin()" type="submit" [disabled]="!formSignin.valid || isSigningIn" [loading]="isSigningIn">Connexion</p-button>
+    <small class="text-red-500" *ngIf="formSignin.invalid && (formSignin.dirty || formSignin.touched) && formSignin.hasError('invalid')">Email ou mot de passe invalide</small>
+    <div class="flex justify-between gap-2">
+      <p-button [disabled]="!formSignin.controls.email.valid" [loading]="isSending" (onClick)="send()">Mdp oublié</p-button>
+      <div class="flex gap-2">
+        <p-button *ngIf="!user" [outlined]="true" (onClick)="isSigninShown = false; isSignupShown = true">Inscription</p-button>
+        <p-button [disabled]="!formSignin.valid || isSigningIn" [loading]="isSigningIn" (onClick)="isSigningIn = true; signin()" type="submit">Connexion</p-button>
+      </div>
     </div>
   </form>
 </p-dialog>
-<p-dialog header="Inscription" [modal]="true" [(visible)]="isSignupShown" [dismissableMask]="true">
-  <form [formGroup]="formSignup" class="flex flex-col gap-2 [&_input]:w-full">
+<p-dialog [(visible)]="isSignupShown" [modal]="true" [dismissableMask]="true" header="Inscription">
+  <form class="flex flex-col gap-2 [&_input]:w-full" [formGroup]="formSignup">
     <label>
       Email
-      <input pInputText type="text" formControlName="email" [ngClass]="{ 'ng-invalid ng-dirty': formSignup.controls.email.invalid && (formSignup.controls.email.dirty || formSignup.controls.email.touched) }" />
-      <div *ngIf="formSignup.controls.email.invalid && (formSignup.controls.email.dirty || formSignup.controls.email.touched)" class="flex flex-col text-red-500">
+      <input [ngClass]="{ 'ng-invalid ng-dirty': formSignup.controls.email.invalid && (formSignup.controls.email.dirty || formSignup.controls.email.touched) }" type="text" pInputText formControlName="email" />
+      <div class="flex flex-col text-red-500" *ngIf="formSignup.controls.email.invalid && (formSignup.controls.email.dirty || formSignup.controls.email.touched)">
         <small *ngIf="formSignup.controls.email.hasError('required')">L'email est requis</small>
         <small *ngIf="formSignup.controls.email.hasError('email')">L'email doit être de la forme xxxx&#64;gmail.com'</small>
         <small *ngIf="formSignup.controls.email.hasError('inuse')">Cette adresse est déjà utilisée</small>
@@ -71,24 +73,52 @@
     </label>
     <label>
       Mot de passe
-      <p-password formControlName="password" styleClass="w-full" inputStyleClass="w-full" [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': formSignup.controls.password.invalid && (formSignup.controls.password.dirty || formSignup.controls.password.touched) }" />
-      <div *ngIf="formSignup.controls.password.invalid && (formSignup.controls.password.dirty || formSignup.controls.password.touched)" class="flex flex-col text-red-500">
-        <small *ngIf="formSignup.controls.password.hasError('required')">Le mot de passe est requis</small>
-        <small *ngIf="formSignup.controls.password.hasError('pattern')">Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un caractère spécial</small>
-        <small *ngIf="formSignup.controls.password.hasError('minlength') || formSignup.controls.password.hasError('maxlength')">Le mot de passe doit faire de 8 à 4096 caractères</small>
-      </div>
+      <p-password [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': formSignup.controls.password.invalid && (formSignup.controls.password.dirty || formSignup.controls.password.touched) }" formControlName="password" styleClass="w-full" inputStyleClass="w-full">
+        <div class="flex flex-col text-red-500" *ngIf="formSignup.controls.password.invalid && (formSignup.controls.password.dirty || formSignup.controls.password.touched)">
+          <small *ngIf="formSignup.controls.password.hasError('required')">Le mot de passe est requis</small>
+          <small *ngIf="formSignup.controls.password.hasError('pattern')">Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un caractère spécial</small>
+          <small *ngIf="formSignup.controls.password.hasError('minlength') || formSignup.controls.password.hasError('maxlength')">Le mot de passe doit faire de 8 à 4096 caractères</small>
+        </div>
+      </p-password>
     </label>
     <label>
       Répétez le mot de passe
-      <p-password formControlName="passwordrepeat" styleClass="w-full" inputStyleClass="w-full" [feedback]="false" [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': formSignup.controls.passwordrepeat.invalid && (formSignup.controls.passwordrepeat.dirty || formSignup.controls.passwordrepeat.touched) }" />
-      <div *ngIf="formSignup.controls.passwordrepeat.invalid && (formSignup.controls.passwordrepeat.dirty || formSignup.controls.passwordrepeat.touched)" class="flex flex-col text-red-500">
-        <small *ngIf="formSignup.controls.passwordrepeat.hasError('required')">Le mot de passe est requis</small>
-        <small *ngIf="formSignup.controls.passwordrepeat.hasError('notmatching')">Les mots de passe doivent être identiques</small>
-      </div>
+      <p-password [feedback]="false" [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': formSignup.controls.passwordrepeat.invalid && (formSignup.controls.passwordrepeat.dirty || formSignup.controls.passwordrepeat.touched) }" formControlName="passwordrepeat" styleClass="w-full" inputStyleClass="w-full">
+        <div class="flex flex-col text-red-500" *ngIf="formSignup.controls.passwordrepeat.invalid && (formSignup.controls.passwordrepeat.dirty || formSignup.controls.passwordrepeat.touched)">
+          <small *ngIf="formSignup.controls.passwordrepeat.hasError('required')">Le mot de passe est requis</small>
+          <small *ngIf="formSignup.controls.passwordrepeat.hasError('notmatching')">Les mots de passe doivent être identiques</small>
+        </div>
+      </p-password>
     </label>
     <div class="flex justify-end gap-2">
-      <p-button (onClick)="isSignupShown = false" [text]="true">Annuler</p-button>
-      <p-button (onClick)="isSigningUp = true; signup()" type="submit" [disabled]="!formSignup.valid || isSigningUp" [loading]="isSigningUp">Inscription</p-button>
+      <p-button [text]="true" (onClick)="isSignupShown = false">Annuler</p-button>
+      <p-button [disabled]="!formSignup.valid || isSigningUp" [loading]="isSigningUp" (onClick)="isSigningUp = true; signup()" type="submit">Inscription</p-button>
+    </div>
+  </form>
+</p-dialog>
+<p-dialog [(visible)]="isResetShown" [modal]="true" [closable]="false" header="Réinitialisation">
+  <form class="flex flex-col gap-2 [&_input]:w-full" [formGroup]="formReset">
+    <label>
+      Mot de passe
+      <p-password [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': formReset.controls.password.invalid && (formReset.controls.password.dirty || formReset.controls.password.touched) }" formControlName="password" styleClass="w-full" inputStyleClass="w-full">
+        <div class="flex flex-col text-red-500" *ngIf="formReset.controls.password.invalid && (formReset.controls.password.dirty || formReset.controls.password.touched)">
+          <small *ngIf="formReset.controls.password.hasError('required')">Le mot de passe est requis</small>
+          <small *ngIf="formReset.controls.password.hasError('pattern')">Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un caractère spécial</small>
+          <small *ngIf="formReset.controls.password.hasError('minlength') || formReset.controls.password.hasError('maxlength')">Le mot de passe doit faire de 8 à 4096 caractères</small>
+        </div>
+      </p-password>
+    </label>
+    <label>
+      Répétez le mot de passe
+      <p-password [feedback]="false" [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': formReset.controls.passwordrepeat.invalid && (formReset.controls.passwordrepeat.dirty || formReset.controls.passwordrepeat.touched) }" formControlName="passwordrepeat" styleClass="w-full" inputStyleClass="w-full">
+        <div class="flex flex-col text-red-500" *ngIf="formReset.controls.passwordrepeat.invalid && (formReset.controls.passwordrepeat.dirty || formReset.controls.passwordrepeat.touched)">
+          <small *ngIf="formReset.controls.passwordrepeat.hasError('required')">Le mot de passe est requis</small>
+          <small *ngIf="formReset.controls.passwordrepeat.hasError('notmatching')">Les mots de passe doivent être identiques</small>
+        </div>
+      </p-password>
+    </label>
+    <div class="flex justify-end gap-2">
+      <p-button [disabled]="!formReset.valid || isResetting" [loading]="isResetting" (onClick)="isResetting = true; reset()" type="submit">Sauvegarder</p-button>
     </div>
   </form>
 </p-dialog>

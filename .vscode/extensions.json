@@ -1,17 +1,4 @@
 {
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=827846
-  "recommendations": [
-    "angular.ng-template",
-    "formulahendry.auto-close-tag",
-    "formulahendry.auto-complete-tag",
-    "formulahendry.auto-rename-tag",
-    "visualstudioexptteam.vscodeintellicode",
-    "visualstudioexptteam.intellicode-api-usage-examples",
-    "yzhang.markdown-all-in-one",
-    "christian-kohler.path-intellisense",
-    "esbenp.prettier-vscode",
-    "bradlc.vscode-tailwindcss",
-    "ecmel.vscode-html-css",
-    "syler.sass-indented"
-  ]
+  "recommendations": ["angular.ng-template", "formulahendry.auto-close-tag", "formulahendry.auto-complete-tag", "formulahendry.auto-rename-tag", "visualstudioexptteam.vscodeintellicode", "visualstudioexptteam.intellicode-api-usage-examples", "yzhang.markdown-all-in-one", "christian-kohler.path-intellisense", "esbenp.prettier-vscode", "bradlc.vscode-tailwindcss", "ecmel.vscode-html-css"]
 }

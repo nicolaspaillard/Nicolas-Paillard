@@ -1,14 +1,16 @@
 import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { AuthGuard, AuthPipe, customClaims, loggedIn } from "@angular/fire/auth-guard";
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
-import { NavigationEnd, NavigationStart, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
+import { ActivatedRoute, NavigationEnd, NavigationStart, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
 import { AnimationComponent } from "@components/animation/animation.component";
 import { usePreset } from "@primeng/themes";
 import { AuthService } from "@services/auth.service";
 import { DesignerService } from "@services/designer.service";
+import { ToastService } from "@services/toast.service";
 import { ButtonModule } from "primeng/button";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { DialogModule } from "primeng/dialog";
@@ -50,6 +52,10 @@ export class AppComponent {
   isSigninShown: boolean = false;
   isSigningIn: boolean = false;
   isTransitioning: boolean = false;
+  isResetShown: boolean = false;
+  isResetting: boolean = false;
+  isSending: boolean = false;
+  params: any = {};
   user: { user: User; admin: boolean } | undefined;
   routes: Route[] = routes.filter((route) => route.path && route.data);
   formSignup = new FormGroup(
@@ -64,15 +70,35 @@ export class AppComponent {
     email: new FormControl("", [Validators.required, Validators.email]),
     password: new FormControl("", [Validators.required]),
   });
+  formReset = new FormGroup(
+    {
+      password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]),
+      passwordrepeat: new FormControl("", [Validators.required]),
+    },
+    { validators: CustomValidators.matchFields("password", "passwordrepeat") },
+  );
   enableMatrix: boolean = false;
   private enableDarkMode: boolean = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
   private interval: NodeJS.Timeout;
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private designerService: DesignerService,
+    private toastService: ToastService,
   ) {
-    if (location.pathname.split("/").pop() === "cv") this.designerService.export({ editing: false, replace: true });
+    route.queryParams.pipe(takeUntilDestroyed()).subscribe((params) => (this.params = params));
+    switch (location.pathname.split("/").pop()) {
+      case "cv":
+        this.designerService.export({ editing: false, replace: true });
+        break;
+      case "login":
+        this.isSigninShown = true;
+        break;
+      case "reset":
+        this.isResetShown = true;
+        break;
+    }
     document.querySelector("html")!.classList.toggle("app-dark", this.enableDarkMode);
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => (this.enableDarkMode = document.querySelector("html")!.classList.toggle("app-dark", e.matches)));
     this.authService.user().subscribe((user) => (this.user = user));
@@ -107,7 +133,34 @@ export class AppComponent {
       this.isSigningIn = false;
     });
   };
-  signout = () => this.authService.signout();
+  signout = () => this.authService.signout().then(() => this.router.navigate([""]));
+
+  send = () => {
+    if (!this.formSignin.controls.email.invalid) {
+      this.isSending = true;
+      this.authService.send(this.formSignin.controls.email.value!).then((result) => {
+        this.isSending = false;
+        if (result) this.toastService.success("Envoi effectué", `Le lien de réinitialisation de votre mot de passe vient de vous être envoyé`);
+        else this.toastService.error("Échec de l'envoi", `Une erreur est survenue lors de l'envoi`);
+      });
+    } else {
+      this.formSignin.controls.email.markAsTouched();
+      this.formSignin.controls.email.setErrors({ required: true });
+    }
+  };
+
+  reset = () => {
+    this.isResetting = true;
+    this.authService.reset(this.params.oobCode, this.formReset.controls.password.value!).then((result) => {
+      this.isResetting = false;
+      if (result) {
+        this.toastService.success("Réinitialisation réussie", "Votre mot de passe à bien été réinitialisé, vous pouvez à présent vous connecter");
+        this.formSignin.controls.password.setValue(this.formReset.controls.password.value);
+        this.isResetShown = false;
+        this.isSigninShown = true;
+      } else this.toastService.error("Échec de la réinitialisation", "Une erreur est survenue lors de la réinitialisation du mot de passe");
+    });
+  };
   downloadCV = () => this.designerService.export({ editing: false, replace: true });
   applyPreset = () => {
     document.querySelector("html")!.classList.toggle("app-dark", this.enableMatrix || this.enableDarkMode);
