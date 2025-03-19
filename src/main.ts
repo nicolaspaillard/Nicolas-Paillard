@@ -58,7 +58,7 @@ bootstrapApplication(AppComponent, {
     provideAnalytics(() => getAnalytics()),
     ScreenTrackingService,
     UserTrackingService,
-    provideAppCheck(() => initializeAppCheck(undefined, { provider: new ReCaptchaEnterpriseProvider("6LdH4IYqAAAAAFEF9U2RMeZGVxRXVZAf_67iHt9M"), isTokenAutoRefreshEnabled: true })),
+    provideAppCheck(() => initializeAppCheck(undefined, { provider: new ReCaptchaEnterpriseProvider("6Lcwe_kqAAAAAA9b5kizgsjvlZNp1_stQSEc5iSs"), isTokenAutoRefreshEnabled: true })),
     provideFirestore(() => getFirestore()),
   ],
 }).catch((err) => console.error(err));
