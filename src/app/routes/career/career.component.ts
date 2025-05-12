@@ -11,6 +11,7 @@ import { DatePickerModule } from "primeng/datepicker";
 import { DialogModule } from "primeng/dialog";
 import { InputGroupModule } from "primeng/inputgroup";
 import { InputTextModule } from "primeng/inputtext";
+import { SelectModule } from "primeng/select";
 import { TextareaModule } from "primeng/textarea";
 import { TooltipModule } from "primeng/tooltip";
 import { ExperienceComponent } from "./experience/experience.component";
@@ -25,7 +26,7 @@ const SERVICE_VARIABLE: ServiceConfig<Experience> = {
 
 @Component({
   selector: "app-career",
-  imports: [CommonModule, ReactiveFormsModule, ExperienceComponent, DialogModule, DatePickerModule, TextareaModule, InputTextModule, ButtonModule, InputGroupModule, TooltipModule],
+  imports: [CommonModule, ReactiveFormsModule, ExperienceComponent, DialogModule, DatePickerModule, SelectModule, TextareaModule, InputTextModule, ButtonModule, InputGroupModule, TooltipModule],
   templateUrl: "./career.component.html",
   providers: [CrudService<Experience>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
@@ -34,16 +35,8 @@ export class CareerComponent extends CrudComponent<Experience> {
   constructor(crudService: CrudService<Experience>, authService: AuthService, confirmService: ConfirmService) {
     super(crudService, authService, confirmService);
   }
-  override open(item?: Experience): void {
-    this.activities = item ? item.activities.split(";") : [];
-    super.open(item);
-  }
   add = (activity: string) => {
     this.activities.push(activity);
-    this.form.patchValue({ activities: this.activities.join(";") });
-  };
-  remove = (activity: string) => {
-    this.activities = this.activities.filter((act) => act != activity);
     this.form.patchValue({ activities: this.activities.join(";") });
   };
   move = (activity: string, up: boolean = false) => {
@@ -52,6 +45,15 @@ export class CareerComponent extends CrudComponent<Experience> {
     var element = this.activities[fromIndex];
     this.activities.splice(fromIndex, 1);
     this.activities.splice(fromIndex + (up ? -1 : 1), 0, element);
+    this.form.patchValue({ activities: this.activities.join(";") });
+  };
+  override open(item?: Experience): void {
+    this.activities = item && item.activities ? item.activities.split(";") : [];
+    this.form.patchValue({ activities: this.activities.join(";") });
+    super.open(item);
+  }
+  remove = (activity: string) => {
+    this.activities = this.activities.filter((act) => act != activity);
     this.form.patchValue({ activities: this.activities.join(";") });
   };
 }

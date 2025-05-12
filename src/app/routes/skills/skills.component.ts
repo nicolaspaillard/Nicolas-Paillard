@@ -8,6 +8,7 @@ import { ConfirmService } from "@services/confirm.service";
 import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
 import { ButtonModule } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
+import { InputNumberModule } from "primeng/inputnumber";
 import { InputTextModule } from "primeng/inputtext";
 import { SelectModule } from "primeng/select";
 import { CategoryComponent } from "./category/category.component";
@@ -21,19 +22,13 @@ const SERVICE_VARIABLE: ServiceConfig<Skill> = {
 
 @Component({
   selector: "app-skills",
-  imports: [ReactiveFormsModule, CommonModule, CategoryComponent, ButtonModule, DialogModule, InputTextModule, SelectModule],
+  imports: [ReactiveFormsModule, CommonModule, CategoryComponent, ButtonModule, DialogModule, InputTextModule, SelectModule, InputNumberModule],
   templateUrl: "./skills.component.html",
   providers: [CrudService<Skill>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class SkillsComponent extends CrudComponent<Skill> {
   // editing: string = "";
   categories: Category[] = [];
-  isShownCategory: boolean = false;
-
-  formCategory: FormGroup = new FormGroup({
-    oldTitle: new FormControl(""),
-    title: new FormControl("", [Validators.required]),
-  });
   devIcons: string[] = [
     "aarch64-line",
     "aarch64-original",
@@ -1556,21 +1551,27 @@ export class SkillsComponent extends CrudComponent<Skill> {
     "zig-original",
     "zig-plain-wordmark",
   ];
+  formCategory: FormGroup = new FormGroup({
+    oldTitle: new FormControl(""),
+    title: new FormControl("", [Validators.required]),
+  });
+  isShownCategory: boolean = false;
+
   constructor(crudService: CrudService<Skill>, authService: AuthService, confirmService: ConfirmService) {
     super(crudService, authService, confirmService);
   }
+  deleteCategory = (category: string) => this.confirmService.confirm({ message: `Voulez-vous vraiment supprimer ${category}`, accept: () => this.items.filter((skill) => skill.category === category).map((skill) => this.delete(skill)) });
+  updateCategory = async () => Promise.all(this.items.filter((skill) => skill.category === this.formCategory.get("oldTitle")!.value).map(async (skill) => await this.update({ ...skill, category: this.formCategory.get("title")!.value }))).then(() => (this.isShownCategory = false));
   protected override sort(skills: Skill[]): void {
     this.categories = [];
     for (let skill of skills) {
       const categoryId = this.categories.findIndex((tmp) => tmp.title === skill.category);
-      if (categoryId === -1) this.categories.push(new Category({ title: skill.category, skills: [skill] }));
+      if (categoryId === -1) this.categories.push(new Category({ rank: skill.rank, title: skill.category, skills: [skill] }));
       else {
         this.categories[categoryId].skills.push(skill);
         this.categories[categoryId].skills.sort((skill1, skill2) => (skill1.title < skill2.title ? -1 : skill.title > skill2.title ? 1 : 0));
       }
     }
-    this.categories.sort((category1, category2) => (category1.title < category2.title ? -1 : category1.title > category2.title ? 1 : 0));
+    this.categories.sort((category1, category2) => category1.rank - category2.rank);
   }
-  updateCategory = async () => Promise.all(this.items.filter((skill) => skill.category === this.formCategory.get("oldTitle")!.value).map(async (skill) => await this.update({ ...skill, category: this.formCategory.get("title")!.value }))).then(() => (this.isShownCategory = false));
-  deleteCategory = (category: string) => this.confirmService.confirm({ message: `Voulez-vous vraiment supprimer ${category}`, accept: () => this.items.filter((skill) => skill.category === category).map((skill) => this.delete(skill)) });
 }

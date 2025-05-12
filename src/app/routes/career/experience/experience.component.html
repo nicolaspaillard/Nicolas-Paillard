@@ -1,7 +1,8 @@
 <div class="card group relative flex w-full text-wrap break-words p-5 lg:w-[calc(50%-(--spacing(10)))] lg:p-10 lg:before:content-['']" [ngClass]="['lg:before:bg-primary lg:before:absolute lg:before:top-1/2 lg:before:h-[2px] lg:before:w-10 lg:before:-translate-y-full', right ? 'lg:ml-auto lg:before:-left-[calc(--spacing(10)+1px)]' : 'lg:before:-right-[calc(--spacing(10)+1px)]']">
+  <p-tag class="absolute top-0 mx-2 mt-2" [ngClass]="right ? 'right-0' : 'left-0'" [value]="experience.type" />
   <div class="absolute top-0 transition-opacity group-hover:opacity-100 lg:opacity-0" [ngClass]="right ? 'right-0 lg:left-0' : 'right-0'">
-    <p-button *ngIf="user?.admin" icon="pi pi-pencil" [text]="true" size="small" (onClick)="onExperienceEdit.emit(experience)" />
-    <p-button *ngIf="user?.admin" icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="onExperienceRemoved.emit(experience)" />
+    <p-button *ngIf="user?.admin" [text]="true" (onClick)="onExperienceEdit.emit(experience)" icon="pi pi-pencil" size="small" />
+    <p-button *ngIf="user?.admin" [text]="true" (onClick)="onExperienceRemoved.emit(experience)" icon="pi pi-trash" size="small" severity="danger" />
   </div>
   <div class="flex shrink flex-col border-0 border-r border-solid border-white/25 pr-5 text-end">
     <i class="text-primary text-xs sm:text-nowrap">

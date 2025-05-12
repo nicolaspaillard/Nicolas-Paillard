@@ -4,10 +4,11 @@ import { User } from "@angular/fire/auth";
 import { AuthService } from "@app/shared/services/auth.service";
 import { Experience } from "@classes/experience";
 import { ButtonModule } from "primeng/button";
+import { TagModule } from "primeng/tag";
 
 @Component({
   selector: "app-experience",
-  imports: [CommonModule, ButtonModule],
+  imports: [CommonModule, ButtonModule, TagModule],
   templateUrl: "./experience.component.html",
 })
 export class ExperienceComponent {

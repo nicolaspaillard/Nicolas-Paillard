@@ -57,9 +57,11 @@ export class CrudService<T extends Base> {
     }
   };
   update = async (item: T) => {
+    console.log(item);
     try {
       let newItem: any = new this.type(item);
       delete newItem.id;
+      console.log(newItem);
       setDoc(doc(this.db, "data", this.collection, this.collection, item.id), Object.assign({}, newItem));
       this.__items[this.__items.findIndex((tmp) => tmp.id === item.id)] = item;
       if (this.compareFn) this.__items.sort(this.compareFn);
@@ -69,8 +71,9 @@ export class CrudService<T extends Base> {
     }
   };
   delete = async (item: T) => {
+    console.log(item);
     try {
-      deleteDoc(doc(this.db, "data", this.collection, this.collection, item.id!));
+      deleteDoc(doc(this.db, "data", this.collection, this.collection, item.id));
       // prettier-ignore
       this.__items.splice(this.__items.findIndex((tmp) => tmp.id === item.id),1);
       this._items.next(this.__items);

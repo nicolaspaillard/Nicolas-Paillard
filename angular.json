@@ -60,7 +60,6 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "host": "192.168.1.2",
             "hmr": false
           },
           "configurations": {
