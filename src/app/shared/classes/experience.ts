@@ -11,7 +11,6 @@ export class Experience extends Base {
   postcode: string;
   start: Date;
   text: string;
-  title: string;
   type: "Expérience" | "Formation" | "Évènement";
   constructor(experience: Experience) {
     // if (!experience.type) experience.type = "Expérience";
@@ -23,9 +22,9 @@ export class Experience extends Base {
 
 export const formExperience = new FormGroup({
   id: new FormControl(""),
+  title: new FormControl("", [Validators.required]),
   start: new FormControl(new Date(), [Validators.required]),
   end: new FormControl(new Date(), []),
-  title: new FormControl("", [Validators.required]),
   text: new FormControl("", []),
   company: new FormControl("", []),
   address: new FormControl("", []),

@@ -10,7 +10,7 @@ export class CrudComponent<T extends Base> {
   form: FormGroup;
   isEditing: boolean = false;
   isShown: boolean = false;
-  items: T[];
+  items: T[] = [];
   user: { admin: boolean; user: User } | undefined;
   constructor(
     private crudService: CrudService<T>,
@@ -31,14 +31,17 @@ export class CrudComponent<T extends Base> {
     this.form = this.crudService.form;
   }
   async create(item?: any) {
-    return await this.crudService.create(item ? item : (this.form.value as T)).then(() => (this.isShown = false));
+    return await this.crudService
+      .create(item ? item : (this.form.value as T))
+      .then((id) => {
+        this.isShown = false;
+        return id;
+      })
+      .catch(() => false);
   }
-  delete(item: T, field?: string) {
-    field ? this.confirmService.confirm({ message: `Voulez-vous vraiment supprimer '${item[field]}' ?`, accept: () => this.crudService.delete(item) }) : this.crudService.delete(item);
-  }
-
+  delete = (item: T, field?: string) => this.confirmService.confirm({ message: `Voulez-vous vraiment supprimer '${field ? item[field] : item.title}' ?`, accept: () => this.crudService.delete(item) });
   open(item?: T) {
-    console.log(item);
+    if (item) console.log(item);
     this.isEditing = item ? true : false;
     if (item) this.form.setValue(new this.crudService.type(item));
     else this.form.reset();

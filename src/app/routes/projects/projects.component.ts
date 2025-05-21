@@ -32,28 +32,70 @@ const SERVICE_VARIABLE: ServiceConfig<Project> = {
   providers: [CrudService<Project>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class ProjectsComponent extends CrudComponent<Project> {
-  images: string;
   activities: string[] = [];
+  images: string;
   constructor(crudService: CrudService<Project>, authService: AuthService, confirmService: ConfirmService) {
     super(crudService, authService, confirmService);
   }
+  add = (activity: string) => {
+    this.activities.push(activity);
+    this.form.patchValue({ activities: this.activities.join(";") });
+  };
   override async create(images: File[]) {
     const result = images.length ? await this.uploadImages(images) : "";
     if (result === false) return false;
-    super.create({ ...this.form.value, images: result } as Project);
-    return true;
+    return await super.create({ ...this.form.value, images: result } as Project);
   }
+  move = (activity: string, up: boolean = false) => {
+    let fromIndex = this.activities.indexOf(activity);
+    if ((fromIndex == 0 && up) || (fromIndex == this.activities.length - 1 && !up)) return;
+    var element = this.activities[fromIndex];
+    this.activities.splice(fromIndex, 1);
+    this.activities.splice(fromIndex + (up ? -1 : 1), 0, element);
+    this.form.patchValue({ activities: this.activities.join(";") });
+  };
+  override open(item?: Project) {
+    this.activities = item ? item.activities.split(";") : [];
+    this.images = item ? item.images : "";
+    super.open(item);
+  }
+  remove = (activity: string) => {
+    this.activities = this.activities.filter((act) => act != activity);
+    this.form.patchValue({ activities: this.activities.join(";") });
+  };
   override async update(images: File[]) {
     const result = images.length ? (await this.deleteImages(this.images)) && (await this.uploadImages(images)) : (this.form.value as Project).images;
     if (result === false) return false;
     super.update({ ...this.form.value, images: result } as Project);
     return true;
   }
-  override open(item?: Project) {
-    this.activities = item ? item.activities.split(";") : [];
-    this.images = item ? item.images : "";
-    super.open(item);
-  }
+  private deleteImages = async (images: string) => {
+    if (images === "") return true;
+    const timestamp: string = Math.round(new Date().getTime() / 1000).toString();
+    let promises: Promise<boolean>[] = [];
+    const cloudinary = (await this.cloudinary())!;
+    for (let image of images.split(";")) {
+      const formdata = new FormData();
+      formdata.append("public_id", "nicolasPaillard/" + image);
+      formdata.append("signature", sha1.hash(new URLSearchParams({ public_id: "nicolasPaillard/" + image, timestamp: timestamp }).toString().replace("%2F", "/") + cloudinary.api_secret));
+      formdata.append("api_key", cloudinary.api_key);
+      formdata.append("timestamp", timestamp);
+      promises.push(
+        fetch(`https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/destroy`, { method: "POST", body: formdata })
+          .then(async (response) => {
+            const data = JSON.parse(await response.text());
+            if (["ok", "not found"].includes(data.result)) return true;
+            console.error(data);
+            return false;
+          })
+          .catch((error) => {
+            console.error(error);
+            return false;
+          }),
+      );
+    }
+    return !(await Promise.all(promises)).includes(false);
+  };
   private uploadImages = async (files: File[]) => {
     if (!files.length) return "";
     const timestamp: string = Math.round(new Date().getTime() / 1000).toString();
@@ -83,49 +125,6 @@ export class ProjectsComponent extends CrudComponent<Project> {
     }
     const responses = await Promise.all(promises);
     return responses.includes(false) ? false : responses.join(";");
-  };
-  private deleteImages = async (images: string) => {
-    if (images === "") return true;
-    const timestamp: string = Math.round(new Date().getTime() / 1000).toString();
-    let promises: Promise<boolean>[] = [];
-    const cloudinary = (await this.cloudinary())!;
-    for (let image of images.split(";")) {
-      const formdata = new FormData();
-      formdata.append("public_id", "nicolasPaillard/" + image);
-      formdata.append("signature", sha1.hash(new URLSearchParams({ public_id: "nicolasPaillard/" + image, timestamp: timestamp }).toString().replace("%2F", "/") + cloudinary.api_secret));
-      formdata.append("api_key", cloudinary.api_key);
-      formdata.append("timestamp", timestamp);
-      promises.push(
-        fetch(`https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/destroy`, { method: "POST", body: formdata })
-          .then(async (response) => {
-            const data = JSON.parse(await response.text());
-            if (["ok", "not found"].includes(data.result)) return true;
-            console.error(data);
-            return false;
-          })
-          .catch((error) => {
-            console.error(error);
-            return false;
-          }),
-      );
-    }
-    return !(await Promise.all(promises)).includes(false);
-  };
-  add = (activity: string) => {
-    this.activities.push(activity);
-    this.form.patchValue({ activities: this.activities.join(";") });
-  };
-  remove = (activity: string) => {
-    this.activities = this.activities.filter((act) => act != activity);
-    this.form.patchValue({ activities: this.activities.join(";") });
-  };
-  move = (activity: string, up: boolean = false) => {
-    let fromIndex = this.activities.indexOf(activity);
-    if ((fromIndex == 0 && up) || (fromIndex == this.activities.length - 1 && !up)) return;
-    var element = this.activities[fromIndex];
-    this.activities.splice(fromIndex, 1);
-    this.activities.splice(fromIndex + (up ? -1 : 1), 0, element);
-    this.form.patchValue({ activities: this.activities.join(";") });
   };
 }
 namespace sha1 {

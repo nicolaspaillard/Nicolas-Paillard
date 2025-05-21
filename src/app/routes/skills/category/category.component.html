@@ -1,10 +1,13 @@
 <div class="card group relative p-5 lg:p-10">
-  <div *ngIf="user?.admin" class="absolute right-0 top-0 z-10 transition-opacity group-hover:opacity-100 lg:opacity-0">
-    <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="onCategoryEdit.emit(title)" />
-    <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="onCategoryRemoved.emit(title)" />
+  <div class="absolute right-0 top-0 z-10 transition-opacity group-hover:opacity-100 lg:opacity-0" *ngIf="user?.admin">
+    <p-button [text]="true" (onClick)="onEdit.emit(category)" icon="pi pi-pencil" size="small" />
+    <p-button [text]="true" (onClick)="onRemove.emit(category)" icon="pi pi-trash" size="small" severity="danger" />
   </div>
-  <h3 class="mb-1 text-lg font-bold">{{ title }}</h3>
+  <h3 class="mb-1 text-lg font-bold">{{ category.title }}</h3>
   <div class="flex flex-wrap justify-center gap-1">
-    <app-skill class="flex-[1_0_calc(50%-calc(var(--spacing)/2))]" *ngFor="let skill of skills" [skill]="skill" (onSkillEdit)="onSkillEdit.emit($event)" (onSkillRemoved)="onSkillRemoved.emit($event)"></app-skill>
+    <app-skill class="flex-[1_0_calc(50%-calc(var(--spacing)/2))]" *ngFor="let skill of skills" [skill]="skill" (onEdit)="onSkillEdit.emit($event)" (onRemove)="onSkillRemove.emit($event)"></app-skill>
+    <div class="flex-[1_0_calc(50%-calc(var(--spacing)/2))]" *ngIf="user?.admin">
+      <p-button class="block text-center" [text]="true" (onClick)="onSkillAdd.emit(category)" size="large" icon="pi pi-plus"></p-button>
+    </div>
   </div>
 </div>

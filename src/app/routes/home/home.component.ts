@@ -34,16 +34,16 @@ export class HomeComponent extends CrudComponent<Section> {
   constructor(crudService: CrudService<Section>, authService: AuthService, confirmService: ConfirmService) {
     super(crudService, authService, confirmService);
   }
-  override open(item?: Section): void {
-    super.open(item);
-    this.form.controls["rank"].setValue(item ? item.rank : this.items[this.items.length - 1].rank + 1);
-  }
-  moveSections = (rank: number) => {
-    let previousRank: number = rank;
-    this.items.slice(rank).forEach((section) => {
-      if (section.rank > previousRank) return;
-      this.items[this.items.indexOf(section)].rank++;
-      this.update({ ...section, rank: section.rank + 1 });
-    });
-  };
+  // moveSections = (rank: number) => {
+  //   let previousRank: number = rank;
+  //   this.items.slice(rank).forEach((section) => {
+  //     if (section.rank > previousRank) return;
+  //     this.items[this.items.indexOf(section)].rank++;
+  //     this.update({ ...section, rank: section.rank + 1 });
+  //   });
+  // };
+  // override open(item?: Section): void {
+  //   this.form.controls["rank"].setValue(item ? item.rank : this.items[this.items.length - 1].rank + 1);
+  //   super.open(item);
+  // }
 }

@@ -1,8 +1,8 @@
 <span class="group/skill relative flex h-full items-center">
-  <div *ngIf="user?.admin" class="absolute z-10 flex w-full justify-end transition-opacity group-hover/skill:opacity-100 lg:opacity-0">
-    <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="onSkillEdit.emit(skill)" />
-    <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="onSkillRemoved.emit(skill)" />
+  <div class="absolute z-10 flex w-full justify-end transition-opacity group-hover/skill:opacity-100 lg:opacity-0" *ngIf="user?.admin">
+    <p-button [text]="true" (onClick)="onEdit.emit(skill)" icon="pi pi-pencil" size="small" />
+    <p-button [text]="true" (onClick)="onRemove.emit(skill)" icon="pi pi-trash" size="small" severity="danger" />
   </div>
-  <img *ngIf="skill.icon.length" width="24" height="24" class="me-1" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
+  <img class="me-1" *ngIf="skill.icon.length" width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
   <span [ngClass]="{ 'transition-opacity group-hover/skill:opacity-50': user?.admin }">{{ skill.title }}</span>
 </span>

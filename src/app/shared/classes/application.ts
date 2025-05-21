@@ -1,18 +1,17 @@
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { Base } from "./base";
 export class Application extends Base {
-  title: string;
-  company: string;
   activity: string;
-  sector: string;
   address: string;
-  links: string;
-  comments: string;
-  contacts: string;
-  contactDate: Date;
-  relaunchDate: Date;
-  answerDate: Date;
   answer: string;
+  answerDate: Date;
+  comments: string;
+  company: string;
+  contactDate: Date;
+  contacts: string;
+  links: string;
+  relaunchDate: Date;
+  sector: string;
   constructor(application: Application) {
     if (application.contactDate && !(application.contactDate instanceof Date)) application.contactDate = (application.contactDate as any).toDate();
     if (application.relaunchDate && !(application.relaunchDate instanceof Date)) application.relaunchDate = (application.relaunchDate as any).toDate();

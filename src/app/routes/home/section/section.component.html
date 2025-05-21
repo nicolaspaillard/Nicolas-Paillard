@@ -1,7 +1,7 @@
 <div class="card group relative flex h-full items-center p-5 lg:p-10">
-  <div *ngIf="user?.admin" class="absolute right-0 top-0 z-10 transition-opacity group-hover:opacity-100 lg:opacity-0">
-    <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="onSectionEdit.emit(section)" />
-    <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="onSectionRemoved.emit(section)" />
+  <div class="absolute right-0 top-0 z-10 transition-opacity group-hover:opacity-100 lg:opacity-0" *ngIf="user?.admin">
+    <p-button [text]="true" (onClick)="onEdit.emit(section)" icon="pi pi-pencil" size="small" />
+    <p-button [text]="true" (onClick)="onRemove.emit(section)" icon="pi pi-trash" size="small" severity="danger" />
   </div>
   <p class="m-0">{{ section.text }}</p>
 </div>

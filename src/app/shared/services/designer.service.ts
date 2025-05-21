@@ -1,5 +1,7 @@
 import { Injectable, isDevMode } from "@angular/core";
 import { collection, doc, Firestore, getDoc, getDocs, orderBy, OrderByDirection, query, setDoc } from "@angular/fire/firestore";
+import { Category } from "@classes/category";
+import { Skill } from "@classes/skill";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { cloneDeep, Font, mm2pt, PDFRenderProps, Plugin, Schema, Template } from "@pdfme/common";
@@ -12,76 +14,36 @@ import { IconNode, Link } from "lucide";
 import { cloudinaryConfig } from "src/main";
 import { Experience } from "../classes/experience";
 import { Section } from "../classes/section";
-import { Category, Skill } from "../classes/skill";
 import { AnimationService } from "./animation.service";
 import { ToastService } from "./toast.service";
 @Injectable({
   providedIn: "root",
 })
 export class DesignerService {
-  private timer: NodeJS.Timeout;
-  designer: Designer;
   blank: Template = { basePdf: { width: 210, height: 297, padding: [10, 10, 10, 10] }, schemas: [[]] };
+  designer: Designer;
+  private timer: NodeJS.Timeout;
   constructor(
     private toastService: ToastService,
     private animationService: AnimationService,
     private db: Firestore,
   ) {}
-  init = async (containerId: string) => {
-    this.designer = new Designer({ domContainer: document.getElementById(containerId)!, template: await this.getTemplate(), plugins: plugins, options: { font: fonts } });
-    this.designer.onChangeTemplate(() => {
-      clearTimeout(this.timer);
-      this.timer = setTimeout(() => this.save(true), 10000);
-    });
-  };
-  destroy = () => this.designer.destroy();
   clear = () => this.designer.updateTemplate(this.blank);
-  importTemplate = (file: File) => {
-    const fileReader = new FileReader();
-    fileReader.readAsText(file);
-    fileReader.onloadend = (readerEvent: ProgressEvent<FileReader>) => this.designer.updateTemplate(JSON.parse(readerEvent.target!.result!.toString()));
-  };
-  exportTemplate = () => {
-    const url = URL.createObjectURL(new Blob([JSON.stringify(this.designer.getTemplate())], { type: "application/json" }));
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `template.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-  import = (file: File) => {
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(file);
-    fileReader.onloadend = (readerEvent: ProgressEvent<FileReader>) => this.designer.updateTemplate(Object.assign(cloneDeep(this.designer.getTemplate()), { basePdf: readerEvent.target!.result! }));
-  };
+  destroy = () => this.designer.destroy();
   export = async ({ editing, replace }: { editing: boolean; replace: boolean }) => {
     const getData = async <T>(type: { new (...args: any[]): T }, name: string, order: [string, OrderByDirection?]): Promise<T[]> => {
       try {
-        return await getDocs(query(collection(this.db, "data", name, name), orderBy(...order))).then((result) => {
-          if (type === Category) {
-            let categories: T[] = [];
-            result.docs.map((doc) => {
-              let skill = new Skill(doc.data() as any);
-              const categoryId = categories.findIndex((category) => category["title"] === skill.category);
-              if (categoryId === -1) categories.push(new type({ title: skill.category, skills: [skill] }));
-              else {
-                categories[categoryId]["skills"].push(skill);
-                categories[categoryId]["skills"].sort((a, b) => (a.title < b.title ? -1 : a.title > b.title ? 1 : 0));
-              }
-            });
-            return categories.sort((a, b) => (a["title"] < b["title"] ? -1 : a["title"] > b["title"] ? 1 : 0));
-          } else return result.docs.map((doc) => new type(doc.data() as any));
-        });
+        return await getDocs(query(collection(this.db, "data", name, name), orderBy(...order))).then((result) => result.docs.map((doc) => new type({ ...doc.data(), id: doc.id })));
       } catch (error) {
         console.error(error);
         return [];
       }
     };
-    let [sections, experiences, categories] = [await getData(Section, "sections", ["rank"]), await getData(Experience, "experiences", ["start", "desc"]), await getData(Category, "skills", ["category"])];
-    if (isDevMode()) generate({ template: editing ? this.designer.getTemplate() : await this.getTemplate(), inputs: await this.getInputs(sections, categories, experiences), plugins: plugins, options: { font: fonts } }).then((pdf) => window.open(URL.createObjectURL(new Blob([pdf.buffer], { type: "application/pdf" })), replace ? "_self" : "_blank"));
+    let [sections, experiences, categories, skills] = [await getData(Section, "sections", ["rank"]), await getData(Experience, "experiences", ["start", "desc"]), await getData(Category, "categories", ["rank"]), await getData(Skill, "skills", ["title"])];
+    if (isDevMode()) generate({ template: editing ? this.designer.getTemplate() : await this.getTemplate(), inputs: await this.getInputs(sections, categories, experiences, skills), plugins: plugins, options: { font: fonts } }).then((pdf) => window.open(URL.createObjectURL(new Blob([pdf.buffer], { type: "application/pdf" })), replace ? "_self" : "_blank"));
     else {
       this.animationService.animate({
-        callback: async () => generate({ template: editing ? this.designer.getTemplate() : await this.getTemplate(), inputs: await this.getInputs(sections, categories, experiences), plugins: plugins, options: { font: fonts } }).then((pdf) => window.open(URL.createObjectURL(new Blob([pdf.buffer], { type: "application/pdf" })), replace ? "_self" : "_blank")),
+        callback: async () => generate({ template: editing ? this.designer.getTemplate() : await this.getTemplate(), inputs: await this.getInputs(sections, categories, experiences, skills), plugins: plugins, options: { font: fonts } }).then((pdf) => window.open(URL.createObjectURL(new Blob([pdf.buffer], { type: "application/pdf" })), replace ? "_self" : "_blank")),
         sections: [
           {
             route: "home",
@@ -99,11 +61,37 @@ export class DesignerService {
               ...sections.map((section) => `nicolaspaillard.fr/about# ` + section.text),
             ],
           },
-          { route: "career", lines: ["Carrière", ...experiences.map((experience) => `nicolaspaillard.fr/career# ` + experience.title)] },
+          { route: "career", lines: ["Expériences", ...experiences.filter((experience) => experience.type === "Expérience").map((experience) => `nicolaspaillard.fr/career# ` + experience.title)] },
+          { route: "career", lines: ["Formations", ...experiences.filter((experience) => experience.type === "Formation").map((formation) => `nicolaspaillard.fr/career# ` + formation.title)] },
           { route: "skills", lines: ["Compétences", ...categories.map((category) => `nicolaspaillard.fr/skills# ` + category.title)] },
         ],
       });
     }
+  };
+  exportTemplate = () => {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(this.designer.getTemplate())], { type: "application/json" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `template.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+  import = (file: File) => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onloadend = (readerEvent: ProgressEvent<FileReader>) => this.designer.updateTemplate(Object.assign(cloneDeep(this.designer.getTemplate()), { basePdf: readerEvent.target!.result! }));
+  };
+  importTemplate = (file: File) => {
+    const fileReader = new FileReader();
+    fileReader.readAsText(file);
+    fileReader.onloadend = (readerEvent: ProgressEvent<FileReader>) => this.designer.updateTemplate(JSON.parse(readerEvent.target!.result!.toString()));
+  };
+  init = async (containerId: string) => {
+    this.designer = new Designer({ domContainer: document.getElementById(containerId)!, template: await this.getTemplate(), plugins: plugins, options: { font: fonts } });
+    this.designer.onChangeTemplate(() => {
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => this.save(true), 10000);
+    });
   };
   save = async (auto: boolean = false) => {
     let template = this.designer.getTemplate();
@@ -116,7 +104,38 @@ export class DesignerService {
       console.error(error);
     }
   };
-  private getTemplate = async (): Promise<Template> => await getDoc(doc(this.db, "data", "template")).then((document) => (document.exists() ? JSON.parse(document.data()!["template"]) : this.blank) as Template);
+  private formatExperience = (experience: Experience, index: number, length: number) => [
+    `${experience.start.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} - ${experience.end.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} : ${experience.title}` + (experience.text.length ? `\n\t${experience.text}` : "") + (experience.activities ? `\n${"\t- " + experience.activities.split(";").join("\n\t- ")}` : "") + (index < length - 1 ? "\n" : ""),
+  ];
+  private getInputs = async (sections: Section[], categories: Category[], experiences: Experience[], skills: Skill[]): Promise<any> => {
+    return [
+      {
+        title: "Nicolas Paillard",
+        subtitle: "Développeur Full-Stack",
+        picture: await this.getPhoto(),
+        intro: [[sections.length ? sections.map((section) => section.text).join("\n") : ""]],
+        skills: JSON.stringify(
+          categories.map((category) => [
+            category.title +
+              " : " +
+              skills
+                .filter((skill) => skill.category == category.id)
+                .map((skill) => skill.title)
+                .join(", "),
+          ]),
+        ),
+        experiences: JSON.stringify(experiences.filter((experience) => experience.type === "Expérience").map((experience, index, arr) => this.formatExperience(experience, index, arr.length))),
+        formations: JSON.stringify(experiences.filter((formation) => formation.type === "Formation").map((formation, index, arr) => this.formatExperience(formation, index, arr.length))),
+        address: "Montpellier",
+        phone: JSON.stringify([["07 81 48 00 36", "tel:0781480036"]]),
+        email: JSON.stringify([["paillard.nicolas.pro@gmail.com", "mailto:paillard.nicolas.pro@gmail.com"]]),
+        site: JSON.stringify([["nicolaspaillard.fr", "https://nicolaspaillard.fr/designer"]]),
+        github: JSON.stringify([["github.com/nicolaspaillard", "https://github.com/nicolaspaillard"]]),
+        gitlab: JSON.stringify([["gitlab.com/nicolaspaillard", "https://gitlab.com/nicolaspaillard"]]),
+        linkedin: JSON.stringify([["linkedin.com/in/nicolas--p", "https://www.linkedin.com/in/nicolas--p"]]),
+      },
+    ];
+  };
   private getPhoto = async (): Promise<string> =>
     await fetch(new Cloudinary({ cloud: { cloudName: cloudinaryConfig.cloudName } }).image("nicolasPaillard/profile").resize(fill().width(500).aspectRatio("1.0")).toURL()).then(
       (response) =>
@@ -126,34 +145,9 @@ export class DesignerService {
           reader.readAsDataURL(await response.blob());
         }),
     );
-  private getInputs = async (sections: Section[], categories: Category[], experiences: Experience[]): Promise<any> => [
-    {
-      title: "Nicolas Paillard",
-      subtitle: "Développeur Full-Stack",
-      picture: await this.getPhoto(),
-      intro: [[sections.length ? sections.map((section) => section.text).join("\n") : ""]],
-      skills: JSON.stringify(categories.map((category) => ["\t" + category.title + " : " + category.skills.map((skill) => skill.title).join(", ")])),
-      experiences: JSON.stringify(
-        experiences
-          .filter((experience) => experience.end && experience.start.getTime() != experience.end.getTime())
-          .map((experience, index) => [
-            `${experience.start.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} - ${experience.end.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} : ${experience.title}` +
-              (experience.text.length ? `\n\t${experience.text}` : "") +
-              (experience.activities ? `\n${"\t- " + experience.activities.split(";").join("\n\t- ")}` : "") +
-              (index < experiences.length - 1 ? "\n" : ""),
-          ]),
-      ),
-      address: "Montpellier",
-      phone: JSON.stringify([["07 81 48 00 36", "tel:0781480036"]]),
-      email: JSON.stringify([["paillard.nicolas.pro@gmail.com", "mailto:paillard.nicolas.pro@gmail.com"]]),
-      site: JSON.stringify([["nicolaspaillard.fr", "https://nicolaspaillard.fr/designer"]]),
-      github: JSON.stringify([["github.com/nicolaspaillard", "https://github.com/nicolaspaillard"]]),
-      gitlab: JSON.stringify([["gitlab.com/nicolaspaillard", "https://gitlab.com/nicolaspaillard"]]),
-      linkedin: JSON.stringify([["linkedin.com/in/nicolas--p", "https://www.linkedin.com/in/nicolas--p"]]),
-    },
-  ];
+  private getTemplate = async (): Promise<Template> => await getDoc(doc(this.db, "data", "template")).then((document) => (document.exists() ? JSON.parse(document.data()!["template"]) : this.blank) as Template);
 }
-const convertForPdfLayoutProps = ({ schema, pageHeight, applyRotateTranslate = true }: { schema: Schema; pageHeight: number; applyRotateTranslate?: boolean }) => {
+const convertForPdfLayoutProps = ({ schema, pageHeight, applyRotateTranslate = true }: { applyRotateTranslate?: boolean; pageHeight: number; schema: Schema }) => {
   const { width: mmWidth, height: mmHeight, position, rotate, opacity } = schema;
   const { x: mmX, y: mmY } = position;
   const rotateDegrees = rotate ? -rotate : 0;

@@ -11,10 +11,10 @@ import { ButtonModule } from "primeng/button";
   templateUrl: "./section.component.html",
 })
 export class SectionComponent {
+  @Output() onEdit = new EventEmitter<Section>();
+  @Output() onRemove = new EventEmitter<Section>();
   @Input() section: Section;
-  @Output() onSectionRemoved = new EventEmitter<Section>();
-  @Output() onSectionEdit = new EventEmitter<Section>();
-  user: { user: User; admin: boolean } | undefined;
+  user: { admin: boolean; user: User } | undefined;
   constructor(private authService: AuthService) {
     this.authService.user().subscribe((user) => (this.user = user));
   }

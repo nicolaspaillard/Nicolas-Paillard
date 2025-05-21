@@ -20,7 +20,7 @@
   </div>
   <div>
     <div class="flex flex-wrap justify-center gap-5 lg:gap-10">
-      <app-section class="flex-[0_0_100%] sm:flex-[0_0_calc(50%-calc(var(--spacing)*calc(5/2)))] lg:flex-[0_0_calc(50%-calc(var(--spacing)*calc(10/2)))]" *ngFor="let section of items" [section]="section" (onSectionEdit)="open(section)" (onSectionRemoved)="delete(section, 'text')"></app-section>
+      <app-section class="flex-[0_0_100%] sm:flex-[0_0_calc(50%-calc(var(--spacing)*calc(5/2)))] lg:flex-[0_0_calc(50%-calc(var(--spacing)*calc(10/2)))]" *ngFor="let section of items" [section]="section" (onEdit)="open(section)" (onRemove)="delete(section, 'text')"></app-section>
       <div class="card flex flex-[0_0_100%] items-center justify-center sm:flex-[0_0_calc(50%-calc(var(--spacing)*calc(5/2)))] lg:flex-[0_0_calc(50%-calc(var(--spacing)*calc(10/2)))]" *ngIf="user?.admin">
         <p-button class="block text-center" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
       </div>
