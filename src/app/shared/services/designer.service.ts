@@ -33,30 +33,26 @@ export class DesignerService {
   export = async ({ editing, replace }: { editing: boolean; replace: boolean }) => {
     const getData = async <T>(type: { new (...args: any[]): T }, name: string, order: [string, OrderByDirection?]): Promise<T[]> => await getDocs(query(collection(this.db, "data", name, name), orderBy(...order))).then((result) => result.docs.map((doc) => new type({ ...doc.data(), id: doc.id })));
     const [sections, experiences, categories, skills] = [await getData(Section, "sections", ["rank"]), await getData(Experience, "experiences", ["start", "desc"]), await getData(Category, "categories", ["rank"]), await getData(Skill, "skills", ["title"])];
-    const gener = async (sections: Section[], experiences: Experience[], categories: Category[], skills: Skill[]) => {
-      const formatExperience = (experience: Experience, index: number, length: number) => [
-        `${experience.start.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} - ${experience.end.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} : ${experience.title}` + (experience.text.length ? `\n\t${experience.text}` : "") + (experience.activities ? `\n${"\t- " + experience.activities.split(";").join("\n\t- ")}` : "") + (index < length - 1 ? "\n" : ""),
-      ];
-      return generate({
+    const output = async (sections: Section[], experiences: Experience[], categories: Category[], skills: Skill[]) =>
+      generate({
         template: editing ? this.designer.getTemplate() : await this.getTemplate(),
         inputs: [
           {
             title: "Nicolas Paillard",
             subtitle: "Développeur Full-Stack",
-            picture: await this.getPhoto(),
-            intro: [[sections.length ? sections.map((section) => section.text).join("\n") : ""]],
-            skills: JSON.stringify(
-              categories.map((category) => [
-                category.title +
-                  " : " +
-                  skills
-                    .filter((skill) => skill.category == category.id)
-                    .map((skill) => skill.title)
-                    .join(", "),
-              ]),
+            picture: await fetch(new Cloudinary({ cloud: { cloudName: cloudinaryConfig.cloudName } }).image("nicolasPaillard/profile").resize(fill().width(500).aspectRatio("1.0")).toURL()).then(
+              (response) =>
+                new Promise(async (resolve, reject) => {
+                  const reader = new FileReader();
+                  reader.onloadend = () => resolve(reader.result as string);
+                  reader.readAsDataURL(await response.blob());
+                }),
             ),
-            experiences: JSON.stringify(experiences.filter((experience) => experience.type === "Expérience").map((experience, index, arr) => formatExperience(experience, index, arr.length))),
-            formations: JSON.stringify(experiences.filter((formation) => formation.type === "Formation").map((formation, index, arr) => formatExperience(formation, index, arr.length))),
+            intro: [[sections.length ? sections.map((section) => section.text).join("\n") : ""]],
+            // prettier-ignore
+            skills: JSON.stringify(categories.map((cat) => [cat.title +" : " +skills.filter((skl) => skl.category == cat.id).map((skl) => skl.title).join(", ")])),
+            experiences: JSON.stringify(experiences.filter((exp) => exp.type === "Expérience").map((exp, id, arr) => [`${exp.start.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} - ${exp.end.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} : ${exp.title}` + (exp.text.length ? `\n\t${exp.text}` : "") + (exp.activities ? `\n${"\t- " + exp.activities.split(";").join("\n\t- ")}` : "") + (id < arr.length - 1 ? "\n" : "")])),
+            formations: JSON.stringify(experiences.filter((frm) => frm.type === "Formation").map((frm, id, arr) => [`${frm.start.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} - ${frm.end.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} : ${frm.title}` + (frm.text.length ? `\n\t${frm.text}` : "") + (frm.activities ? `\n${"\t- " + frm.activities.split(";").join("\n\t- ")}` : "") + (id < arr.length - 1 ? "\n" : "")])),
             address: "Montpellier",
             phone: JSON.stringify([["07 81 48 00 36", "tel:0781480036"]]),
             email: JSON.stringify([["paillard.nicolas.pro@gmail.com", "mailto:paillard.nicolas.pro@gmail.com"]]),
@@ -69,12 +65,11 @@ export class DesignerService {
         plugins: plugins,
         options: { font: fonts },
       }).then((pdf) => window.open(URL.createObjectURL(new Blob([pdf.buffer], { type: "application/pdf" })), replace ? "_self" : "_blank"));
-    };
-    if (isDevMode()) gener(sections, experiences, categories, skills);
+
+    if (isDevMode()) output(sections, experiences, categories, skills);
     else {
       this.animationService.animate({
-        callback: async () => gener(sections, experiences, categories, skills),
-        sections: [
+        steps: [
           {
             route: "home",
             lines: [
@@ -95,6 +90,7 @@ export class DesignerService {
           { route: "career", lines: ["Formations", ...experiences.filter((experience) => experience.type === "Formation").map((formation) => `nicolaspaillard.fr/career# ` + formation.title)] },
           { route: "skills", lines: ["Compétences", ...categories.map((category) => `nicolaspaillard.fr/skills# ` + category.title)] },
         ],
+        callback: async () => output(sections, experiences, categories, skills),
       });
     }
   };
@@ -134,16 +130,6 @@ export class DesignerService {
       console.error(error);
     }
   };
-
-  private getPhoto = async (): Promise<string> =>
-    await fetch(new Cloudinary({ cloud: { cloudName: cloudinaryConfig.cloudName } }).image("nicolasPaillard/profile").resize(fill().width(500).aspectRatio("1.0")).toURL()).then(
-      (response) =>
-        new Promise(async (resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(await response.blob());
-        }),
-    );
   private getTemplate = async (): Promise<Template> => await getDoc(doc(this.db, "data", "template")).then((document) => (document.exists() ? JSON.parse(document.data()!["template"]) : this.blank) as Template);
 }
 const convertForPdfLayoutProps = ({ schema, pageHeight, applyRotateTranslate = true }: { applyRotateTranslate?: boolean; pageHeight: number; schema: Schema }) => {

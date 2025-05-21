@@ -13,38 +13,35 @@ import { Subscription } from "rxjs";
 })
 export class AnimationComponent implements OnDestroy {
   @Input() containerId = "animation-main";
-  text: string[] = [];
-  isAnimationShown: boolean = false;
   animationSubscription: Subscription;
-  interval: NodeJS.Timeout;
   callback: Function;
+  interval: NodeJS.Timeout;
+  isAnimationShown: boolean = false;
+  text: string[] = [];
   constructor(
     private animationService: AnimationService,
     private router: Router,
   ) {
     this.animationSubscription = this.animationService.animations(this.containerId).subscribe((animation: Animation) => this.animate(animation));
   }
-  ngOnDestroy() {
-    this.animationSubscription.unsubscribe();
-  }
   animate = (animation: Animation) => {
     this.callback = animation.callback;
     this.isAnimationShown = true;
     this.text = [];
-    let section = 0,
+    let step = 0,
       line = 0;
     this.interval = setInterval(
       () => {
-        if (section >= animation.sections.length) {
+        if (step >= animation.steps.length) {
           this.finish();
           return;
-        } else if (line == animation.sections[section].lines.length) {
-          section++;
+        } else if (line == animation.steps[step].lines.length) {
+          step++;
           line = 0;
         } else {
-          if (animation.sections[section].route && line === 0 && this.router.url != "/designer") this.router.navigate([animation.sections[section].route]);
-          if (line === 0 && section > 0) this.text.push("<br>");
-          this.text.push(animation.sections[section].lines[line]);
+          if (animation.steps[step].route && line === 0 && this.router.url != "/designer") this.router.navigate([animation.steps[step].route]);
+          if (line === 0 && step > 0) this.text.push("<br>");
+          this.text.push(animation.steps[step].lines[line]);
           document.getElementById(this.containerId)!.scrollTop = 99999999;
           line++;
         }
@@ -57,4 +54,7 @@ export class AnimationComponent implements OnDestroy {
     clearInterval(this.interval);
     this.isAnimationShown = false;
   };
+  ngOnDestroy() {
+    this.animationSubscription.unsubscribe();
+  }
 }

@@ -3,7 +3,7 @@
   "sortMembersAlphabetically": true,
   "bracketSameLine": true,
   "htmlWhitespaceSensitivity": "ignore",
-  "printWidth": 400,
+  "printWidth": 500,
   "semi": true,
   "tailwindStylesheet": "./src/styles.scss",
   "tailwindAttributes": ["contentStyleClass", "tabStyleClass", "chooseStyleClass", "ngClass", "headerStyleClass", "styleClass", "routerLinkActive"]
