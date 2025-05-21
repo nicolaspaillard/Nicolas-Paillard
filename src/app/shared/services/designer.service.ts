@@ -1,6 +1,8 @@
 import { Injectable, isDevMode } from "@angular/core";
 import { collection, doc, Firestore, getDoc, getDocs, orderBy, OrderByDirection, query, setDoc } from "@angular/fire/firestore";
 import { Category } from "@classes/category";
+import { Experience } from "@classes/experience";
+import { Section } from "@classes/section";
 import { Skill } from "@classes/skill";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { fill } from "@cloudinary/url-gen/actions/resize";
@@ -12,8 +14,6 @@ import { TextSchema } from "@pdfme/schemas/dist/types/src/text/types";
 import { Designer } from "@pdfme/ui";
 import { IconNode, Link } from "lucide";
 import { cloudinaryConfig } from "src/main";
-import { Experience } from "../classes/experience";
-import { Section } from "../classes/section";
 import { AnimationService } from "./animation.service";
 import { ToastService } from "./toast.service";
 @Injectable({
@@ -31,19 +31,49 @@ export class DesignerService {
   clear = () => this.designer.updateTemplate(this.blank);
   destroy = () => this.designer.destroy();
   export = async ({ editing, replace }: { editing: boolean; replace: boolean }) => {
-    const getData = async <T>(type: { new (...args: any[]): T }, name: string, order: [string, OrderByDirection?]): Promise<T[]> => {
-      try {
-        return await getDocs(query(collection(this.db, "data", name, name), orderBy(...order))).then((result) => result.docs.map((doc) => new type({ ...doc.data(), id: doc.id })));
-      } catch (error) {
-        console.error(error);
-        return [];
-      }
+    const getData = async <T>(type: { new (...args: any[]): T }, name: string, order: [string, OrderByDirection?]): Promise<T[]> => await getDocs(query(collection(this.db, "data", name, name), orderBy(...order))).then((result) => result.docs.map((doc) => new type({ ...doc.data(), id: doc.id })));
+    const [sections, experiences, categories, skills] = [await getData(Section, "sections", ["rank"]), await getData(Experience, "experiences", ["start", "desc"]), await getData(Category, "categories", ["rank"]), await getData(Skill, "skills", ["title"])];
+    const gener = async (sections: Section[], experiences: Experience[], categories: Category[], skills: Skill[]) => {
+      const formatExperience = (experience: Experience, index: number, length: number) => [
+        `${experience.start.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} - ${experience.end.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} : ${experience.title}` + (experience.text.length ? `\n\t${experience.text}` : "") + (experience.activities ? `\n${"\t- " + experience.activities.split(";").join("\n\t- ")}` : "") + (index < length - 1 ? "\n" : ""),
+      ];
+      return generate({
+        template: editing ? this.designer.getTemplate() : await this.getTemplate(),
+        inputs: [
+          {
+            title: "Nicolas Paillard",
+            subtitle: "Développeur Full-Stack",
+            picture: await this.getPhoto(),
+            intro: [[sections.length ? sections.map((section) => section.text).join("\n") : ""]],
+            skills: JSON.stringify(
+              categories.map((category) => [
+                category.title +
+                  " : " +
+                  skills
+                    .filter((skill) => skill.category == category.id)
+                    .map((skill) => skill.title)
+                    .join(", "),
+              ]),
+            ),
+            experiences: JSON.stringify(experiences.filter((experience) => experience.type === "Expérience").map((experience, index, arr) => formatExperience(experience, index, arr.length))),
+            formations: JSON.stringify(experiences.filter((formation) => formation.type === "Formation").map((formation, index, arr) => formatExperience(formation, index, arr.length))),
+            address: "Montpellier",
+            phone: JSON.stringify([["07 81 48 00 36", "tel:0781480036"]]),
+            email: JSON.stringify([["paillard.nicolas.pro@gmail.com", "mailto:paillard.nicolas.pro@gmail.com"]]),
+            site: JSON.stringify([["nicolaspaillard.fr", "https://nicolaspaillard.fr/designer"]]),
+            github: JSON.stringify([["github.com/nicolaspaillard", "https://github.com/nicolaspaillard"]]),
+            gitlab: JSON.stringify([["gitlab.com/nicolaspaillard", "https://gitlab.com/nicolaspaillard"]]),
+            linkedin: JSON.stringify([["linkedin.com/in/nicolas--p", "https://www.linkedin.com/in/nicolas--p"]]),
+          },
+        ],
+        plugins: plugins,
+        options: { font: fonts },
+      }).then((pdf) => window.open(URL.createObjectURL(new Blob([pdf.buffer], { type: "application/pdf" })), replace ? "_self" : "_blank"));
     };
-    let [sections, experiences, categories, skills] = [await getData(Section, "sections", ["rank"]), await getData(Experience, "experiences", ["start", "desc"]), await getData(Category, "categories", ["rank"]), await getData(Skill, "skills", ["title"])];
-    if (isDevMode()) generate({ template: editing ? this.designer.getTemplate() : await this.getTemplate(), inputs: await this.getInputs(sections, categories, experiences, skills), plugins: plugins, options: { font: fonts } }).then((pdf) => window.open(URL.createObjectURL(new Blob([pdf.buffer], { type: "application/pdf" })), replace ? "_self" : "_blank"));
+    if (isDevMode()) gener(sections, experiences, categories, skills);
     else {
       this.animationService.animate({
-        callback: async () => generate({ template: editing ? this.designer.getTemplate() : await this.getTemplate(), inputs: await this.getInputs(sections, categories, experiences, skills), plugins: plugins, options: { font: fonts } }).then((pdf) => window.open(URL.createObjectURL(new Blob([pdf.buffer], { type: "application/pdf" })), replace ? "_self" : "_blank")),
+        callback: async () => gener(sections, experiences, categories, skills),
         sections: [
           {
             route: "home",
@@ -104,38 +134,7 @@ export class DesignerService {
       console.error(error);
     }
   };
-  private formatExperience = (experience: Experience, index: number, length: number) => [
-    `${experience.start.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} - ${experience.end.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} : ${experience.title}` + (experience.text.length ? `\n\t${experience.text}` : "") + (experience.activities ? `\n${"\t- " + experience.activities.split(";").join("\n\t- ")}` : "") + (index < length - 1 ? "\n" : ""),
-  ];
-  private getInputs = async (sections: Section[], categories: Category[], experiences: Experience[], skills: Skill[]): Promise<any> => {
-    return [
-      {
-        title: "Nicolas Paillard",
-        subtitle: "Développeur Full-Stack",
-        picture: await this.getPhoto(),
-        intro: [[sections.length ? sections.map((section) => section.text).join("\n") : ""]],
-        skills: JSON.stringify(
-          categories.map((category) => [
-            category.title +
-              " : " +
-              skills
-                .filter((skill) => skill.category == category.id)
-                .map((skill) => skill.title)
-                .join(", "),
-          ]),
-        ),
-        experiences: JSON.stringify(experiences.filter((experience) => experience.type === "Expérience").map((experience, index, arr) => this.formatExperience(experience, index, arr.length))),
-        formations: JSON.stringify(experiences.filter((formation) => formation.type === "Formation").map((formation, index, arr) => this.formatExperience(formation, index, arr.length))),
-        address: "Montpellier",
-        phone: JSON.stringify([["07 81 48 00 36", "tel:0781480036"]]),
-        email: JSON.stringify([["paillard.nicolas.pro@gmail.com", "mailto:paillard.nicolas.pro@gmail.com"]]),
-        site: JSON.stringify([["nicolaspaillard.fr", "https://nicolaspaillard.fr/designer"]]),
-        github: JSON.stringify([["github.com/nicolaspaillard", "https://github.com/nicolaspaillard"]]),
-        gitlab: JSON.stringify([["gitlab.com/nicolaspaillard", "https://gitlab.com/nicolaspaillard"]]),
-        linkedin: JSON.stringify([["linkedin.com/in/nicolas--p", "https://www.linkedin.com/in/nicolas--p"]]),
-      },
-    ];
-  };
+
   private getPhoto = async (): Promise<string> =>
     await fetch(new Cloudinary({ cloud: { cloudName: cloudinaryConfig.cloudName } }).image("nicolasPaillard/profile").resize(fill().width(500).aspectRatio("1.0")).toURL()).then(
       (response) =>
