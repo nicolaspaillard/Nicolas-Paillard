@@ -16,9 +16,7 @@ export interface ServiceConfig<T> {
 
 export const SERVICE_CONFIG = new InjectionToken<ServiceConfig<any>>("sets parameters for crud service constructor");
 
-@Injectable({
-  providedIn: "root",
-})
+@Injectable({ providedIn: "root" })
 export class CrudService<T extends Base> {
   form: FormGroup;
   type: { new (...args: any[]): T };
@@ -34,8 +32,8 @@ export class CrudService<T extends Base> {
 
     if (config.compareFn) this.compareFn = config.compareFn;
     try {
-      getDocs(query(collection(this.db, "data", config.collection, config.collection), orderBy(...config.order))).then((items) => {
-        items.docs.forEach((doc) => {
+      getDocs(query(collection(this.db, "data", config.collection, config.collection), orderBy(...config.order))).then(items => {
+        items.docs.forEach(doc => {
           this.__items.push(new config.type({ ...doc.data(), id: doc.id }));
           this._items.next(this.__items);
         });
@@ -53,7 +51,6 @@ export class CrudService<T extends Base> {
     }
   };
   create = async (item: T) => {
-    console.log(item);
     try {
       item.id = (await addDoc(collection(this.db, "data", this.collection, this.collection), Object.assign({}, this.removeId(item)))).id;
       this.__items.push(item);
@@ -65,11 +62,12 @@ export class CrudService<T extends Base> {
     return item.id;
   };
   delete = async (item: T) => {
-    console.log(item);
     try {
       deleteDoc(doc(this.db, "data", this.collection, this.collection, item.id));
-      // prettier-ignore
-      this.__items.splice(this.__items.findIndex((tmp) => tmp.id === item.id),1);
+      this.__items.splice(
+        this.__items.findIndex(tmp => tmp.id === item.id),
+        1,
+      );
       this._items.next(this.__items);
     } catch (error) {
       console.error(error);
@@ -77,10 +75,9 @@ export class CrudService<T extends Base> {
   };
   items = () => this._items.pipe(takeUntilDestroyed());
   update = async (item: T) => {
-    console.log(item);
     try {
       setDoc(doc(this.db, "data", this.collection, this.collection, item.id), Object.assign({}, this.removeId(item)));
-      this.__items[this.__items.findIndex((tmp) => tmp.id === item.id)] = item;
+      this.__items[this.__items.findIndex(tmp => tmp.id === item.id)] = item;
       if (this.compareFn) this.__items.sort(this.compareFn);
       this._items.next(this.__items);
     } catch (error) {
@@ -88,7 +85,7 @@ export class CrudService<T extends Base> {
     }
   };
   private removeId = (item: T): T => {
-    let noid: any = item;
+    let noid: any = new this.type(item);
     delete noid.id;
     return noid;
   };

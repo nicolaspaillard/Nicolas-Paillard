@@ -2,8 +2,10 @@
   "plugins": ["prettier-plugin-tailwindcss", "prettier-plugin-organize-imports", "prettier-plugin-organize-attributes", "prettier-plugin-packagejson", "prettier-plugin-sort-members"],
   "sortMembersAlphabetically": true,
   "bracketSameLine": true,
+  "objectWrap": "collapse",
   "htmlWhitespaceSensitivity": "ignore",
-  "printWidth": 500,
+  "arrowParens": "avoid",
+  "printWidth": 400,
   "semi": true,
   "tailwindStylesheet": "./src/styles.scss",
   "tailwindAttributes": ["contentStyleClass", "tabStyleClass", "chooseStyleClass", "ngClass", "headerStyleClass", "styleClass", "routerLinkActive"]

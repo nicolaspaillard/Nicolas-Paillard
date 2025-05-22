@@ -6,8 +6,6 @@
   <h3 class="mb-1 text-lg font-bold">{{ category.title }}</h3>
   <div class="flex flex-wrap justify-center gap-1">
     <app-skill class="flex-[1_0_calc(50%-calc(var(--spacing)/2))]" *ngFor="let skill of skills" [skill]="skill" (onEdit)="onSkillEdit.emit($event)" (onRemove)="onSkillRemove.emit($event)"></app-skill>
-    <div class="flex-[1_0_calc(50%-calc(var(--spacing)/2))]" *ngIf="user?.admin">
-      <p-button class="block text-center" [text]="true" (onClick)="onSkillAdd.emit(category)" size="large" icon="pi pi-plus"></p-button>
-    </div>
+    <p-button class="flex-[1_0_calc(50%-calc(var(--spacing)/2))]" *ngIf="user?.admin" [outlined]="true" (onClick)="onSkillAdd.emit(category)" styleClass="w-full!  " size="small" icon="pi pi-plus"></p-button>
   </div>
 </div>

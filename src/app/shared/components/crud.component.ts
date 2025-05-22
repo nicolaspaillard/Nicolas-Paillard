@@ -41,14 +41,13 @@ export class CrudComponent<T extends Base> {
   }
   delete = (item: T, field?: string) => this.confirmService.confirm({ message: `Voulez-vous vraiment supprimer '${field ? item[field] : item.title}' ?`, accept: () => this.crudService.delete(item) });
   open(item?: T) {
-    if (item) console.log(item);
     this.isEditing = item ? true : false;
     if (item) this.form.setValue(new this.crudService.type(item));
     else this.form.reset();
     this.isShown = true;
   }
   async update(item?: any) {
-    return await this.crudService.update(item ? item : (this.form.value as T)).then(() => (this.isShown = false));
+    return await this.crudService.update(item ? item : this.form.value).then(() => (this.isShown = false));
   }
   protected cloudinary = async () => await this.crudService.cloudinary().then((cloudinary) => cloudinary);
 
