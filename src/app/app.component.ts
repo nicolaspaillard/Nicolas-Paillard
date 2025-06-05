@@ -25,17 +25,17 @@ import { aura } from "src/themes/aura.preset";
 import { matrix } from "src/themes/matrix.preset";
 
 const combined: AuthPipe = pipe(
-  mergeMap((user) => forkJoin([loggedIn(of(user)), customClaims(of(user!))])),
+  mergeMap(user => forkJoin([loggedIn(of(user)), customClaims(of(user!))])),
   map(([isLoggedIn, claims]) => (isLoggedIn && claims["admin"] ? true : "")),
 );
 
 export const routes: Routes = [
-  { path: "", title: "Nicolas Paillard", loadComponent: () => import("@routes/home/home.component").then((m) => m.HomeComponent), data: { animation: 0 } },
-  { path: "career", title: "Carrière", loadComponent: () => import("@routes/career/career.component").then((m) => m.CareerComponent), data: { animation: 1 } },
-  { path: "skills", title: "Compétences", loadComponent: () => import("@routes/skills/skills.component").then((m) => m.SkillsComponent), data: { animation: 2 } },
-  { path: "projects", title: "Projets", loadComponent: () => import("@routes/projects/projects.component").then((m) => m.ProjectsComponent), data: { animation: 3 } },
-  { path: "designer", title: "Designer", loadComponent: () => import("@routes/designer/designer.component").then((m) => m.DesignerComponent), data: { animation: 4 } },
-  { path: "applications", title: "Candidatures", loadComponent: () => import("@routes/applications/applications.component").then((m) => m.ApplicationsComponent), canActivate: [AuthGuard], data: { animation: 5, authGuardPipe: () => combined } },
+  { path: "", title: "Nicolas Paillard", loadComponent: () => import("@routes/home/home.component").then(m => m.HomeComponent), data: { animation: 0 } },
+  { path: "career", title: "Carrière", loadComponent: () => import("@routes/career/career.component").then(m => m.CareerComponent), data: { animation: 1 } },
+  { path: "skills", title: "Compétences", loadComponent: () => import("@routes/skills/skills.component").then(m => m.SkillsComponent), data: { animation: 2 } },
+  { path: "projects", title: "Projets", loadComponent: () => import("@routes/projects/projects.component").then(m => m.ProjectsComponent), data: { animation: 3 } },
+  { path: "designer", title: "Designer", loadComponent: () => import("@routes/designer/designer.component").then(m => m.DesignerComponent), data: { animation: 4 } },
+  { path: "applications", title: "Candidatures", loadComponent: () => import("@routes/applications/applications.component").then(m => m.ApplicationsComponent), canActivate: [AuthGuard], data: { animation: 5, authGuardPipe: () => combined } },
   { path: "cv", children: [] },
   { path: "**", redirectTo: "" },
 ];
@@ -48,23 +48,10 @@ export const routes: Routes = [
 })
 export class AppComponent {
   enableMatrix: boolean = false;
-  formReset = new FormGroup(
-    {
-      password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]),
-      passwordrepeat: new FormControl("", [Validators.required]),
-    },
-    { validators: CustomValidators.matchFields("password", "passwordrepeat") },
-  );
-  formSignin = new FormGroup({
-    email: new FormControl("", [Validators.required, Validators.email]),
-    password: new FormControl("", [Validators.required]),
-  });
+  formReset = new FormGroup({ password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]), passwordrepeat: new FormControl("", [Validators.required]) }, { validators: CustomValidators.matchFields("password", "passwordrepeat") });
+  formSignin = new FormGroup({ email: new FormControl("", [Validators.required, Validators.email]), password: new FormControl("", [Validators.required]) });
   formSignup = new FormGroup(
-    {
-      email: new FormControl("", [Validators.required, Validators.email]),
-      password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]),
-      passwordrepeat: new FormControl("", [Validators.required]),
-    },
+    { email: new FormControl("", [Validators.required, Validators.email]), password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]), passwordrepeat: new FormControl("", [Validators.required]) },
     { validators: CustomValidators.matchFields("password", "passwordrepeat") },
   );
   isResetShown: boolean = false;
@@ -76,7 +63,7 @@ export class AppComponent {
   isSignupShown: boolean = false;
   isTransitioning: boolean = false;
   params: any = {};
-  routes: Route[] = routes.filter((route) => route.path && route.data);
+  routes: Route[] = routes.filter(route => route.path && route.data);
   user: { admin: boolean; user: User } | undefined;
   private enableDarkMode: boolean = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
   private interval: NodeJS.Timeout;
@@ -87,7 +74,7 @@ export class AppComponent {
     private designerService: DesignerService,
     private toastService: ToastService,
   ) {
-    route.queryParams.pipe(takeUntilDestroyed()).subscribe((params) => (this.params = params));
+    route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => (this.params = params));
     switch (location.pathname.split("/").pop()) {
       case "cv":
         this.designerService.export({ editing: false, replace: true });
@@ -100,9 +87,9 @@ export class AppComponent {
         break;
     }
     document.querySelector("html")!.classList.toggle("app-dark", this.enableDarkMode);
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => (this.enableDarkMode = document.querySelector("html")!.classList.toggle("app-dark", e.matches)));
-    this.authService.user().subscribe((user) => (this.user = user));
-    this.router.events.subscribe((event) => {
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => (this.enableDarkMode = document.querySelector("html")!.classList.toggle("app-dark", e.matches)));
+    this.authService.user().subscribe(user => (this.user = user));
+    this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         this.isTransitioning = true;
         document.getElementById("router-container")!.scrollTop = 0;
@@ -145,7 +132,7 @@ export class AppComponent {
   prepareRoute = (outlet: RouterOutlet) => outlet && outlet.activatedRouteData && outlet.activatedRouteData["animation"];
   reset = () => {
     this.isResetting = true;
-    this.authService.reset(this.params.oobCode, this.formReset.controls.password.value!).then((result) => {
+    this.authService.reset(this.params.oobCode, this.formReset.controls.password.value!).then(result => {
       this.isResetting = false;
       if (result) {
         this.toastService.success("Réinitialisation réussie", "Votre mot de passe à bien été réinitialisé, vous pouvez à présent vous connecter");
@@ -158,7 +145,7 @@ export class AppComponent {
   send = () => {
     if (!this.formSignin.controls.email.invalid) {
       this.isSending = true;
-      this.authService.send(this.formSignin.controls.email.value!).then((result) => {
+      this.authService.send(this.formSignin.controls.email.value!).then(result => {
         this.isSending = false;
         if (result) this.toastService.success("Envoi effectué", `Le lien de réinitialisation de votre mot de passe vient de vous être envoyé`);
         else this.toastService.error("Échec de l'envoi", `Une erreur est survenue lors de l'envoi`);
@@ -181,7 +168,7 @@ export class AppComponent {
 
   signup = () => {
     this.isSigningUp = true;
-    this.authService.signup(this.formSignup.value.email!, this.formSignup.value.password!).then((result) => {
+    this.authService.signup(this.formSignup.value.email!, this.formSignup.value.password!).then(result => {
       if (result === true) this.isSignupShown = false;
       else {
         this.formSignup.controls[result[0]].markAsTouched();
@@ -194,22 +181,7 @@ export class AppComponent {
 }
 function slideTo(direction: any) {
   const optional = { optional: true };
-  return [
-    query(
-      ":enter, :leave",
-      [
-        style({
-          position: "absolute",
-          width: "100%",
-          height: "100%",
-          [direction]: 0,
-        }),
-      ],
-      optional,
-    ),
-    query(":enter", [style({ [direction]: "-100%" })]),
-    group([query(":leave", [animate("600ms ease", style({ [direction]: "100%" }))], optional), query(":enter", [animate("600ms ease", style({ [direction]: "0%" }))])]),
-  ];
+  return [query(":enter, :leave", [style({ position: "absolute", width: "100%", height: "100%", [direction]: 0 })], optional), query(":enter", [style({ [direction]: "-100%" })]), group([query(":leave", [animate("600ms ease", style({ [direction]: "100%" }))], optional), query(":enter", [animate("600ms ease", style({ [direction]: "0%" }))])])];
 }
 class CustomValidators {
   static matchFields(a: string, b: string): ValidatorFn {
