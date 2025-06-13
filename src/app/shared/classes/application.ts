@@ -12,10 +12,12 @@ export class Application extends Base {
   links: string;
   relaunchDate: Date;
   sector: string;
+  type: "Annonce" | "Spontané";
   constructor(application: Application) {
     if (application.contactDate && !(application.contactDate instanceof Date)) application.contactDate = (application.contactDate as any).toDate();
     if (application.relaunchDate && !(application.relaunchDate instanceof Date)) application.relaunchDate = (application.relaunchDate as any).toDate();
     if (application.answerDate && !(application.answerDate instanceof Date)) application.answerDate = (application.answerDate as any).toDate();
+    if (!application.type) application.type = "Annonce";
     super(application);
   }
 }
@@ -34,4 +36,5 @@ export const formApplication = new FormGroup({
   relaunchDate: new FormControl(new Date(), []),
   answerDate: new FormControl(new Date(), []),
   answer: new FormControl("", []),
+  type: new FormControl("", [Validators.required]),
 });

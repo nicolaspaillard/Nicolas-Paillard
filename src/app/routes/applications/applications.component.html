@@ -1,6 +1,6 @@
 <div class="flex min-h-full flex-col">
-  <p-button *ngIf="user?.admin" size="large" class="mt-2 block text-center" icon="pi pi-plus" [text]="true" (onClick)="open()"></p-button>
-  <p-table dataKey="id" [value]="items" size="small" [expandedRowKeys]="expandedRows">
+  <p-button class="mt-2 block text-center" *ngIf="user?.admin" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
+  <p-table [value]="items" [expandedRowKeys]="expandedRows" dataKey="id" size="small">
     <ng-template #header>
       <tr>
         <th pSortableColumn="title">
@@ -41,10 +41,10 @@
       <tr class="group relative">
         <td>
           <div class="me-2 inline-block">
-            <p-button type="button" pRipple [pRowToggler]="application" [text]="true" [plain]="true" size="small" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
-            <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="open(application)" />
-            <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="delete(application, 'title')" />
-            <p-button *ngIf="application.contacts" [text]="true" size="small" severity="success" icon="pi pi-send" (onClick)="mail('mailto:' + application.contacts.split(',') + '?subject=Candidature ' + application.title + ' Nicolas Paillard')" />
+            <p-button [pRowToggler]="application" [text]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" type="button" pRipple size="small" />
+            <p-button [text]="true" (onClick)="open(application)" icon="pi pi-pencil" size="small" />
+            <p-button [text]="true" (onClick)="delete(application, 'title')" icon="pi pi-trash" size="small" severity="danger" />
+            <p-button *ngIf="application.contacts" [text]="true" (onClick)="mail(application)" size="small" severity="success" icon="pi pi-send" />
           </div>
           <span class="inline-block">{{ application.title }}</span>
         </td>
@@ -61,6 +61,11 @@
       <tr>
         <td colspan="8">
           <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
+            <div>
+              Type :
+              <br />
+              {{ application.type === "offer" ? "Annonce" : "Spontané" }}
+            </div>
             <div>
               Adresse :
               <br />
@@ -86,8 +91,8 @@
     </ng-template>
   </p-table>
 </div>
-<p-dialog [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une candidature'" [dismissableMask]="true" [(visible)]="isShown">
-  <form [formGroup]="form" class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col">
+<p-dialog [(visible)]="isShown" [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une candidature'" [dismissableMask]="true">
+  <form class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col" [formGroup]="form">
     <input type="hidden" formControlName="id" />
     <label>
       Titre
@@ -96,6 +101,10 @@
     <label>
       Société
       <input pInputText formControlName="company" />
+    </label>
+    <label>
+      Type
+      <p-select [options]="['Annonce', 'Spontané']" formControlName="type" appendTo="body" placeholder="Type"></p-select>
     </label>
     <label>
       Secteur
@@ -119,32 +128,32 @@
     </label>
     <label for="lnk">
       Liens
-      <div *ngFor="let link of links" class="relative flex items-center justify-between">
+      <div class="relative flex items-center justify-between" *ngFor="let link of links">
         <span class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="lnk.value = link">•&nbsp;&nbsp;{{ link }}</span>
         <div class="flex">
-          <p-button icon="pi pi-angle-up" [disabled]="links[0] == link" [text]="true" size="small" severity="secondary" (onClick)="move(link, 'links', true)" />
-          <p-button icon="pi pi-angle-down" [disabled]="links[links.length - 1] == link" [text]="true" size="small" severity="secondary" (onClick)="move(link, 'links')" />
-          <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="remove(link, 'links')" />
+          <p-button [disabled]="links[0] == link" [text]="true" (onClick)="move(link, 'links', true)" icon="pi pi-angle-up" size="small" severity="secondary" />
+          <p-button [disabled]="links[links.length - 1] == link" [text]="true" (onClick)="move(link, 'links')" icon="pi pi-angle-down" size="small" severity="secondary" />
+          <p-button [text]="true" (onClick)="remove(link, 'links')" icon="pi pi-trash" size="small" severity="danger" />
         </div>
       </div>
       <p-inputGroup>
         <input id="lnk" #lnk pInputText placeholder="Lien" />
-        <button [disabled]="!lnk.value" type="button" pButton icon="pi pi-plus" (click)="add(lnk.value, 'links')"></button>
+        <button [disabled]="!lnk.value" (click)="add(lnk.value, 'links')" type="button" pButton icon="pi pi-plus"></button>
       </p-inputGroup>
     </label>
     <label for="ctt">
       Contacts
-      <div *ngFor="let contact of contacts" class="relative flex items-center justify-between">
+      <div class="relative flex items-center justify-between" *ngFor="let contact of contacts">
         <span class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="ctt.value = contact">•&nbsp;&nbsp;{{ contact }}</span>
         <div class="flex">
-          <p-button icon="pi pi-angle-up" [disabled]="contacts[0] == contact" [text]="true" size="small" severity="secondary" (onClick)="move(contact, 'contacts', true)" />
-          <p-button icon="pi pi-angle-down" [disabled]="contacts[contacts.length - 1] == contact" [text]="true" size="small" severity="secondary" (onClick)="move(contact, 'contacts')" />
-          <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="remove(contact, 'contacts')" />
+          <p-button [disabled]="contacts[0] == contact" [text]="true" (onClick)="move(contact, 'contacts', true)" icon="pi pi-angle-up" size="small" severity="secondary" />
+          <p-button [disabled]="contacts[contacts.length - 1] == contact" [text]="true" (onClick)="move(contact, 'contacts')" icon="pi pi-angle-down" size="small" severity="secondary" />
+          <p-button [text]="true" (onClick)="remove(contact, 'contacts')" icon="pi pi-trash" size="small" severity="danger" />
         </div>
       </div>
       <p-inputGroup>
         <input id="ctt" #ctt pInputText placeholder="Contact" />
-        <button [disabled]="!ctt.value" type="button" pButton icon="pi pi-plus" (click)="add(ctt.value, 'contacts')"></button>
+        <button [disabled]="!ctt.value" (click)="add(ctt.value, 'contacts')" type="button" pButton icon="pi pi-plus"></button>
       </p-inputGroup>
     </label>
     <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
@@ -162,8 +171,8 @@
       </label>
     </div>
     <div class="flex justify-end gap-2 md:col-span-2">
-      <p-button (onClick)="isShown = false" [text]="true">Annuler</p-button>
-      <p-button (onClick)="isEditing ? update() : create(); isShown = false" [disabled]="!form.valid">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
+      <p-button [text]="true" (onClick)="isShown = false">Annuler</p-button>
+      <p-button [disabled]="!form.valid" (onClick)="isEditing ? update() : create(); isShown = false">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
     </div>
   </form>
 </p-dialog>
