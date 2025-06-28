@@ -36,6 +36,7 @@ export const routes: Routes = [
   { path: "projects", title: "Projets", loadComponent: () => import("@routes/projects/projects.component").then(m => m.ProjectsComponent), data: { animation: 3 } },
   { path: "designer", title: "Designer", loadComponent: () => import("@routes/designer/designer.component").then(m => m.DesignerComponent), data: { animation: 4 } },
   { path: "applications", title: "Candidatures", loadComponent: () => import("@routes/applications/applications.component").then(m => m.ApplicationsComponent), canActivate: [AuthGuard], data: { animation: 5, authGuardPipe: () => combined } },
+  { path: "dash", title: "Tableau de bord", loadComponent: () => import("@routes/dashboard/dashboard.component").then(m => m.DashboardComponent), canActivate: [AuthGuard], data: { animation: 6, authGuardPipe: () => combined } },
   { path: "cv", children: [] },
   { path: "**", redirectTo: "" },
 ];
