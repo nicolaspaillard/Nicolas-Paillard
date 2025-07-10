@@ -1,6 +1,6 @@
 import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { AuthGuard, AuthPipe, customClaims, loggedIn } from "@angular/fire/auth-guard";
@@ -47,7 +47,7 @@ export const routes: Routes = [
   imports: [CommonModule, RouterModule, RouterOutlet, TooltipModule, ReactiveFormsModule, ButtonModule, DialogModule, ToastModule, ConfirmDialogModule, ToggleSwitchModule, InputTextModule, PasswordModule, AnimationComponent, ProgressSpinnerModule],
   templateUrl: "./app.component.html",
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   enableMatrix: boolean = false;
   formReset = new FormGroup({ password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]), passwordrepeat: new FormControl("", [Validators.required]) }, { validators: CustomValidators.matchFields("password", "passwordrepeat") });
   formSignin = new FormGroup({ email: new FormControl("", [Validators.required, Validators.email]), password: new FormControl("", [Validators.required]) });
@@ -100,36 +100,57 @@ export class AppComponent {
       }
     });
   }
+  animate = () => {
+    clearInterval(this.interval);
+    if (this.enableMatrix) {
+      let canvas: HTMLCanvasElement = document.querySelector("canvas")!;
+      let context: CanvasRenderingContext2D = canvas.getContext("2d")!;
+      context.reset();
+      let drops: number[] = [];
+      let fontSize: number = 10;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      for (let i = 0; i < canvas.width / fontSize; i++) drops[i] = canvas.height + 1;
+      this.interval = setInterval(() => {
+        let letters: string[] = "ABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZ".split("");
+        context.fillStyle = "rgba(0, 0, 0, .18)";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < drops.length; i++) {
+          let text = letters[Math.floor(Math.random() * letters.length)];
+          context.fillStyle = "rgba(0,200,0,0.8)";
+          context.fillText(text, i * fontSize, drops[i] * fontSize);
+          drops[i]++;
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.99) drops[i] = 0;
+        }
+      }, 60);
+    } else {
+      let shapes: any = document.querySelectorAll("#animation>div");
+      if (!shapes.length) {
+        for (let i = 0; i < 10; i++) {
+          let shape = document.createElement("div");
+          shape.classList.add("border-primary", "border", "border-2", "absolute", "animate-slide", "rounded-lg");
+          shape.style.animationDelay = Math.random() * 5 + "s";
+          shape.style.animationDuration = Math.random() * (5 - 0.5 + 1) + 5 + "s";
+          shape.style.setProperty("--slide-distance", (Math.round(Math.random()) ? "" : "-") + Math.random() * (100 - 20 + 1) + 20 + "px");
+          shape.style.width = Math.random() * (300 - 50 + 1) + 50 + "px";
+          shape.style.height = Math.random() * (300 - 50 + 1) + 50 + "px";
+          shape.style.left = Math.random() * (100 - 0 + 1) + 0 + "%";
+          shape.style.top = Math.random() * (100 - 0 + 1) + 0 + "%";
+          shape.style.opacity = Math.random() * 0.6 + "";
+          document.getElementById("animation")?.append(shape);
+        }
+      }
+    }
+  };
   applyPreset = () => {
     document.querySelector("html")!.classList.toggle("app-dark", this.enableMatrix || this.enableDarkMode);
     usePreset(this.enableMatrix ? matrix : aura);
-    this.matrix();
+    this.animate();
   };
   downloadCV = () => this.designerService.export({ editing: false, replace: true });
-  matrix = () => {
-    let canvas: HTMLCanvasElement = document.querySelector("canvas")!;
-    let context: CanvasRenderingContext2D = canvas.getContext("2d")!;
-    context.reset();
-    clearInterval(this.interval);
-    if (!this.enableMatrix) return;
-    let drops: number[] = [];
-    let fontSize: number = 10;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    for (let i = 0; i < canvas.width / fontSize; i++) drops[i] = canvas.height + 1;
-    this.interval = setInterval(() => {
-      let letters: string[] = "ABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZ".split("");
-      context.fillStyle = "rgba(0, 0, 0, .18)";
-      context.fillRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < drops.length; i++) {
-        let text = letters[Math.floor(Math.random() * letters.length)];
-        context.fillStyle = "rgba(0,200,0,0.8)";
-        context.fillText(text, i * fontSize, drops[i] * fontSize);
-        drops[i]++;
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.99) drops[i] = 0;
-      }
-    }, 60);
-  };
+  ngOnInit() {
+    this.animate();
+  }
   prepareRoute = (outlet: RouterOutlet) => outlet && outlet.activatedRouteData && outlet.activatedRouteData["animation"];
   reset = () => {
     this.isResetting = true;
@@ -156,7 +177,6 @@ export class AppComponent {
       this.formSignin.controls.email.setErrors({ required: true });
     }
   };
-
   signin = () => {
     this.isSigningIn = true;
     this.authService.signin(this.formSignin.value.email!, this.formSignin.value.password!).then((valid: boolean) => {
@@ -166,7 +186,6 @@ export class AppComponent {
     });
   };
   signout = () => this.authService.signout().then(() => this.router.navigate([""]));
-
   signup = () => {
     this.isSigningUp = true;
     this.authService.signup(this.formSignup.value.email!, this.formSignup.value.password!).then(result => {

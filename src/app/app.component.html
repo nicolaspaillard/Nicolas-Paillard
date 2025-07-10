@@ -1,4 +1,5 @@
-<canvas class="absolute bottom-0 left-0 right-0 top-0 bg-black" id="matrix" [ngClass]="{ hidden: !enableMatrix }" (window:resize)="matrix()"></canvas>
+<canvas class="absolute bottom-0 left-0 right-0 top-0 bg-black" id="matrix" [ngClass]="{ hidden: !enableMatrix }" (window:resize)="animate()"></canvas>
+<div class="absolute top-0 left-0 right-0 bottom-0 overflow-hidden" id="animation" [ngClass]="{ hidden: enableMatrix }"></div>
 <div class="flex h-full w-full flex-col overflow-hidden">
   <nav class="card container fixed left-1/2 z-20 -translate-x-1/2 [&_button]:h-full [&_button]:w-full">
     <div class="flex justify-between gap-2 p-2 lg:justify-center" #nav>

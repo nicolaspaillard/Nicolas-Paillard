@@ -13,12 +13,27 @@
   --view-transition-name: fade;
 }
 
+@layer utilities {
+  .animate-slide {
+    animation: slide 3s infinite alternate ease-in-out;
+  }
+}
+
 @keyframes fade {
   from {
     opacity: 0;
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes slide {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(var(--slide-distance));
   }
 }
 
