@@ -23,7 +23,10 @@
       <i class="pi pi-search"></i>
     </ng-template>
   </p-image>
-  <i class="block text-center">{{ project.company }} | {{ project.start | date: "MM/yyyy" }} - {{ project.end | date: "MM/yyyy" }}</i>
+  <i class="block text-center">
+    {{ project.company }} | {{ project.start | date: "MM/yyyy" }}
+    <ng-container *ngIf="project.start.getMonth() != project.end.getMonth() || project.start.getFullYear() != project.end.getFullYear()">&nbsp;- {{ project.end | date: "MM/yyyy" }}</ng-container>
+  </i>
   <p class="my-2">{{ project.text }}</p>
   <h3 class="mb-0 text-lg font-bold">Activités</h3>
   <ul class="m-0 list-inside list-disc" *ngIf="project.activities">
