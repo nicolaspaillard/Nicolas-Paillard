@@ -2,7 +2,7 @@ import { provideCloudinaryLoader } from "@angular/common";
 import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { provideZoneChangeDetection } from "@angular/core";
 import { getAnalytics, provideAnalytics, ScreenTrackingService, UserTrackingService } from "@angular/fire/analytics";
-import { initializeApp, provideFirebaseApp } from "@angular/fire/app";
+import { getApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
 import { initializeAppCheck, provideAppCheck, ReCaptchaEnterpriseProvider } from "@angular/fire/app-check";
 import { getAuth, provideAuth } from "@angular/fire/auth";
 import { getFirestore, provideFirestore } from "@angular/fire/firestore";
@@ -23,22 +23,11 @@ bootstrapApplication(AppComponent, {
       withPreloading(PreloadAllModules),
       withComponentInputBinding(),
       // withViewTransitions(),
-      withInMemoryScrolling({
-        scrollPositionRestoration: "enabled",
-        anchorScrolling: "enabled",
-      }),
+      withInMemoryScrolling({ scrollPositionRestoration: "enabled", anchorScrolling: "enabled" }),
     ),
     provideAnimationsAsync(),
     provideHttpClient(withInterceptorsFromDi()),
-    providePrimeNG({
-      theme: {
-        preset: aura,
-        options: {
-          darkModeSelector: ".app-dark",
-        },
-      },
-      ripple: true,
-    }),
+    providePrimeNG({ theme: { preset: aura, options: { darkModeSelector: ".app-dark" } }, ripple: true }),
     ConfirmationService,
     MessageService,
     provideCloudinaryLoader("https://res.cloudinary.com/" + cloudinaryConfig.cloudName),
@@ -58,7 +47,7 @@ bootstrapApplication(AppComponent, {
     provideAnalytics(() => getAnalytics()),
     ScreenTrackingService,
     UserTrackingService,
-    provideAppCheck(() => initializeAppCheck(undefined, { provider: new ReCaptchaEnterpriseProvider("6Lcwe_kqAAAAAFp7VJmu8BmnOByvyDiz2yfPGrLp"), isTokenAutoRefreshEnabled: true })),
+    provideAppCheck(() => initializeAppCheck(getApp(), { provider: new ReCaptchaEnterpriseProvider("6Lcwe_kqAAAAAFp7VJmu8BmnOByvyDiz2yfPGrLp"), isTokenAutoRefreshEnabled: true })),
     provideFirestore(() => getFirestore()),
   ],
-}).catch((err) => console.error(err));
+}).catch(err => console.error(err));
