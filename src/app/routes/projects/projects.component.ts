@@ -17,20 +17,9 @@ import { TooltipModule } from "primeng/tooltip";
 import { cloudinaryConfig } from "src/main";
 import { ProjectComponent } from "./project/project.component";
 
-const SERVICE_VARIABLE: ServiceConfig<Project> = {
-  type: Project,
-  form: formProject,
-  collection: "projects",
-  order: ["start", "desc"],
-  compareFn: (a, b) => b.start.getTime() - a.start.getTime(),
-};
+const SERVICE_VARIABLE: ServiceConfig<Project> = { type: Project, form: formProject, collection: "projects", order: ["start", "desc"], compareFn: (a, b) => b.start.getTime() - a.start.getTime() };
 
-@Component({
-  selector: "app-projects",
-  imports: [CommonModule, ReactiveFormsModule, ProjectComponent, ButtonModule, DialogModule, TooltipModule, InputGroupModule, DatePickerModule, InputTextModule, TextareaModule, FileUploadModule],
-  templateUrl: "./projects.component.html",
-  providers: [CrudService<Project>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
-})
+@Component({ selector: "app-projects", imports: [CommonModule, ReactiveFormsModule, ProjectComponent, ButtonModule, DialogModule, TooltipModule, InputGroupModule, DatePickerModule, InputTextModule, TextareaModule, FileUploadModule], templateUrl: "./projects.component.html", providers: [CrudService<Project>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }] })
 export class ProjectsComponent extends CrudComponent<Project> {
   activities: string[] = [];
   images: string;
@@ -55,12 +44,12 @@ export class ProjectsComponent extends CrudComponent<Project> {
     this.form.patchValue({ activities: this.activities.join(";") });
   };
   override open(item?: Project) {
-    this.activities = item ? item.activities.split(";") : [];
+    this.activities = item && item.activities ? item.activities.split(";") : [];
     this.images = item ? item.images : "";
     super.open(item);
   }
   remove = (activity: string) => {
-    this.activities = this.activities.filter((act) => act != activity);
+    this.activities = this.activities.filter(act => act != activity);
     this.form.patchValue({ activities: this.activities.join(";") });
   };
   override async update(images: File[]) {
@@ -82,13 +71,13 @@ export class ProjectsComponent extends CrudComponent<Project> {
       formdata.append("timestamp", timestamp);
       promises.push(
         fetch(`https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/destroy`, { method: "POST", body: formdata })
-          .then(async (response) => {
+          .then(async response => {
             const data = JSON.parse(await response.text());
             if (["ok", "not found"].includes(data.result)) return true;
             console.error(data);
             return false;
           })
-          .catch((error) => {
+          .catch(error => {
             console.error(error);
             return false;
           }),
@@ -111,13 +100,13 @@ export class ProjectsComponent extends CrudComponent<Project> {
       formData.append("folder", "nicolasPaillard");
       promises.push(
         fetch(`https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`, { method: "POST", body: formData })
-          .then(async (response) => {
+          .then(async response => {
             const data = JSON.parse(await response.text());
             if (data.public_id) return data.public_id.split("/")[1];
             console.error(data);
             return false;
           })
-          .catch((error) => {
+          .catch(error => {
             console.error(error);
             return false;
           }),

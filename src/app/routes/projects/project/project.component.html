@@ -1,27 +1,32 @@
 <div class="card group relative h-full p-5 lg:p-10">
   <h2 class="mb-3 text-center text-xl font-bold">
     {{ project.title }}
-    <span *ngIf="project.url" class="text-sm">
-      <a [href]="'https://' + project.url" target="_blank" class="text-primary"><i class="pi pi-link"></i></a>
+    <span class="text-sm" *ngIf="project.url">
+      <a class="text-primary" [href]="'https://' + project.url" target="_blank"><i class="pi pi-link"></i></a>
     </span>
   </h2>
-  <div *ngIf="user?.admin" class="absolute right-0 top-0 z-10 transition-opacity group-hover:opacity-100 lg:opacity-0">
-    <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="onProjectEdit.emit(project)" />
-    <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="onProjectRemoved.emit(project)" />
+  <div class="absolute right-0 top-0 z-10 transition-opacity group-hover:opacity-100 lg:opacity-0" *ngIf="user?.admin">
+    <p-button [text]="true" (onClick)="onProjectEdit.emit(project)" icon="pi pi-pencil" size="small" />
+    <p-button [text]="true" (onClick)="onProjectRemoved.emit(project)" icon="pi pi-trash" size="small" severity="danger" />
   </div>
-  <p-carousel *ngIf="project.images" [value]="project.images.split(';')" [numVisible]="1" [numScroll]="1" [showIndicators]="false" [circular]="true" autoplayInterval="3000">
+  <p-carousel *ngIf="project.images && project.images.split(';').length > 1" [value]="project.images.split(';')" [numVisible]="1" [numScroll]="1" [showIndicators]="false" [circular]="true" autoplayInterval="3000">
     <ng-template let-image pTemplate="item">
-      <p-image [src]="getURL(image)" [previewImageSrc]="getURL(image, false)" class="[&_button]:w-full!" imageClass="w-full" width="250" [preview]="true" appendTo="body">
+      <p-image class="[&_button]:w-full!" [src]="getURL(image)" [previewImageSrc]="getURL(image, false)" [preview]="true" imageClass="w-full" width="250" appendTo="body">
         <ng-template #indicator>
           <i class="pi pi-search"></i>
         </ng-template>
       </p-image>
     </ng-template>
   </p-carousel>
+  <p-image class="[&_button]:w-full!" *ngIf="project.images.split(';').length === 1" [src]="getURL(project.images.split(';')[0])" [previewImageSrc]="getURL(project.images.split(';')[0], false)" [preview]="true" imageClass="w-full" width="250" appendTo="body">
+    <ng-template #indicator>
+      <i class="pi pi-search"></i>
+    </ng-template>
+  </p-image>
   <i class="block text-center">{{ project.company }} | {{ project.start | date: "MM/yyyy" }} - {{ project.end | date: "MM/yyyy" }}</i>
   <p class="my-2">{{ project.text }}</p>
   <h3 class="mb-0 text-lg font-bold">Activités</h3>
-  <ul class="m-0 list-inside list-disc">
+  <ul class="m-0 list-inside list-disc" *ngIf="project.activities">
     <li *ngFor="let activity of project.activities.split(';')">{{ activity }}</li>
   </ul>
 </div>
