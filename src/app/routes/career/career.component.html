@@ -14,15 +14,15 @@
     <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
       <label>
         Type
-        <p-select [options]="['Expérience', 'Formation', 'Évènement']" placeholder="Type" formControlName="type" appendTo="body"></p-select>
+        <p-select [options]="['Expérience', 'Formation', 'Évènement']" placeholder="Type" formControlName="type"></p-select>
       </label>
       <label>
         Début
-        <p-datepicker styleClass="w-full" formControlName="start" appendTo="body" dateFormat="dd/mm/yy" />
+        <p-datepicker styleClass="w-full" formControlName="start" dateFormat="dd/mm/yy" />
       </label>
       <label>
         Fin
-        <p-datepicker styleClass="w-full" formControlName="end" appendTo="body" dateFormat="dd/mm/yy" />
+        <p-datepicker styleClass="w-full" formControlName="end" dateFormat="dd/mm/yy" />
       </label>
     </div>
 

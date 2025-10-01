@@ -7,7 +7,7 @@ import { AuthGuard, AuthPipe, customClaims, loggedIn } from "@angular/fire/auth-
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { ActivatedRoute, NavigationEnd, NavigationStart, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
 import { AnimationComponent } from "@components/animation/animation.component";
-import { usePreset } from "@primeng/themes";
+import { usePreset } from "@primeuix/themes";
 import { AuthService } from "@services/auth.service";
 import { DesignerService } from "@services/designer.service";
 import { ToastService } from "@services/toast.service";
@@ -21,8 +21,8 @@ import { ToastModule } from "primeng/toast";
 import { ToggleSwitchModule } from "primeng/toggleswitch";
 import { TooltipModule } from "primeng/tooltip";
 import { forkJoin, map, mergeMap, of, pipe } from "rxjs";
-import { aura } from "src/themes/aura.preset";
-import { matrix } from "src/themes/matrix.preset";
+import { Amber } from "src/themes/amber.preset";
+import { Matrix } from "src/themes/matrix.preset.old";
 
 const combined: AuthPipe = pipe(
   mergeMap(user => forkJoin([loggedIn(of(user)), customClaims(of(user!))])),
@@ -35,8 +35,20 @@ export const routes: Routes = [
   { path: "skills", title: "Compétences", loadComponent: () => import("@routes/skills/skills.component").then(m => m.SkillsComponent), data: { animation: 2 } },
   { path: "projects", title: "Projets", loadComponent: () => import("@routes/projects/projects.component").then(m => m.ProjectsComponent), data: { animation: 3 } },
   { path: "designer", title: "Designer", loadComponent: () => import("@routes/designer/designer.component").then(m => m.DesignerComponent), data: { animation: 4 } },
-  { path: "applications", title: "Candidatures", loadComponent: () => import("@routes/applications/applications.component").then(m => m.ApplicationsComponent), canActivate: [AuthGuard], data: { animation: 5, authGuardPipe: () => combined } },
-  { path: "dash", title: "Tableau de bord", loadComponent: () => import("@routes/dashboard/dashboard.component").then(m => m.DashboardComponent), canActivate: [AuthGuard], data: { animation: 6, authGuardPipe: () => combined } },
+  {
+    path: "applications",
+    title: "Candidatures",
+    loadComponent: () => import("@routes/applications/applications.component").then(m => m.ApplicationsComponent),
+    canActivate: [AuthGuard],
+    data: { animation: 5, authGuardPipe: () => combined },
+  },
+  {
+    path: "dash",
+    title: "Tableau de bord",
+    loadComponent: () => import("@routes/dashboard/dashboard.component").then(m => m.DashboardComponent),
+    canActivate: [AuthGuard],
+    data: { animation: 6, authGuardPipe: () => combined },
+  },
   { path: "cv", children: [] },
   { path: "**", redirectTo: "" },
 ];
@@ -49,10 +61,20 @@ export const routes: Routes = [
 })
 export class AppComponent implements OnInit {
   enableMatrix: boolean = false;
-  formReset = new FormGroup({ password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]), passwordrepeat: new FormControl("", [Validators.required]) }, { validators: CustomValidators.matchFields("password", "passwordrepeat") });
+  formReset = new FormGroup(
+    {
+      password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]),
+      passwordrepeat: new FormControl("", [Validators.required]),
+    },
+    { validators: CustomValidators.matchFields("password", "passwordrepeat") },
+  );
   formSignin = new FormGroup({ email: new FormControl("", [Validators.required, Validators.email]), password: new FormControl("", [Validators.required]) });
   formSignup = new FormGroup(
-    { email: new FormControl("", [Validators.required, Validators.email]), password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]), passwordrepeat: new FormControl("", [Validators.required]) },
+    {
+      email: new FormControl("", [Validators.required, Validators.email]),
+      password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]),
+      passwordrepeat: new FormControl("", [Validators.required]),
+    },
     { validators: CustomValidators.matchFields("password", "passwordrepeat") },
   );
   isResetShown: boolean = false;
@@ -87,8 +109,7 @@ export class AppComponent implements OnInit {
         this.isResetShown = true;
         break;
     }
-    document.querySelector("html")!.classList.toggle("app-dark", this.enableDarkMode);
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => (this.enableDarkMode = document.querySelector("html")!.classList.toggle("app-dark", e.matches)));
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => (this.enableDarkMode = e.matches));
     this.authService.user().subscribe(user => (this.user = user));
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
@@ -143,8 +164,7 @@ export class AppComponent implements OnInit {
     }
   };
   applyPreset = () => {
-    document.querySelector("html")!.classList.toggle("app-dark", this.enableMatrix || this.enableDarkMode);
-    usePreset(this.enableMatrix ? matrix : aura);
+    usePreset(this.enableMatrix ? Matrix : Amber);
     this.animate();
   };
   downloadCV = () => this.designerService.export({ editing: false, replace: true });

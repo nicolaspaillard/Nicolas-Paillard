@@ -1,11 +1,26 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
+  "cli": {
+    "analytics": false,
+    "packageManager": "pnpm"
+  },
   "newProjectRoot": "projects",
   "projects": {
     "nicolaspaillard": {
       "projectType": "application",
-      "schematics": { "@schematics/angular:component": { "inlineStyle": true, "standalone": true, "skipTests": true }, "@schematics/angular:service": { "skipTests": true }, "@schematics/angular:directive": { "skipTests": true }, "@schematics/angular:class": { "skipTests": true }, "@schematics/angular:interceptor": { "skipTests": true }, "@schematics/angular:guard": { "skipTests": true } },
+      "schematics": {
+        "@schematics/angular:component": {
+          "inlineStyle": true,
+          "standalone": true,
+          "skipTests": true
+        },
+        "@schematics/angular:service": { "skipTests": true },
+        "@schematics/angular:directive": { "skipTests": true },
+        "@schematics/angular:class": { "skipTests": true },
+        "@schematics/angular:interceptor": { "skipTests": true },
+        "@schematics/angular:guard": { "skipTests": true }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -32,9 +47,6 @@
         "test": { "builder": "@angular/build:karma", "options": { "polyfills": ["zone.js", "zone.js/testing"], "tsConfig": "tsconfig.spec.json", "inlineStyleLanguage": "scss", "assets": ["src/assets", { "glob": "favicon.ico", "input": "src/favicon/", "output": "./" }], "styles": ["src/styles.scss"], "scripts": [] } }
       }
     }
-  },
-  "cli": {
-    "analytics": false
   },
   "schematics": {
     "@schematics/angular:component": {

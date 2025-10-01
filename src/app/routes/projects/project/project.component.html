@@ -11,14 +11,14 @@
   </div>
   <p-carousel *ngIf="project.images && project.images.split(';').length > 1" [value]="project.images.split(';')" [numVisible]="1" [numScroll]="1" [showIndicators]="false" [circular]="true" autoplayInterval="3000">
     <ng-template let-image pTemplate="item">
-      <p-image class="[&_button]:w-full!" [src]="getURL(image)" [previewImageSrc]="getURL(image, false)" [preview]="true" imageClass="w-full" width="250" appendTo="body">
+      <p-image class="[&_button]:w-full!" [src]="getURL(image)" [previewImageSrc]="getURL(image, false)" [preview]="true" imageClass="w-full" width="250">
         <ng-template #indicator>
           <i class="pi pi-search"></i>
         </ng-template>
       </p-image>
     </ng-template>
   </p-carousel>
-  <p-image class="[&_button]:w-full!" *ngIf="project.images.split(';').length === 1" [src]="getURL(project.images.split(';')[0])" [previewImageSrc]="getURL(project.images.split(';')[0], false)" [preview]="true" imageClass="w-full" width="250" appendTo="body">
+  <p-image class="[&_button]:w-full!" *ngIf="project.images.split(';').length === 1" [src]="getURL(project.images.split(';')[0])" [previewImageSrc]="getURL(project.images.split(';')[0], false)" [preview]="true" imageClass="w-full" width="250">
     <ng-template #indicator>
       <i class="pi pi-search"></i>
     </ng-template>

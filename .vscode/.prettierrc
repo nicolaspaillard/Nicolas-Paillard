@@ -2,11 +2,19 @@
   "plugins": ["prettier-plugin-tailwindcss", "prettier-plugin-organize-imports", "prettier-plugin-organize-attributes", "prettier-plugin-packagejson", "prettier-plugin-sort-members"],
   "sortMembersAlphabetically": true,
   "bracketSameLine": true,
-  "objectWrap": "collapse",
+  "objectWrap": "preserve",
   "htmlWhitespaceSensitivity": "ignore",
   "arrowParens": "avoid",
   "printWidth": 400,
   "semi": true,
   "tailwindStylesheet": "./src/styles.scss",
-  "tailwindAttributes": ["contentStyleClass", "tabStyleClass", "chooseStyleClass", "ngClass", "headerStyleClass", "styleClass", "routerLinkActive"]
+  "tailwindAttributes": ["contentStyleClass", "tabStyleClass", "chooseStyleClass", "ngClass", "headerStyleClass", "styleClass", "routerLinkActive"],
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "angular"
+      }
+    }
+  ]
 }

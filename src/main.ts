@@ -12,7 +12,7 @@ import { PreloadAllModules, provideRouter, withComponentInputBinding, withInMemo
 import { ConfirmationService, MessageService } from "primeng/api";
 import { providePrimeNG } from "primeng/config";
 import { AppComponent, routes } from "./app/app.component";
-import { aura } from "./themes/aura.preset";
+import { Amber } from "./themes/amber.preset";
 
 export const cloudinaryConfig = { cloudName: "dsuvd32up" };
 bootstrapApplication(AppComponent, {
@@ -27,7 +27,7 @@ bootstrapApplication(AppComponent, {
     ),
     provideAnimationsAsync(),
     provideHttpClient(withInterceptorsFromDi()),
-    providePrimeNG({ theme: { preset: aura, options: { darkModeSelector: ".app-dark" } }, ripple: true }),
+    providePrimeNG({ theme: { preset: Amber }, ripple: true, overlayAppendTo: "body" }),
     ConfirmationService,
     MessageService,
     provideCloudinaryLoader("https://res.cloudinary.com/" + cloudinaryConfig.cloudName),

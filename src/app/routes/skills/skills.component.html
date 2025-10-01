@@ -52,14 +52,14 @@
         </label>
         <label>
           Catégorie
-          <p-select [options]="items" [editable]="true" formControlName="category" placeholder="Catégorie" optionLabel="title" optionValue="id" appendTo="body" />
+          <p-select [options]="items" [editable]="true" formControlName="category" placeholder="Catégorie" optionLabel="title" optionValue="id" />
         </label>
       </div>
     </div>
 
     <label class="md:col-span-2">
       Icône
-      <p-select [options]="devIcons" [showClear]="true" [filter]="true" [virtualScroll]="true" [virtualScrollItemSize]="38" formControlName="icon" placeholder="Icône" appendTo="body">
+      <p-select [options]="devIcons" [showClear]="true" [filter]="true" [virtualScroll]="true" [virtualScrollItemSize]="38" formControlName="icon" placeholder="Icône">
         <ng-template pTemplate="selectedItem">
           <div class="flex items-center gap-2" *ngIf="formSkill.value.icon">
             <img width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ formSkill.value.icon.includes('dot-net') ? 'dot-net' : formSkill.value.icon.split('-')[0] }}/{{ formSkill.value.icon }}.svg" />
