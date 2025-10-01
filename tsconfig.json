@@ -15,25 +15,43 @@
     "sourceMap": true,
     "declaration": false,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
-    "lib": ["ES2022", "dom"],
+    "lib": [
+      "ES2022",
+      "dom"
+    ],
     "strictPropertyInitialization": false,
     "baseUrl": "./",
     "paths": {
-      "@components/*": ["src/app/shared/components/*"],
-      "@directives/*": ["src/app/shared/directives/*"],
-      "@helpers/*": ["src/app/shared/helpers/*"],
-      "@services/*": ["src/app/shared/services/*"],
-      "@models/*": ["src/app/shared/models/*"],
-      "@classes/*": ["src/app/shared/classes/*"],
-      "@routes/*": ["src/app/routes/*"],
-      "@app/*": ["src/app/*"]
+      "@components/*": [
+        "src/app/shared/components/*"
+      ],
+      "@directives/*": [
+        "src/app/shared/directives/*"
+      ],
+      "@helpers/*": [
+        "src/app/shared/helpers/*"
+      ],
+      "@services/*": [
+        "src/app/shared/services/*"
+      ],
+      "@models/*": [
+        "src/app/shared/models/*"
+      ],
+      "@classes/*": [
+        "src/app/shared/classes/*"
+      ],
+      "@routes/*": [
+        "src/app/routes/*"
+      ],
+      "@app/*": [
+        "src/app/*"
+      ]
     }
-    // "typeRoots": ["./node_modules/@types", "./node_modules/primeng"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
