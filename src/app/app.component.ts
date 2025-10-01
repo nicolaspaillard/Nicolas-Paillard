@@ -22,7 +22,7 @@ import { ToggleSwitchModule } from "primeng/toggleswitch";
 import { TooltipModule } from "primeng/tooltip";
 import { forkJoin, map, mergeMap, of, pipe } from "rxjs";
 import { Amber } from "src/themes/amber.preset";
-import { Matrix } from "src/themes/matrix.preset.old";
+import { Matrix } from "src/themes/matrix.preset";
 
 const combined: AuthPipe = pipe(
   mergeMap(user => forkJoin([loggedIn(of(user)), customClaims(of(user!))])),
