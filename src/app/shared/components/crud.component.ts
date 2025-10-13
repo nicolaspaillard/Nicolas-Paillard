@@ -20,26 +20,22 @@ export class CrudComponent<T extends Base> {
     this.authService
       .user()
       .pipe(takeUntilDestroyed())
-      .subscribe((user) => (this.user = user));
+      .subscribe(user => (this.user = user));
     this.crudService
       .items()
       .pipe(takeUntilDestroyed())
-      .subscribe((items) => {
+      .subscribe(items => {
         if (this.sort) this.sort(items);
         this.items = items;
       });
     this.form = this.crudService.form;
   }
   async create(item?: any) {
-    return await this.crudService
-      .create(item ? item : (this.form.value as T))
-      .then((id) => {
-        this.isShown = false;
-        return id;
-      })
-      .catch(() => false);
+    await this.crudService.create(item ? item : (this.form.value as T)).then(id => (this.isShown = false));
   }
-  delete = (item: T, field?: string) => this.confirmService.confirm({ message: `Voulez-vous vraiment supprimer '${field ? item[field] : item.title}' ?`, accept: () => this.crudService.delete(item) });
+  delete(item: T, field?: string) {
+    this.confirmService.confirm({ message: `Voulez-vous vraiment supprimer '${field ? item[field] : item.title}' ?`, accept: () => this.crudService.delete(item) });
+  }
   open(item?: T) {
     this.isEditing = item ? true : false;
     if (item) this.form.setValue(new this.crudService.type(item));
@@ -47,9 +43,10 @@ export class CrudComponent<T extends Base> {
     this.isShown = true;
   }
   async update(item?: any) {
-    return await this.crudService.update(item ? item : this.form.value).then(() => (this.isShown = false));
+    await this.crudService.update(item ? item : this.form.value).then(() => (this.isShown = false));
   }
-  protected cloudinary = async () => await this.crudService.cloudinary().then((cloudinary) => cloudinary);
+
+  protected cloudinary = async () => await this.crudService.cloudinary().then(cloudinary => cloudinary);
 
   protected sort?(items: T[]): void;
 }

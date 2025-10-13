@@ -45,9 +45,9 @@ export const routes: Routes = [
     data: { animation: 5, authGuardPipe: () => combined },
   },
   {
-    path: "dash",
-    title: "Tableau de bord",
-    loadComponent: () => import("@routes/dashboard/dashboard.component").then(m => m.DashboardComponent),
+    path: "profile",
+    title: "Profil",
+    loadComponent: () => import("@routes/profile/profile.component").then(m => m.ProfileComponent),
     canActivate: [AuthGuard],
     data: { animation: 6, authGuardPipe: () => combined },
   },

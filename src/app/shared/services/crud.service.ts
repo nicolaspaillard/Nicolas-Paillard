@@ -59,7 +59,6 @@ export class CrudService<T extends Base> {
     } catch (error) {
       console.error(error);
     }
-    return item.id;
   };
   delete = async (item: T) => {
     try {

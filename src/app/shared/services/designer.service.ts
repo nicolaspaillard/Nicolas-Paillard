@@ -2,6 +2,7 @@ import { Injectable, isDevMode } from "@angular/core";
 import { collection, doc, Firestore, getDoc, getDocs, orderBy, OrderByDirection, query, setDoc } from "@angular/fire/firestore";
 import { Category } from "@classes/category";
 import { Experience } from "@classes/experience";
+import { Profile } from "@classes/profile";
 import { Section } from "@classes/section";
 import { Skill } from "@classes/skill";
 import { Cloudinary } from "@cloudinary/url-gen";
@@ -29,7 +30,7 @@ export class DesignerService {
   destroy = () => this.designer.destroy();
   export = async ({ editing }: { editing: boolean }): Promise<{ steps: Step[]; url: string }> => {
     const getData = async <T>(type: { new (...args: any[]): T }, name: string, order: [string, OrderByDirection?]): Promise<T[]> => await getDocs(query(collection(this.db, "data", name, name), orderBy(...order))).then(result => result.docs.map(doc => new type({ ...doc.data(), id: doc.id })));
-    const [sections, experiences, categories, skills] = [await getData(Section, "sections", ["rank"]), await getData(Experience, "experiences", ["start", "desc"]), await getData(Category, "categories", ["rank"]), await getData(Skill, "skills", ["title"])];
+    const [sections, experiences, categories, skills, profile] = [await getData(Section, "sections", ["rank"]), await getData(Experience, "experiences", ["start", "desc"]), await getData(Category, "categories", ["rank"]), await getData(Skill, "skills", ["title"]), await getData(Profile, "profile", ["lastName"])];
     let steps: Step[] = [];
     if (true || !isDevMode())
       steps = [
@@ -65,13 +66,13 @@ export class DesignerService {
               .filter(frm => frm.type === "Formation")
               .map((frm, id, arr) => [`${frm.start.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} - ${frm.end.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} : ${frm.title}` + (frm.text.length ? `\n\t${frm.text}` : "") + (frm.activities ? `\n${"\t- " + frm.activities.split(";").join("\n\t- ")}` : "") + (id < arr.length - 1 ? "\n" : "")]),
           ),
-          address: "Montpellier",
-          phone: JSON.stringify([["07 81 48 00 36", "tel:0781480036"]]),
-          email: JSON.stringify([["paillard.nicolas.pro@gmail.com", "mailto:paillard.nicolas.pro@gmail.com"]]),
+          address: profile[0].address,
+          phone: JSON.stringify([[profile[0].phone, "tel:" + profile[0].phone.replace(/\s/g, "")]]),
+          email: JSON.stringify([[profile[0].email, "mailto:" + profile[0].email]]),
           site: JSON.stringify([["nicolaspaillard.fr", "https://nicolaspaillard.fr/designer"]]),
-          github: JSON.stringify([["github.com/nicolaspaillard", "https://github.com/nicolaspaillard"]]),
-          gitlab: JSON.stringify([["gitlab.com/nicolaspaillard", "https://gitlab.com/nicolaspaillard"]]),
-          linkedin: JSON.stringify([["linkedin.com/in/nicolas--p", "https://www.linkedin.com/in/nicolas--p"]]),
+          github: JSON.stringify([[profile[0].github, "https://" + profile[0].github]]),
+          gitlab: JSON.stringify([[profile[0].gitlab, "https://" + profile[0].gitlab]]),
+          linkedin: JSON.stringify([[profile[0].linkedin, "https://www." + profile[0].linkedin]]),
         },
       ],
       plugins: plugins,

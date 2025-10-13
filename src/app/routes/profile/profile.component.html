@@ -1,0 +1,54 @@
+<div class="flex flex-col min-h-full p-5 lg:p-10">
+  <div class="flex gap-5">
+    <div class="group relative w-[300px] h-[300px] aspect-square max-w-full overflow-hidden grow-0 shrink-0">
+      <div class="absolute right-0 top-0 z-10">
+        <p-fileupload class="mix-blend-overlay transition-opacity group-hover:opacity-100 lg:opacity-0" [customUpload]="true" [auto]="true" (uploadHandler)="updatePhoto($event)" mode="basic" chooseIcon="pi pi-pencil" accept="image/*" maxFileSize="1000000" chooseLabel="" chooseStyleClass="p-button-icon-only p-button-text p-button-sm text-primary!" />
+      </div>
+      <img class="block" ngSrc="nicolaspaillard/profile" sizes="(max-width: 768px) 100vw, 30vw" priority placeholder fill />
+    </div>
+    <div class="w-full flex flex-col gap-5">
+      <form class="w-full grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col" [formGroup]="form">
+        <input type="hidden" formControlName="id" />
+        <label>
+          Titre
+          <input pInputText formControlName="title" />
+        </label>
+        <label>
+          Nom
+          <input pInputText formControlName="lastName" />
+        </label>
+        <label>
+          Prénom
+          <input pInputText formControlName="firstName" />
+        </label>
+        <label>
+          Adresse
+          <input pInputText formControlName="address" />
+        </label>
+        <label>
+          Téléphone
+          <input pInputText formControlName="phone" />
+        </label>
+        <label>
+          Email
+          <input pInputText formControlName="email" />
+        </label>
+        <label>
+          LinkedIn
+          <input pInputText formControlName="linkedin" />
+        </label>
+        <label>
+          GitHub
+          <input pInputText formControlName="github" />
+        </label>
+        <label>
+          GitLab
+          <input pInputText formControlName="gitlab" />
+        </label>
+      </form>
+      <div class="flex justify-end gap-2">
+        <p-button [disabled]="!form.valid" [loading]="isUpdating" (onClick)="update()">Mettre à jour</p-button>
+      </div>
+    </div>
+  </div>
+</div>
