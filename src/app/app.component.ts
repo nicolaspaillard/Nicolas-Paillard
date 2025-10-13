@@ -5,9 +5,11 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { AuthGuard, AuthPipe, customClaims, loggedIn } from "@angular/fire/auth-guard";
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
+import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 import { ActivatedRoute, NavigationEnd, NavigationStart, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
 import { AnimationComponent } from "@components/animation/animation.component";
 import { usePreset } from "@primeuix/themes";
+import { AnimationService } from "@services/animation.service";
 import { AuthService } from "@services/auth.service";
 import { DesignerService } from "@services/designer.service";
 import { ToastService } from "@services/toast.service";
@@ -79,6 +81,7 @@ export class AppComponent implements OnInit {
   );
   isResetShown: boolean = false;
   isResetting: boolean = false;
+  isResumeShown: boolean = false;
   isSending: boolean = false;
   isSigninShown: boolean = false;
   isSigningIn: boolean = false;
@@ -86,6 +89,7 @@ export class AppComponent implements OnInit {
   isSignupShown: boolean = false;
   isTransitioning: boolean = false;
   params: any = {};
+  resume: SafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl("");
   routes: Route[] = routes.filter(route => route.path && route.data);
   user: { admin: boolean; user: User } | undefined;
   private enableDarkMode: boolean = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -96,11 +100,13 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private designerService: DesignerService,
     private toastService: ToastService,
+    private sanitizer: DomSanitizer,
+    private animationService: AnimationService,
   ) {
-    route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => (this.params = params));
+    this.route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => (this.params = params));
     switch (location.pathname.split("/").pop()) {
       case "cv":
-        this.designerService.export({ editing: false, replace: true });
+        this.downloadCV();
         break;
       case "login":
         this.isSigninShown = true;
@@ -167,7 +173,12 @@ export class AppComponent implements OnInit {
     usePreset(this.enableMatrix ? Matrix : Amber);
     this.animate();
   };
-  downloadCV = () => this.designerService.export({ editing: false, replace: true });
+  downloadCV = () => {
+    this.designerService.export({ editing: false }).then(res => {
+      this.resume = this.sanitizer.bypassSecurityTrustResourceUrl(res.url);
+      if (res.steps.length) this.animationService.animate({ steps: res.steps, callback: () => (this.isResumeShown = true) });
+    });
+  };
   ngOnInit() {
     this.animate();
   }

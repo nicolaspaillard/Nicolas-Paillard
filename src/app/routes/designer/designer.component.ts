@@ -14,7 +14,6 @@ import { SplitButton } from "primeng/splitbutton";
   templateUrl: "./designer.component.html",
 })
 export class DesignerComponent implements OnInit, OnDestroy {
-  user: { user: User; admin: boolean } | undefined;
   menuItems: MenuItem[] = [
     {
       label: "Réinitialiser",
@@ -47,23 +46,24 @@ export class DesignerComponent implements OnInit, OnDestroy {
       command: () => this.export(),
     },
   ];
+  user: { admin: boolean; user: User } | undefined;
   constructor(
     private authService: AuthService,
     private designerService: DesignerService,
   ) {
-    this.authService.user().subscribe((user) => (this.user = user));
+    this.authService.user().subscribe(user => (this.user = user));
+  }
+  clear = () => this.designerService.clear();
+  export = () => this.designerService.export({ editing: true });
+  exportTemplate = () => this.designerService.exportTemplate();
+  import = (event: FileUploadHandlerEvent) => this.designerService.import(event.files[0]);
+  importTemplate = (event: FileUploadHandlerEvent) => this.designerService.importTemplate(event.files[0]);
+  load = () => this.designerService.init("container");
+  ngOnDestroy() {
+    this.designerService.destroy();
   }
   ngOnInit() {
     this.load();
   }
-  ngOnDestroy() {
-    this.designerService.destroy();
-  }
-  load = () => this.designerService.init("container");
   save = () => this.designerService.save();
-  clear = () => this.designerService.clear();
-  importTemplate = (event: FileUploadHandlerEvent) => this.designerService.importTemplate(event.files[0]);
-  exportTemplate = () => this.designerService.exportTemplate();
-  import = (event: FileUploadHandlerEvent) => this.designerService.import(event.files[0]);
-  export = () => this.designerService.export({ editing: true, replace: false });
 }

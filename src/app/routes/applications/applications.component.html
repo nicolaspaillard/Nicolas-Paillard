@@ -73,7 +73,9 @@
             </div>
             <div>
               Contacts :
-              <div *ngFor="let contact of application.contacts.split(';')">{{ contact }}</div>
+              <ng-container *ngIf="application.contacts && application.contacts.length">
+                <div *ngFor="let contact of application.contacts.split(';')">{{ contact }}</div>
+              </ng-container>
             </div>
             <div>
               Liens :
@@ -143,14 +145,16 @@
     </label>
     <label for="ctt">
       Contacts
-      <div class="relative flex items-center justify-between" *ngFor="let contact of contacts">
-        <span class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="ctt.value = contact">•&nbsp;&nbsp;{{ contact }}</span>
-        <div class="flex">
-          <p-button [disabled]="contacts[0] == contact" [text]="true" (onClick)="move(contact, 'contacts', true)" icon="pi pi-angle-up" size="small" severity="secondary" />
-          <p-button [disabled]="contacts[contacts.length - 1] == contact" [text]="true" (onClick)="move(contact, 'contacts')" icon="pi pi-angle-down" size="small" severity="secondary" />
-          <p-button [text]="true" (onClick)="remove(contact, 'contacts')" icon="pi pi-trash" size="small" severity="danger" />
+      <ng-container *ngIf="contacts && contacts.length">
+        <div class="relative flex items-center justify-between" *ngFor="let contact of contacts">
+          <span class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="ctt.value = contact">•&nbsp;&nbsp;{{ contact }}</span>
+          <div class="flex">
+            <p-button [disabled]="contacts[0] == contact" [text]="true" (onClick)="move(contact, 'contacts', true)" icon="pi pi-angle-up" size="small" severity="secondary" />
+            <p-button [disabled]="contacts[contacts.length - 1] == contact" [text]="true" (onClick)="move(contact, 'contacts')" icon="pi pi-angle-down" size="small" severity="secondary" />
+            <p-button [text]="true" (onClick)="remove(contact, 'contacts')" icon="pi pi-trash" size="small" severity="danger" />
+          </div>
         </div>
-      </div>
+      </ng-container>
       <p-inputGroup>
         <input id="ctt" #ctt pInputText placeholder="Contact" />
         <button [disabled]="!ctt.value" (click)="add(ctt.value, 'contacts')" type="button" pButton icon="pi pi-plus"></button>

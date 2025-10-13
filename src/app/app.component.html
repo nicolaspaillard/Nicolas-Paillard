@@ -123,3 +123,6 @@
     </div>
   </form>
 </p-dialog>
+<p-dialog [(visible)]="isResumeShown" [modal]="true" [dismissableMask]="true" [resizable]="false" contentStyleClass="!w-full !h-full" styleClass="w-[calc(100%-calc(var(--spacing)*10))] h-[calc(100%-calc(var(--spacing)*10))] !max-h-full" header="C.V.">
+  <iframe class="w-full h-full" [src]="resume"></iframe>
+</p-dialog>

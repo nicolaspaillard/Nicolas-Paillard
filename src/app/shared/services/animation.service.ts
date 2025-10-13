@@ -1,11 +1,14 @@
 import { Injectable } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { filter, Observable, Subject } from "rxjs";
+import { Observable, Subject } from "rxjs";
 
-export class Animation {
-  callback: Function;
-  id?: string;
-  steps: { lines: string[]; route?: string }[];
+export interface Step {
+  lines: string[];
+  route?: string;
+}
+export interface Animation {
+  callback?: Function;
+  steps: Step[];
 }
 
 @Injectable({
@@ -13,6 +16,8 @@ export class Animation {
 })
 export class AnimationService {
   private _animations = new Subject<Animation>();
-  animate = (animation: Animation) => (animation.id = animation.id || "animation-main") && this._animations.next(animation);
-  animations = (id: string = "animation-main"): Observable<Animation> => this._animations.pipe(takeUntilDestroyed()).pipe(filter((animation) => animation && animation.id === id));
+  animate = (animation: Animation) => {
+    this._animations.next(animation);
+  };
+  animations = (): Observable<Animation> => this._animations.pipe(takeUntilDestroyed());
 }

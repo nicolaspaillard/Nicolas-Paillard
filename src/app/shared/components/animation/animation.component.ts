@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, Input, OnDestroy } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
 import { SafeHtmlPipe } from "@helpers/safehtml.pipe";
 import { Animation, AnimationService } from "@services/animation.service";
@@ -12,9 +12,8 @@ import { Subscription } from "rxjs";
   templateUrl: "./animation.component.html",
 })
 export class AnimationComponent implements OnDestroy {
-  @Input() containerId = "animation-main";
   animationSubscription: Subscription;
-  callback: Function;
+  callback?: Function;
   interval: NodeJS.Timeout;
   isAnimationShown: boolean = false;
   text: string[] = [];
@@ -22,7 +21,7 @@ export class AnimationComponent implements OnDestroy {
     private animationService: AnimationService,
     private router: Router,
   ) {
-    this.animationSubscription = this.animationService.animations(this.containerId).subscribe((animation: Animation) => this.animate(animation));
+    this.animationSubscription = this.animationService.animations().subscribe(animation => this.animate(animation));
   }
   animate = (animation: Animation) => {
     this.callback = animation.callback;
@@ -42,7 +41,7 @@ export class AnimationComponent implements OnDestroy {
           if (animation.steps[step].route && line === 0 && this.router.url != "/designer") this.router.navigate([animation.steps[step].route]);
           if (line === 0 && step > 0) this.text.push("<br>");
           this.text.push(animation.steps[step].lines[line]);
-          document.getElementById(this.containerId)!.scrollTop = 99999999;
+          document.getElementById("animation-main")!.scrollTop = 99999999;
           line++;
         }
       },
@@ -50,9 +49,9 @@ export class AnimationComponent implements OnDestroy {
     );
   };
   finish = () => {
-    this.callback();
     clearInterval(this.interval);
     this.isAnimationShown = false;
+    if (this.callback) this.callback();
   };
   ngOnDestroy() {
     this.animationSubscription.unsubscribe();

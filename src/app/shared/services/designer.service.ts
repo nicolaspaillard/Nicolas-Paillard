@@ -14,7 +14,7 @@ import { Designer } from "@pdfme/ui";
 import { IconNode, Link } from "lucide";
 import { TextSchema } from "node_modules/@pdfme/schemas/dist/types/src/text/types";
 import { cloudinaryConfig } from "src/main";
-import { AnimationService } from "./animation.service";
+import { Step } from "./animation.service";
 import { ToastService } from "./toast.service";
 @Injectable({ providedIn: "root" })
 export class DesignerService {
@@ -23,82 +23,63 @@ export class DesignerService {
   private timer: NodeJS.Timeout;
   constructor(
     private toastService: ToastService,
-    private animationService: AnimationService,
     private db: Firestore,
   ) {}
   clear = () => this.designer.updateTemplate(this.blank);
   destroy = () => this.designer.destroy();
-  export = async ({ editing, replace }: { editing: boolean; replace: boolean }) => {
+  export = async ({ editing }: { editing: boolean }): Promise<{ steps: Step[]; url: string }> => {
     const getData = async <T>(type: { new (...args: any[]): T }, name: string, order: [string, OrderByDirection?]): Promise<T[]> => await getDocs(query(collection(this.db, "data", name, name), orderBy(...order))).then(result => result.docs.map(doc => new type({ ...doc.data(), id: doc.id })));
     const [sections, experiences, categories, skills] = [await getData(Section, "sections", ["rank"]), await getData(Experience, "experiences", ["start", "desc"]), await getData(Category, "categories", ["rank"]), await getData(Skill, "skills", ["title"])];
-    const output = async (sections: Section[], experiences: Experience[], categories: Category[], skills: Skill[]) =>
-      generate({
-        template: editing ? this.designer.getTemplate() : await this.getTemplate(),
-        inputs: [
-          {
-            title: "Nicolas Paillard",
-            subtitle: "Développeur Full-Stack",
-            picture: await fetch(new Cloudinary({ cloud: { cloudName: cloudinaryConfig.cloudName } }).image("nicolasPaillard/profile").resize(fill().width(500).aspectRatio("1.0")).toURL()).then(
-              response =>
-                new Promise(async (resolve, reject) => {
-                  const reader = new FileReader();
-                  reader.onloadend = () => resolve(reader.result as string);
-                  reader.readAsDataURL(await response.blob());
-                }),
-            ),
-            intro: [[sections.length ? sections.map(section => section.text).join("\n") : ""]],
-            // prettier-ignore
-            skills: JSON.stringify(categories.map((cat) => [cat.title +" : " +skills.filter((skl) => skl.category == cat.id).map((skl) => skl.title).join(", ")])),
-            experiences: JSON.stringify(
-              experiences
-                .filter(exp => exp.type === "Expérience")
-                .map((exp, id, arr) => [`${exp.start.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} - ${exp.end.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} : ${exp.title}` + (exp.text.length ? `\n\t${exp.text}` : "") + (exp.activities ? `\n${"\t- " + exp.activities.split(";").join("\n\t- ")}` : "") + (id < arr.length - 1 ? "\n" : "")]),
-            ),
-            formations: JSON.stringify(
-              experiences
-                .filter(frm => frm.type === "Formation")
-                .map((frm, id, arr) => [`${frm.start.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} - ${frm.end.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} : ${frm.title}` + (frm.text.length ? `\n\t${frm.text}` : "") + (frm.activities ? `\n${"\t- " + frm.activities.split(";").join("\n\t- ")}` : "") + (id < arr.length - 1 ? "\n" : "")]),
-            ),
-            address: "Montpellier",
-            phone: JSON.stringify([["07 81 48 00 36", "tel:0781480036"]]),
-            email: JSON.stringify([["paillard.nicolas.pro@gmail.com", "mailto:paillard.nicolas.pro@gmail.com"]]),
-            site: JSON.stringify([["nicolaspaillard.fr", "https://nicolaspaillard.fr/designer"]]),
-            github: JSON.stringify([["github.com/nicolaspaillard", "https://github.com/nicolaspaillard"]]),
-            gitlab: JSON.stringify([["gitlab.com/nicolaspaillard", "https://gitlab.com/nicolaspaillard"]]),
-            linkedin: JSON.stringify([["linkedin.com/in/nicolas--p", "https://www.linkedin.com/in/nicolas--p"]]),
-          },
-        ],
-        plugins: plugins,
-        options: { font: fonts },
-      }).then(pdf => window.open(URL.createObjectURL(new Blob([pdf.buffer as BlobPart], { type: "application/pdf" })), replace ? "_self" : "_blank"));
-
-    if (isDevMode()) output(sections, experiences, categories, skills);
-    else {
-      this.animationService.animate({
-        steps: [
-          {
-            route: "home",
-            lines: [
-              "Accueil",
-              "nicolaspaillard.fr/home# " +
-                (await fetch(new Cloudinary({ cloud: { cloudName: cloudinaryConfig.cloudName } }).image("nicolasPaillard/profile").resize(fill().width(500).aspectRatio("1.0")).toURL()).then(
-                  response =>
-                    new Promise(async (resolve, reject) => {
-                      const reader = new FileReader();
-                      reader.onloadend = () => resolve(reader.result as string);
-                      reader.readAsDataURL(await response.blob());
-                    }),
-                )),
-              ...sections.map(section => `nicolaspaillard.fr/about# ` + section.text),
-            ],
-          },
-          { route: "career", lines: ["Expériences", ...experiences.filter(experience => experience.type === "Expérience").map(experience => `nicolaspaillard.fr/career# ` + experience.title)] },
-          { route: "career", lines: ["Formations", ...experiences.filter(experience => experience.type === "Formation").map(formation => `nicolaspaillard.fr/career# ` + formation.title)] },
-          { route: "skills", lines: ["Compétences", ...categories.map(category => `nicolaspaillard.fr/skills# ` + category.title)] },
-        ],
-        callback: async () => output(sections, experiences, categories, skills),
-      });
-    }
+    let steps: Step[] = [];
+    if (true || !isDevMode())
+      steps = [
+        { route: "home", lines: ["Accueil", ...sections.map(section => `nicolaspaillard.fr/about# ` + section.text)] },
+        { route: "career", lines: ["Expériences", ...experiences.filter(experience => experience.type === "Expérience").map(experience => `nicolaspaillard.fr/career# ` + experience.title)] },
+        { route: "career", lines: ["Formations", ...experiences.filter(experience => experience.type === "Formation").map(formation => `nicolaspaillard.fr/career# ` + formation.title)] },
+        { route: "skills", lines: ["Compétences", ...categories.map(category => `nicolaspaillard.fr/skills# ` + category.title)] },
+      ];
+    return generate({
+      template: editing ? this.designer.getTemplate() : await this.getTemplate(),
+      inputs: [
+        {
+          title: "Nicolas Paillard",
+          subtitle: "Développeur Full-Stack",
+          picture: await fetch(new Cloudinary({ cloud: { cloudName: cloudinaryConfig.cloudName } }).image("nicolasPaillard/profile").resize(fill().width(500).aspectRatio("1.0")).toURL()).then(
+            response =>
+              new Promise(async (resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result as string);
+                reader.readAsDataURL(await response.blob());
+              }),
+          ),
+          intro: [[sections.length ? sections.map(section => section.text).join("\n") : ""]],
+          // prettier-ignore
+          skills: JSON.stringify(categories.map((cat) => [cat.title +" : " +skills.filter((skl) => skl.category == cat.id).map((skl) => skl.title).join(", ")])),
+          experiences: JSON.stringify(
+            experiences
+              .filter(exp => exp.type === "Expérience")
+              .map((exp, id, arr) => [`${exp.title}\n${exp.company} : ${exp.start.toLocaleDateString("fr-FR", { month: "short", year: "numeric" })} - ${exp.end.toLocaleDateString("fr-FR", { month: "short", year: "numeric" })}` + (exp.text.length ? `\n\t${exp.text}` : "") + (exp.activities ? `\n${"\t- " + exp.activities.split(";").join("\n\t- ")}` : "") + (id < arr.length - 1 ? "\n" : "")]),
+          ),
+          formations: JSON.stringify(
+            experiences
+              .filter(frm => frm.type === "Formation")
+              .map((frm, id, arr) => [`${frm.start.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} - ${frm.end.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} : ${frm.title}` + (frm.text.length ? `\n\t${frm.text}` : "") + (frm.activities ? `\n${"\t- " + frm.activities.split(";").join("\n\t- ")}` : "") + (id < arr.length - 1 ? "\n" : "")]),
+          ),
+          address: "Montpellier",
+          phone: JSON.stringify([["07 81 48 00 36", "tel:0781480036"]]),
+          email: JSON.stringify([["paillard.nicolas.pro@gmail.com", "mailto:paillard.nicolas.pro@gmail.com"]]),
+          site: JSON.stringify([["nicolaspaillard.fr", "https://nicolaspaillard.fr/designer"]]),
+          github: JSON.stringify([["github.com/nicolaspaillard", "https://github.com/nicolaspaillard"]]),
+          gitlab: JSON.stringify([["gitlab.com/nicolaspaillard", "https://gitlab.com/nicolaspaillard"]]),
+          linkedin: JSON.stringify([["linkedin.com/in/nicolas--p", "https://www.linkedin.com/in/nicolas--p"]]),
+        },
+      ],
+      plugins: plugins,
+      options: { font: fonts },
+    }).then(pdf => ({
+      steps: steps,
+      url: URL.createObjectURL(new Blob([pdf.buffer as BlobPart], { type: "application/pdf" })),
+    }));
   };
   exportTemplate = () => {
     const url = URL.createObjectURL(new Blob([JSON.stringify(this.designer.getTemplate())], { type: "application/json" }));
