@@ -43,8 +43,8 @@ export class DesignerService {
       template: editing ? this.designer.getTemplate() : await this.getTemplate(),
       inputs: [
         {
-          title: "Nicolas Paillard",
-          subtitle: "Développeur Full-Stack",
+          title: profile[0].firstName + " " + profile[0].lastName,
+          subtitle: profile[0].title,
           picture: await fetch(new Cloudinary({ cloud: { cloudName: cloudinaryConfig.cloudName } }).image("nicolasPaillard/profile").resize(fill().width(500).aspectRatio("1.0")).toURL()).then(
             response =>
               new Promise(async (resolve, reject) => {

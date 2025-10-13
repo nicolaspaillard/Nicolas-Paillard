@@ -9,7 +9,6 @@ import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.servi
 import { NgxTypedJsModule } from "ngx-typed-js";
 import { ButtonModule } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
-import { FileUpload } from "primeng/fileupload";
 import { InputNumberModule } from "primeng/inputnumber";
 import { InputTextModule } from "primeng/inputtext";
 import { TextareaModule } from "primeng/textarea";
@@ -25,7 +24,7 @@ const SERVICE_VARIABLE: ServiceConfig<Section> = {
 
 @Component({
   selector: "app-home",
-  imports: [CommonModule, NgxTypedJsModule, ButtonModule, FileUpload, NgOptimizedImage, CommonModule, SectionComponent, ReactiveFormsModule, DialogModule, ButtonModule, InputTextModule, TextareaModule, InputNumberModule],
+  imports: [CommonModule, NgxTypedJsModule, ButtonModule, NgOptimizedImage, CommonModule, SectionComponent, ReactiveFormsModule, DialogModule, ButtonModule, InputTextModule, TextareaModule, InputNumberModule],
   templateUrl: "./home.component.html",
   providers: [CrudService<Section>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
