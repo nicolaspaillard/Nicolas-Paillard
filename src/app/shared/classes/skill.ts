@@ -14,6 +14,6 @@ export const formSkill: FormGroup = new FormGroup({
   id: new FormControl(""),
   title: new FormControl("", [Validators.required]),
   category: new FormControl("", [Validators.required]),
-  icon: new FormControl("", [Validators.required]),
+  icon: new FormControl(""),
   // rank: new FormControl(0, [Validators.required]),
 });
