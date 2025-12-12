@@ -1959,7 +1959,7 @@ export const Matrix: Preset = definePreset(Aura, {
         hoverColor: "{text.color}",
         selectedHoverColor: "{primary.color}",
         size: "1.75rem",
-        borderRadius: "50%",
+        borderRadius: "0",
         focusRing: {
           width: "{focus.ring.width}",
           style: "{focus.ring.style}",
@@ -2162,7 +2162,7 @@ export const Matrix: Preset = definePreset(Aura, {
         rangeSelectedColor: "{highlight.color}",
         width: "2rem",
         height: "2rem",
-        borderRadius: "50%",
+        borderRadius: "0",
         padding: "0.25rem",
         focusRing: {
           width: "{focus.ring.width}",
@@ -2476,10 +2476,10 @@ export const Matrix: Preset = definePreset(Aura, {
         size: "3rem",
         gutter: "0.5rem",
         prev: {
-          borderRadius: "50%",
+          borderRadius: "0",
         },
         next: {
-          borderRadius: "50%",
+          borderRadius: "0",
         },
         focusRing: {
           width: "{focus.ring.width}",
@@ -2524,7 +2524,7 @@ export const Matrix: Preset = definePreset(Aura, {
         width: "1rem",
         height: "1rem",
         activeBackground: "{primary.color}",
-        borderRadius: "50%",
+        borderRadius: "0",
         focusRing: {
           width: "{focus.ring.width}",
           style: "{focus.ring.style}",
@@ -2548,7 +2548,7 @@ export const Matrix: Preset = definePreset(Aura, {
         hoverBackground: "rgba(255, 255, 255, 0.2)",
         color: "{surface.50}",
         hoverColor: "{surface.0}",
-        borderRadius: "50%",
+        borderRadius: "0",
         focusRing: {
           width: "{focus.ring.width}",
           style: "{focus.ring.style}",
@@ -2630,7 +2630,7 @@ export const Matrix: Preset = definePreset(Aura, {
         background: "rgba(255,255,255,0.1)",
         borderColor: "rgba(255,255,255,0.2)",
         borderWidth: "1px",
-        borderRadius: "30px",
+        borderRadius: "0",
         padding: ".5rem",
         gap: "0.5rem",
       },
@@ -2640,7 +2640,7 @@ export const Matrix: Preset = definePreset(Aura, {
         hoverColor: "{surface.0}",
         size: "3rem",
         iconSize: "1.5rem",
-        borderRadius: "50%",
+        borderRadius: "0",
         focusRing: {
           width: "{focus.ring.width}",
           style: "{focus.ring.style}",
@@ -2659,7 +2659,7 @@ export const Matrix: Preset = definePreset(Aura, {
         borderColor: "unset",
         hoverBorderColor: "unset",
         borderWidth: "0",
-        borderRadius: "50%",
+        borderRadius: "0",
         transitionDuration: "{transition.duration}",
         focusRing: {
           width: "{focus.ring.width}",
@@ -3067,7 +3067,7 @@ export const Matrix: Preset = definePreset(Aura, {
         borderColor: "{content.border.color}",
       },
       mobileButton: {
-        borderRadius: "50%",
+        borderRadius: "0",
         size: "1.75rem",
         color: "{text.muted.color}",
         hoverColor: "{text.hover.muted.color}",
@@ -3164,7 +3164,7 @@ export const Matrix: Preset = definePreset(Aura, {
         borderColor: "{content.border.color}",
       },
       mobileButton: {
-        borderRadius: "50%",
+        borderRadius: "0",
         size: "1.75rem",
         color: "{text.muted.color}",
         hoverColor: "{text.hover.muted.color}",
@@ -3216,7 +3216,7 @@ export const Matrix: Preset = definePreset(Aura, {
       closeButton: {
         width: "1.75rem",
         height: "1.75rem",
-        borderRadius: "50%",
+        borderRadius: "0",
         focusRing: {
           width: "{focus.ring.width}",
           style: "{focus.ring.style}",
@@ -3628,7 +3628,7 @@ export const Matrix: Preset = definePreset(Aura, {
         color: "{text.muted.color}",
         hoverColor: "{text.color}",
         size: "1.5rem",
-        borderRadius: "50%",
+        borderRadius: "0",
         focusRing: {
           width: "{focus.ring.width}",
           style: "{focus.ring.style}",
@@ -3669,7 +3669,7 @@ export const Matrix: Preset = definePreset(Aura, {
         selectedColor: "{highlight.color}",
         width: "2.5rem",
         height: "2.5rem",
-        borderRadius: "50%",
+        borderRadius: "0",
         focusRing: {
           width: "{focus.ring.width}",
           style: "{focus.ring.style}",
@@ -4093,11 +4093,11 @@ export const Matrix: Preset = definePreset(Aura, {
       handle: {
         width: "20px",
         height: "20px",
-        borderRadius: "50%",
+        borderRadius: "0",
         background: "{content.border.color}",
         hoverBackground: "{content.border.color}",
         content: {
-          borderRadius: "50%",
+          borderRadius: "0",
           hoverBackground: "{content.background}",
           width: "16px",
           height: "16px",
@@ -4205,7 +4205,7 @@ export const Matrix: Preset = definePreset(Aura, {
         size: "2rem",
         fontSize: "1.143rem",
         fontWeight: "500",
-        borderRadius: "50%",
+        borderRadius: "0",
         shadow: "0px 0.5px 0px 0px rgba(0, 0, 0, 0.06), 0px 1px 1px 0px rgba(0, 0, 0, 0.12)",
       },
       steppanels: {
@@ -4251,7 +4251,7 @@ export const Matrix: Preset = definePreset(Aura, {
         size: "2rem",
         fontSize: "1.143rem",
         fontWeight: "500",
-        borderRadius: "50%",
+        borderRadius: "0",
         shadow: "0px 0.5px 0px 0px rgba(0, 0, 0, 0.06), 0px 1px 1px 0px rgba(0, 0, 0, 0.12)",
       },
     },
@@ -4597,12 +4597,12 @@ export const Matrix: Preset = definePreset(Aura, {
       },
       eventMarker: {
         size: "1.125rem",
-        borderRadius: "50%",
+        borderRadius: "0",
         borderWidth: "2px",
         background: "{content.background}",
         borderColor: "{content.border.color}",
         content: {
-          borderRadius: "50%",
+          borderRadius: "0",
           size: "0.375rem",
           background: "{primary.color}",
           insetShadow: "0px 0.5px 0px 0px rgba(0, 0, 0, 0.06), 0px 1px 1px 0px rgba(0, 0, 0, 0.12)",
@@ -4641,7 +4641,7 @@ export const Matrix: Preset = definePreset(Aura, {
       closeButton: {
         width: "1.75rem",
         height: "1.75rem",
-        borderRadius: "50%",
+        borderRadius: "0",
         focusRing: {
           width: "{focus.ring.width}",
           style: "{focus.ring.style}",
@@ -4920,7 +4920,7 @@ export const Matrix: Preset = definePreset(Aura, {
       root: {
         width: "2.5rem",
         height: "1.5rem",
-        borderRadius: "30px",
+        borderRadius: "0",
         gap: "0.25rem",
         shadow: "{form.field.shadow}",
         focusRing: {
@@ -4940,7 +4940,7 @@ export const Matrix: Preset = definePreset(Aura, {
         slideDuration: "0.2s",
       },
       handle: {
-        borderRadius: "50%",
+        borderRadius: "0",
         size: "1rem",
       },
       colorScheme: {
@@ -5051,7 +5051,7 @@ export const Matrix: Preset = definePreset(Aura, {
         selectedColor: "{highlight.color}",
       },
       nodeToggleButton: {
-        borderRadius: "50%",
+        borderRadius: "0",
         size: "1.75rem",
         hoverBackground: "{content.hover.background}",
         selectedHoverBackground: "{content.background}",
@@ -5225,7 +5225,7 @@ export const Matrix: Preset = definePreset(Aura, {
         hoverColor: "{text.color}",
         selectedHoverColor: "{primary.color}",
         size: "1.75rem",
-        borderRadius: "50%",
+        borderRadius: "0",
         focusRing: {
           width: "{focus.ring.width}",
           style: "{focus.ring.style}",

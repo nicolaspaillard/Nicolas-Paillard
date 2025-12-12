@@ -15,7 +15,7 @@
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <p-toggleswitch class="flex" (onChange)="this.enableMatrix = !this.enableMatrix; applyPreset()" pTooltip="Red pill ?" tooltipPosition="bottom">
+        <p-toggleswitch class="flex" [pTooltip]="enableMatrix ? 'Blue pill' : 'Red pill'" (onChange)="this.enableMatrix = !this.enableMatrix; applyPreset()" tooltipPosition="bottom">
           <ng-template #handle let-checked="checked">
             <i class="text-[10px]! pi" [ngClass]="[checked ? 'pi-check' : 'pi-times']"></i>
           </ng-template>

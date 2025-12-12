@@ -3,6 +3,10 @@
     <p-button [text]="true" (onClick)="onEdit.emit(skill)" icon="pi pi-pencil" size="small" />
     <p-button [text]="true" (onClick)="onRemove.emit(skill)" icon="pi pi-trash" size="small" severity="danger" />
   </div>
-  <img class="me-1" *ngIf="skill.icon && skill.icon.length" width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
+  @if (skill.icon) {
+    <img class="me-1" width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
+  } @else {
+    <span class="font-extrabold mx-1">{{ skill.title[0].toUpperCase() }}</span>
+  }
   <span [ngClass]="{ 'transition-opacity group-hover/skill:opacity-50': user?.admin }">{{ skill.title }}</span>
 </span>

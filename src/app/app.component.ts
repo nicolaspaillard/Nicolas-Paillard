@@ -92,7 +92,7 @@ export class AppComponent implements OnInit {
   resume: SafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl("");
   routes: Route[] = routes.filter(route => route.path && route.data);
   user: { admin: boolean; user: User } | undefined;
-  private enableDarkMode: boolean = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  // private enableDarkMode: boolean = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
   private interval: NodeJS.Timeout;
   constructor(
     private router: Router,
@@ -115,7 +115,7 @@ export class AppComponent implements OnInit {
         this.isResetShown = true;
         break;
     }
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => (this.enableDarkMode = e.matches));
+    // window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => (this.enableDarkMode = e.matches));
     this.authService.user().subscribe(user => (this.user = user));
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
@@ -151,21 +151,19 @@ export class AppComponent implements OnInit {
         }
       }, 60);
     } else {
-      let shapes: any = document.querySelectorAll("#animation>div");
-      if (!shapes.length) {
-        for (let i = 0; i < 10; i++) {
-          let shape = document.createElement("div");
-          shape.classList.add("border-primary", "border", "border-2", "absolute", "animate-slide", "rounded-lg");
-          shape.style.animationDelay = Math.random() * 5 + "s";
-          shape.style.animationDuration = Math.random() * (5 - 0.5 + 1) + 5 + "s";
-          shape.style.setProperty("--slide-distance", (Math.round(Math.random()) ? "" : "-") + Math.random() * (100 - 20 + 1) + 20 + "px");
-          shape.style.width = Math.random() * (300 - 50 + 1) + 50 + "px";
-          shape.style.height = Math.random() * (300 - 50 + 1) + 50 + "px";
-          shape.style.left = Math.random() * (100 - 0 + 1) + 0 + "%";
-          shape.style.top = Math.random() * (100 - 0 + 1) + 0 + "%";
-          shape.style.opacity = Math.random() * 0.6 + "";
-          document.getElementById("animation")?.append(shape);
-        }
+      if (document.querySelectorAll("#animation>span").length) return;
+      for (let i = 0; i < 15; i++) {
+        let shape = document.createElement("span");
+        shape.classList.add("border-primary", "border", "border-2", "absolute", "animate-slide", "rounded-lg");
+        shape.style.animationDelay = Math.random() * 3 + "s";
+        shape.style.animationDuration = Math.random() * 4 + 4 + "s";
+        shape.style.setProperty("--slide-distance", (Math.random() < 0.5 ? "" : "-") + Math.random() * 100 + 50 + "px");
+        shape.style.width = Math.random() * 250 + 50 + "px";
+        shape.style.height = Math.random() * 250 + 50 + "px";
+        shape.style.left = Math.random() * 100 + "%";
+        shape.style.top = Math.random() * 100 + "%";
+        shape.style.opacity = Math.random() * 0.4 + 0.1 + "";
+        document.getElementById("animation")!.append(shape);
       }
     }
   };
