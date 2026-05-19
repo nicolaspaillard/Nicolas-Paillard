@@ -32,7 +32,10 @@
       <p-inputnumber [showButtons]="true" formControlName="rank" />
     </label>
     <label>
-      Texte
+      <div class="flex items-center gap-1">
+        Texte
+        <app-prompt-button (onClick)="promptedField = 'text'; isPrompting = true"></app-prompt-button>
+      </div>
       <textarea class="min-h-40" pTextarea formControlName="text"></textarea>
     </label>
     <div class="flex justify-end gap-2">
@@ -41,3 +44,4 @@
     </div>
   </form>
 </p-dialog>
+<app-prompt [(isPrompting)]="isPrompting" [(form)]="form" [field]="promptedField"></app-prompt>

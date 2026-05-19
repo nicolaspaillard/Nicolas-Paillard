@@ -9,8 +9,10 @@ import { Base } from "../classes/base";
 export class CrudComponent<T extends Base> {
   form: FormGroup;
   isEditing: boolean = false;
+  isPrompting: boolean = false;
   isShown: boolean = false;
   items: T[] = [];
+  promptedField: string = "";
   user: { admin: boolean; user: User } | undefined;
   constructor(
     private crudService: CrudService<T>,
@@ -46,7 +48,6 @@ export class CrudComponent<T extends Base> {
     await this.crudService.update(item ? item : this.form.value).then(() => (this.isShown = false));
   }
 
-  protected cloudinary = async () => await this.crudService.cloudinary().then(cloudinary => cloudinary);
-
+  protected getCloudinary = async () => await this.crudService.getCloudinary().then(cloudinary => cloudinary);
   protected sort?(items: T[]): void;
 }

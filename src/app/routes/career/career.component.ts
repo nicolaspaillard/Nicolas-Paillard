@@ -3,6 +3,8 @@ import { Component } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { Experience, formExperience } from "@classes/experience";
 import { CrudComponent } from "@components/crud.component";
+import { PromptButtonComponent } from "@components/prompt-button/prompt-button.component";
+import { PromptComponent } from "@components/prompt/prompt.component";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
 import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
@@ -26,7 +28,7 @@ const SERVICE_VARIABLE: ServiceConfig<Experience> = {
 
 @Component({
   selector: "app-career",
-  imports: [CommonModule, ReactiveFormsModule, ExperienceComponent, DialogModule, DatePickerModule, SelectModule, TextareaModule, InputTextModule, ButtonModule, InputGroupModule, TooltipModule],
+  imports: [CommonModule, ReactiveFormsModule, ExperienceComponent, DialogModule, DatePickerModule, SelectModule, TextareaModule, InputTextModule, ButtonModule, InputGroupModule, TooltipModule, PromptComponent, PromptButtonComponent],
   templateUrl: "./career.component.html",
   providers: [CrudService<Experience>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
@@ -53,7 +55,7 @@ export class CareerComponent extends CrudComponent<Experience> {
     super.open(item);
   }
   remove = (activity: string) => {
-    this.activities = this.activities.filter((act) => act != activity);
+    this.activities = this.activities.filter(act => act != activity);
     this.form.patchValue({ activities: this.activities.join(";") });
   };
 }

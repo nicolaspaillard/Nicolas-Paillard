@@ -1,8 +1,11 @@
 import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
+import { Firestore } from "@angular/fire/firestore";
 import { ReactiveFormsModule } from "@angular/forms";
 import { formProject, Project } from "@classes/project";
 import { CrudComponent } from "@components/crud.component";
+import { PromptButtonComponent } from "@components/prompt-button/prompt-button.component";
+import { PromptComponent } from "@components/prompt/prompt.component";
 import { sha1 } from "@helpers/helpers";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
@@ -28,13 +31,14 @@ const SERVICE_VARIABLE: ServiceConfig<Project> = {
 
 @Component({
   selector: "app-projects",
-  imports: [CommonModule, ReactiveFormsModule, ProjectComponent, ButtonModule, DialogModule, TooltipModule, InputGroupModule, DatePickerModule, InputTextModule, TextareaModule, FileUploadModule],
+  imports: [CommonModule, ReactiveFormsModule, ProjectComponent, ButtonModule, DialogModule, TooltipModule, InputGroupModule, DatePickerModule, InputTextModule, TextareaModule, FileUploadModule, PromptComponent, PromptButtonComponent],
   templateUrl: "./projects.component.html",
   providers: [CrudService<Project>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class ProjectsComponent extends CrudComponent<Project> {
   activities: string[] = [];
   images: string;
+  private db: Firestore;
   constructor(crudService: CrudService<Project>, authService: AuthService, confirmService: ConfirmService) {
     super(crudService, authService, confirmService);
   }
@@ -73,7 +77,7 @@ export class ProjectsComponent extends CrudComponent<Project> {
     if (images === "") return true;
     const timestamp: string = Math.round(new Date().getTime() / 1000).toString();
     let promises: Promise<boolean>[] = [];
-    const cloudinary = (await this.cloudinary())!;
+    const cloudinary = (await this.getCloudinary())!;
     for (let image of images.split(";")) {
       const formdata = new FormData();
       formdata.append("public_id", "nicolasPaillard/" + image);
@@ -100,7 +104,7 @@ export class ProjectsComponent extends CrudComponent<Project> {
     if (!files.length) return "";
     const timestamp: string = Math.round(new Date().getTime() / 1000).toString();
     let promises: Promise<boolean | string>[] = [];
-    const cloudinary = (await this.cloudinary())!;
+    const cloudinary = (await this.getCloudinary())!;
     for (let file of files) {
       const formData: FormData = new FormData();
       formData.append("file", file);

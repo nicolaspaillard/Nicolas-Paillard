@@ -42,14 +42,6 @@ export class CrudService<T extends Base> {
       console.error(error);
     }
   }
-  cloudinary = async (): Promise<{ api_key: string; api_secret: string } | undefined> => {
-    try {
-      return (await getDoc(doc(this.db, "keys", "cloudinary"))).data() as any;
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-  };
   create = async (item: T) => {
     try {
       item.id = (await addDoc(collection(this.db, "data", this.collection, this.collection), Object.assign({}, this.removeId(item)))).id;
@@ -70,6 +62,14 @@ export class CrudService<T extends Base> {
       this._items.next(this.__items);
     } catch (error) {
       console.error(error);
+    }
+  };
+  getCloudinary = async (): Promise<{ api_key: string; api_secret: string } | undefined> => {
+    try {
+      return (await getDoc(doc(this.db, "keys", "cloudinary"))).data() as any;
+    } catch (error) {
+      console.error(error);
+      return;
     }
   };
   items = () => this._items.pipe(takeUntilDestroyed());

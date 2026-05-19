@@ -3,6 +3,8 @@ import { Component } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { formSection, Section } from "@classes/section";
 import { CrudComponent } from "@components/crud.component";
+import { PromptButtonComponent } from "@components/prompt-button/prompt-button.component";
+import { PromptComponent } from "@components/prompt/prompt.component";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
 import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
@@ -24,7 +26,7 @@ const SERVICE_VARIABLE: ServiceConfig<Section> = {
 
 @Component({
   selector: "app-home",
-  imports: [CommonModule, NgxTypedJsModule, ButtonModule, NgOptimizedImage, CommonModule, SectionComponent, ReactiveFormsModule, DialogModule, ButtonModule, InputTextModule, TextareaModule, InputNumberModule],
+  imports: [CommonModule, NgxTypedJsModule, ButtonModule, NgOptimizedImage, CommonModule, SectionComponent, ReactiveFormsModule, DialogModule, ButtonModule, InputTextModule, TextareaModule, InputNumberModule, PromptComponent, PromptButtonComponent],
   templateUrl: "./home.component.html",
   providers: [CrudService<Section>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
@@ -33,6 +35,15 @@ export class HomeComponent extends CrudComponent<Section> {
   constructor(crudService: CrudService<Section>, authService: AuthService, confirmService: ConfirmService) {
     super(crudService, authService, confirmService);
   }
+  // testGPT = async () => {
+  //   const openai = (await this.getOpenai())!;
+  //   const client = new OpenAI({ apiKey: openai.api_key, dangerouslyAllowBrowser: true });
+  //   const response = await client.responses.create({
+  //     model: "gpt-3.5-turbo",
+  //     input: "Write a one-sentence bedtime story about a unicorn.",
+  //   });
+  //   console.log(response.output_text);
+  // };
   // moveSections = (rank: number) => {
   //   let previousRank: number = rank;
   //   this.items.slice(rank).forEach((section) => {

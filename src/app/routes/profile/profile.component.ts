@@ -61,7 +61,7 @@ export class ProfileComponent extends CrudComponent<Profile> {
   }
   updatePhoto = async (event: FileUploadHandlerEvent) => {
     const timestamp: string = Math.round(new Date().getTime() / 1000).toString();
-    const cloudinary = (await this.cloudinary())!;
+    const cloudinary = (await this.getCloudinary())!;
     const formData: FormData = new FormData();
     let photo = new File([(await event.files[0].arrayBuffer()) as BlobPart], "profile");
     formData.append("public_id", "profile");

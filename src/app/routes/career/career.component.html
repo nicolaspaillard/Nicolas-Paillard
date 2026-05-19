@@ -35,7 +35,10 @@
       <input pInputText formControlName="company" />
     </label>
     <label class="md:col-span-2">
-      Texte
+      <div class="flex items-center gap-1">
+        Texte
+        <app-prompt-button (onClick)="promptedField = 'text'; isPrompting = true"></app-prompt-button>
+      </div>
       <textarea pTextarea formControlName="text"></textarea>
     </label>
     <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
@@ -73,3 +76,4 @@
     </div>
   </form>
 </p-dialog>
+<app-prompt [(isPrompting)]="isPrompting" [(form)]="form" [field]="promptedField"></app-prompt>
