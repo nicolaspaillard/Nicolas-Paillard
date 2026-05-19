@@ -33,4 +33,4 @@ A modern, interactive portfolio website built with Angular, featuring a unique m
 - 📊 Admin dashboard
 - 🌐 Multi-route navigation
 - 🎆 Matrix-style visual effects
-- 🤖 AI Prompt: generate text and insert it into form fields.
+- 🤖 AI Prompts to generate text
