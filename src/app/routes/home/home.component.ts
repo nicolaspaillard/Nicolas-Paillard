@@ -1,6 +1,7 @@
 import { CommonModule, NgOptimizedImage } from "@angular/common";
 import { Component } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
+import { Profile } from "@classes/profile";
 import { formSection, Section } from "@classes/section";
 import { CrudComponent } from "@components/crud.component";
 import { PromptButtonComponent } from "@components/prompt-button/prompt-button.component";
@@ -31,10 +32,13 @@ const SERVICE_VARIABLE: ServiceConfig<Section> = {
   providers: [CrudService<Section>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class HomeComponent extends CrudComponent<Section> {
+  profile?: Profile;
   strings: string[] = ["Web", "Backend", "Frontend", "FullStack", "SQL", "TypeScript", ".NET", "Angular", "Java", "Python"];
   constructor(crudService: CrudService<Section>, authService: AuthService, confirmService: ConfirmService) {
     super(crudService, authService, confirmService);
+    crudService.getData(Profile, "profile", ["lastName"]).then(profile => (this.profile = profile[0]));
   }
+
   // testGPT = async () => {
   //   const openai = (await this.getOpenai())!;
   //   const client = new OpenAI({ apiKey: openai.api_key, dangerouslyAllowBrowser: true });

@@ -18,7 +18,6 @@ import { InputGroupModule } from "primeng/inputgroup";
 import { InputTextModule } from "primeng/inputtext";
 import { TextareaModule } from "primeng/textarea";
 import { TooltipModule } from "primeng/tooltip";
-import { cloudinaryConfig } from "src/main";
 import { ProjectComponent } from "./project/project.component";
 
 const SERVICE_VARIABLE: ServiceConfig<Project> = {
@@ -85,7 +84,7 @@ export class ProjectsComponent extends CrudComponent<Project> {
       formdata.append("api_key", cloudinary.api_key);
       formdata.append("timestamp", timestamp);
       promises.push(
-        fetch(`https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/destroy`, { method: "POST", body: formdata })
+        fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/destroy`, { method: "POST", body: formdata })
           .then(async response => {
             const data = JSON.parse(await response.text());
             if (["ok", "not found"].includes(data.result)) return true;
@@ -114,7 +113,7 @@ export class ProjectsComponent extends CrudComponent<Project> {
       formData.append("signature", sha1.hash(new URLSearchParams({ folder: "nicolasPaillard", timestamp: timestamp, upload_preset: "ml_default" }).toString() + cloudinary.api_secret));
       formData.append("folder", "nicolasPaillard");
       promises.push(
-        fetch(`https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`, { method: "POST", body: formData })
+        fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/upload`, { method: "POST", body: formData })
           .then(async response => {
             const data = JSON.parse(await response.text());
             if (data.public_id) return data.public_id.split("/")[1];

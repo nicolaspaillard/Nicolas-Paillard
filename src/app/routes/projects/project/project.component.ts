@@ -8,7 +8,6 @@ import { scale } from "@cloudinary/url-gen/actions/resize";
 import { ButtonModule } from "primeng/button";
 import { CarouselModule } from "primeng/carousel";
 import { ImageModule } from "primeng/image";
-import { cloudinaryConfig } from "src/main";
 
 @Component({
   selector: "app-project",
@@ -16,17 +15,17 @@ import { cloudinaryConfig } from "src/main";
   templateUrl: "./project.component.html",
 })
 export class ProjectComponent {
-  @Input() project: Project;
-  @Output() onProjectRemoved = new EventEmitter<Project>();
   @Output() onProjectEdit = new EventEmitter<Project>();
+  @Output() onProjectRemoved = new EventEmitter<Project>();
+  @Input() project: Project;
   cld: Cloudinary = new Cloudinary({
     cloud: {
-      cloudName: cloudinaryConfig.cloudName,
+      cloudName: "dsuvd32up",
     },
   });
-  user: { user: User; admin: boolean } | undefined;
+  user: { admin: boolean; user: User } | undefined;
   constructor(private authService: AuthService) {
-    this.authService.user().subscribe((user) => (this.user = user));
+    this.authService.user().subscribe(user => (this.user = user));
   }
   // prettier-ignore
   getURL = (image: string, thumbnail: boolean = true) => this.cld.image("nicolasPaillard/" + image).resize(thumbnail?(scale().height(500)):(scale().width(1500))).toURL();

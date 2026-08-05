@@ -1,4 +1,4 @@
-import { animate, group, query, style, transition, trigger } from "@angular/animations";
+// import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -13,6 +13,8 @@ import { AnimationService } from "@services/animation.service";
 import { AuthService } from "@services/auth.service";
 import { DesignerService } from "@services/designer.service";
 import { ToastService } from "@services/toast.service";
+import { Amber } from "@themes/amber.preset";
+import { Matrix } from "@themes/matrix.preset";
 import { ButtonModule } from "primeng/button";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { DialogModule } from "primeng/dialog";
@@ -23,8 +25,6 @@ import { ToastModule } from "primeng/toast";
 import { ToggleSwitchModule } from "primeng/toggleswitch";
 import { TooltipModule } from "primeng/tooltip";
 import { forkJoin, map, mergeMap, of, pipe } from "rxjs";
-import { Amber } from "src/themes/amber.preset";
-import { Matrix } from "src/themes/matrix.preset";
 
 const combined: AuthPipe = pipe(
   mergeMap(user => forkJoin([loggedIn(of(user)), customClaims(of(user!))])),
@@ -57,7 +57,7 @@ export const routes: Routes = [
 
 @Component({
   selector: "app-root",
-  animations: [trigger("routeAnimations", [transition(":increment", slideTo("right")), transition(":decrement", slideTo("left"))])],
+  // animations: [trigger("routeAnimations", [transition(":increment", slideTo("right")), transition(":decrement", slideTo("left"))])],
   imports: [CommonModule, RouterModule, RouterOutlet, TooltipModule, ReactiveFormsModule, ButtonModule, DialogModule, ToastModule, ConfirmDialogModule, ToggleSwitchModule, InputTextModule, PasswordModule, AnimationComponent, ProgressSpinnerModule],
   templateUrl: "./app.component.html",
 })
@@ -228,10 +228,7 @@ export class AppComponent implements OnInit {
     });
   };
 }
-function slideTo(direction: any) {
-  const optional = { optional: true };
-  return [query(":enter, :leave", [style({ position: "absolute", width: "100%", height: "100%", [direction]: 0 })], optional), query(":enter", [style({ [direction]: "-100%" })]), group([query(":leave", [animate("600ms ease", style({ [direction]: "100%" }))], optional), query(":enter", [animate("600ms ease", style({ [direction]: "0%" }))])])];
-}
+
 class CustomValidators {
   static matchFields(a: string, b: string): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {

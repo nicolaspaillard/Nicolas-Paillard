@@ -12,7 +12,6 @@ import { ToastService } from "@services/toast.service";
 import { ButtonModule } from "primeng/button";
 import { FileUpload, FileUploadHandlerEvent } from "primeng/fileupload";
 import { InputTextModule } from "primeng/inputtext";
-import { cloudinaryConfig } from "src/main";
 
 const SERVICE_VARIABLE: ServiceConfig<Profile> = {
   type: Profile,
@@ -72,7 +71,7 @@ export class ProfileComponent extends CrudComponent<Profile> {
     formData.append("timestamp", timestamp);
     formData.append("signature", sha1.hash(new URLSearchParams({ folder: "nicolasPaillard", invalidate: "true", public_id: "profile", timestamp: timestamp, upload_preset: "ml_default" }).toString() + cloudinary.api_secret));
     formData.append("folder", "nicolasPaillard");
-    fetch(`https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`, { method: "POST", body: formData })
+    fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/upload`, { method: "POST", body: formData })
       .then(async response => {
         const data = JSON.parse(await response.text());
         if (data.public_id) return data.public_id.split("/")[1];

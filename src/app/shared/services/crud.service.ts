@@ -14,7 +14,10 @@ export interface ServiceConfig<T> {
   where?: [string | FieldPath, WhereFilterOp, any];
 }
 
-export const SERVICE_CONFIG = new InjectionToken<ServiceConfig<any>>("sets parameters for crud service constructor");
+export const SERVICE_CONFIG = new InjectionToken<ServiceConfig<any>>("sets parameters for crud service constructor", {
+  providedIn: "root",
+  factory: () => <any>{},
+});
 
 @Injectable({ providedIn: "root" })
 export class CrudService<T extends Base> {
@@ -26,17 +29,15 @@ export class CrudService<T extends Base> {
   private compareFn?: (a: T, b: T) => number;
   private db: Firestore = inject(Firestore);
   constructor(@Inject(SERVICE_CONFIG) config: ServiceConfig<T>) {
+    if (Object.keys(config).length === 0) return;
     this.type = config.type;
     this.form = config.form;
     this.collection = config.collection;
-
     if (config.compareFn) this.compareFn = config.compareFn;
     try {
       getDocs(query(collection(this.db, "data", config.collection, config.collection), orderBy(...config.order))).then(items => {
-        items.docs.forEach(doc => {
-          this.__items.push(new config.type({ ...doc.data(), id: doc.id }));
-          this._items.next(this.__items);
-        });
+        items.docs.forEach(doc => this.__items.push(new config.type({ ...doc.data(), id: doc.id })));
+        this._items.next(this.__items);
       });
     } catch (error) {
       console.error(error);
@@ -72,6 +73,8 @@ export class CrudService<T extends Base> {
       return;
     }
   };
+  getData = <T>(type: { new (...args: any[]): T }, name: string, order: [string, OrderByDirection?]): Promise<T[]> => getDocs(query(collection(this.db, "data", name, name), orderBy(...order))).then(result => result.docs.map(doc => new type({ ...doc.data(), id: doc.id })));
+
   items = () => this._items.pipe(takeUntilDestroyed());
   update = async (item: T) => {
     try {

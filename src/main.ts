@@ -7,30 +7,21 @@ import { initializeAppCheck, provideAppCheck, ReCaptchaEnterpriseProvider } from
 import { getAuth, provideAuth } from "@angular/fire/auth";
 import { getFirestore, provideFirestore } from "@angular/fire/firestore";
 import { bootstrapApplication } from "@angular/platform-browser";
-import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
-import { PreloadAllModules, provideRouter, withComponentInputBinding, withInMemoryScrolling, withPreloading } from "@angular/router";
+import { PreloadAllModules, provideRouter, withComponentInputBinding, withInMemoryScrolling, withPreloading, withViewTransitions } from "@angular/router";
 import { ConfirmationService, MessageService } from "primeng/api";
 import { providePrimeNG } from "primeng/config";
 import { AppComponent, routes } from "./app/app.component";
 import { Amber } from "./themes/amber.preset";
 
-export const cloudinaryConfig = { cloudName: "dsuvd32up" };
 bootstrapApplication(AppComponent, {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(
-      routes,
-      withPreloading(PreloadAllModules),
-      withComponentInputBinding(),
-      // withViewTransitions(),
-      withInMemoryScrolling({ scrollPositionRestoration: "enabled", anchorScrolling: "enabled" }),
-    ),
-    provideAnimationsAsync(),
+    provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding(), withViewTransitions(), withInMemoryScrolling({ scrollPositionRestoration: "enabled", anchorScrolling: "enabled" })),
     provideHttpClient(withInterceptorsFromDi()),
     providePrimeNG({ theme: { preset: Amber }, ripple: true, overlayAppendTo: "body" }),
     ConfirmationService,
     MessageService,
-    provideCloudinaryLoader("https://res.cloudinary.com/" + cloudinaryConfig.cloudName),
+    provideCloudinaryLoader("https://res.cloudinary.com/dsuvd32up"),
     provideFirebaseApp(() =>
       initializeApp({
         apiKey: "AIzaSyCK63FPXXdZiLhcEAno8bx3dRnn3TkzZ0A",

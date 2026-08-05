@@ -7,12 +7,16 @@ export class Project extends Base {
   city: string;
   company: string;
   end: Date;
+  experience: string;
   images: string;
   postcode: string;
+  skills: string[];
   start: Date;
   text: string;
   url: string;
   constructor(project: Project) {
+    if (!project.experience) project.experience = "";
+    if (!project.skills) project.skills = [];
     if (project.start && !(project.start instanceof Date)) project.start = (project.start as any).toDate();
     if (project.end && !(project.end instanceof Date)) project.end = (project.end as any).toDate();
     super(project);
@@ -32,4 +36,6 @@ export const formProject: FormGroup = new FormGroup({
   activities: new FormControl("", []),
   url: new FormControl("", []),
   images: new FormControl("", []),
+  experience: new FormControl("", []),
+  skills: new FormControl([], []),
 });

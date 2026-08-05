@@ -24,14 +24,14 @@
         <p-button *ngIf="user" (onClick)="signout()" size="large">Déconnexion</p-button>
       </div>
     </div>
-    <div class="flex max-h-0 w-full flex-col overflow-hidden px-2 transition-[max-height] lg:hidden" [ngClass]="{ 'max-h-[999px]!': menuShown.checked }">
+    <div class="flex max-h-0 w-full flex-col overflow-hidden px-2 transition-[max-height] lg:hidden" [ngClass]="{ 'max-h-249.75!': menuShown.checked }">
       <ng-container *ngFor="let route of routes">
         <p-button class="mb-2" *ngIf="!route.canActivate || user?.admin" [routerLink]="route.path" [label]="route.title + ''" [text]="true" (onClick)="menuShown.checked = false" size="large" routerLinkActive="[&>button]:border-primary!"></p-button>
       </ng-container>
     </div>
   </nav>
   <div class="shrink-0" [style.height.px]="nav.getBoundingClientRect().height + 4"></div>
-  <div class="container relative mx-auto grow overflow-x-hidden" id="router-container" [@routeAnimations]="prepareRoute(outlet)" [ngClass]="{ 'overflow-hidden!': isTransitioning }">
+  <div class="container relative mx-auto grow overflow-x-hidden" id="router-container" [ngClass]="{ 'overflow-hidden!': isTransitioning }">
     <router-outlet #outlet="outlet"></router-outlet>
   </div>
 </div>

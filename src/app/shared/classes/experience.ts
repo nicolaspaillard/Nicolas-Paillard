@@ -9,11 +9,15 @@ export class Experience extends Base {
   company: string;
   end: Date;
   postcode: string;
+  projects: string[];
+  skills: string[];
   start: Date;
   text: string;
   type: "Expérience" | "Formation" | "Évènement";
   constructor(experience: Experience) {
     // if (!experience.type) experience.type = "Expérience";
+    if (!experience.projects) experience.projects = [];
+    if (!experience.skills) experience.skills = [];
     if (experience.start && !(experience.start instanceof Date)) experience.start = (experience.start as any).toDate();
     if (experience.end && !(experience.end instanceof Date)) experience.end = (experience.end as any).toDate();
     super(experience);
@@ -32,4 +36,6 @@ export const formExperience = new FormGroup({
   city: new FormControl("", []),
   activities: new FormControl("", []),
   type: new FormControl("Expérience", [Validators.required]),
+  projects: new FormControl([], []),
+  skills: new FormControl([], []),
 });

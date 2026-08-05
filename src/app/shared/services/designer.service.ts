@@ -1,5 +1,5 @@
 import { Injectable, isDevMode } from "@angular/core";
-import { collection, doc, Firestore, getDoc, getDocs, orderBy, OrderByDirection, query, setDoc } from "@angular/fire/firestore";
+import { doc, Firestore, getDoc, setDoc } from "@angular/fire/firestore";
 import { Category } from "@classes/category";
 import { Experience } from "@classes/experience";
 import { Profile } from "@classes/profile";
@@ -13,9 +13,9 @@ import { degrees, degreesToRadians, PDFString } from "@pdfme/pdf-lib";
 import { date, dateTime, ellipse, image, line, multiVariableText, rectangle, svg, table, text, time } from "@pdfme/schemas";
 import { Designer } from "@pdfme/ui";
 import { IconNode, Link } from "lucide";
-import { TextSchema } from "node_modules/@pdfme/schemas/dist/types/src/text/types";
-import { cloudinaryConfig } from "src/main";
+import { TextSchema } from "../../../../node_modules/@pdfme/schemas/dist/types/src/text/types";
 import { Step } from "./animation.service";
+import { CrudService } from "./crud.service";
 import { ToastService } from "./toast.service";
 @Injectable({ providedIn: "root" })
 export class DesignerService {
@@ -24,13 +24,13 @@ export class DesignerService {
   private timer: NodeJS.Timeout;
   constructor(
     private toastService: ToastService,
+    private crudService: CrudService<any>,
     private db: Firestore,
   ) {}
   clear = () => this.designer.updateTemplate(this.blank);
   destroy = () => this.designer.destroy();
   export = async ({ editing }: { editing: boolean }): Promise<{ steps: Step[]; url: string }> => {
-    const getData = async <T>(type: { new (...args: any[]): T }, name: string, order: [string, OrderByDirection?]): Promise<T[]> => await getDocs(query(collection(this.db, "data", name, name), orderBy(...order))).then(result => result.docs.map(doc => new type({ ...doc.data(), id: doc.id })));
-    const [sections, experiences, categories, skills, profile] = [await getData(Section, "sections", ["rank"]), await getData(Experience, "experiences", ["start", "desc"]), await getData(Category, "categories", ["rank"]), await getData(Skill, "skills", ["title"]), await getData(Profile, "profile", ["lastName"])];
+    const [sections, experiences, categories, skills, profile] = [await this.crudService.getData(Section, "sections", ["rank"]), await this.crudService.getData(Experience, "experiences", ["start", "desc"]), await this.crudService.getData(Category, "categories", ["rank"]), await this.crudService.getData(Skill, "skills", ["title"]), await this.crudService.getData(Profile, "profile", ["lastName"])];
     let steps: Step[] = [];
     if (true || !isDevMode())
       steps = [
@@ -45,7 +45,7 @@ export class DesignerService {
         {
           title: profile[0].firstName + " " + profile[0].lastName,
           subtitle: profile[0].title,
-          picture: await fetch(new Cloudinary({ cloud: { cloudName: cloudinaryConfig.cloudName } }).image("nicolasPaillard/profile").resize(fill().width(500).aspectRatio("1.0")).toURL()).then(
+          picture: await fetch(new Cloudinary({ cloud: { cloudName: "dsuvd32up" } }).image("nicolasPaillard/profile").resize(fill().width(500).aspectRatio("1.0")).toURL()).then(
             response =>
               new Promise(async (resolve, reject) => {
                 const reader = new FileReader();
