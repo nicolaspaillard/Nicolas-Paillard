@@ -1,6 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
-import { Firestore } from "@angular/fire/firestore";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { formProject, Project } from "@classes/project";
 import { CrudComponent } from "@components/crud.component";
@@ -32,12 +31,12 @@ const SERVICE_VARIABLE: ServiceConfig<Project> = {
   selector: "app-projects",
   imports: [CommonModule, ReactiveFormsModule, ProjectComponent, ButtonModule, DialogModule, TooltipModule, InputGroupModule, DatePickerModule, InputTextModule, TextareaModule, FileUploadModule, PromptComponent, PromptButtonComponent],
   templateUrl: "./projects.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [CrudService<Project>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class ProjectsComponent extends CrudComponent<Project> {
   activities: string[] = [];
   images: string;
-  private db: Firestore;
   constructor(crudService: CrudService<Project>, authService: AuthService, confirmService: ConfirmService) {
     super(crudService, authService, confirmService);
   }
@@ -80,11 +79,24 @@ export class ProjectsComponent extends CrudComponent<Project> {
     for (let image of images.split(";")) {
       const formdata = new FormData();
       formdata.append("public_id", "nicolasPaillard/" + image);
-      formdata.append("signature", sha1.hash(new URLSearchParams({ public_id: "nicolasPaillard/" + image, timestamp: timestamp }).toString().replace("%2F", "/") + cloudinary.api_secret));
+      formdata.append(
+        "signature",
+        sha1.hash(
+          new URLSearchParams({
+            public_id: "nicolasPaillard/" + image,
+            timestamp: timestamp,
+          })
+            .toString()
+            .replace("%2F", "/") + cloudinary.api_secret,
+        ),
+      );
       formdata.append("api_key", cloudinary.api_key);
       formdata.append("timestamp", timestamp);
       promises.push(
-        fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/destroy`, { method: "POST", body: formdata })
+        fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/destroy`, {
+          method: "POST",
+          body: formdata,
+        })
           .then(async response => {
             const data = JSON.parse(await response.text());
             if (["ok", "not found"].includes(data.result)) return true;
@@ -110,10 +122,22 @@ export class ProjectsComponent extends CrudComponent<Project> {
       formData.append("api_key", cloudinary.api_key);
       formData.append("upload_preset", "ml_default");
       formData.append("timestamp", timestamp);
-      formData.append("signature", sha1.hash(new URLSearchParams({ folder: "nicolasPaillard", timestamp: timestamp, upload_preset: "ml_default" }).toString() + cloudinary.api_secret));
+      formData.append(
+        "signature",
+        sha1.hash(
+          new URLSearchParams({
+            folder: "nicolasPaillard",
+            timestamp: timestamp,
+            upload_preset: "ml_default",
+          }).toString() + cloudinary.api_secret,
+        ),
+      );
       formData.append("folder", "nicolasPaillard");
       promises.push(
-        fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/upload`, { method: "POST", body: formData })
+        fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/upload`, {
+          method: "POST",
+          body: formData,
+        })
           .then(async response => {
             const data = JSON.parse(await response.text());
             if (data.public_id) return data.public_id.split("/")[1];

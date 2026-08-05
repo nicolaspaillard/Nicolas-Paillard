@@ -51,31 +51,31 @@
     <label class="md:col-span-2">
       Activités
       <div class="relative flex items-center justify-between" *ngFor="let activity of activities">
-        <span class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="act.value = activity">•&nbsp;&nbsp;{{ activity }}</span>
+        <span class="p-button-sm p-button-text p-button-contrast max-w-75 cursor-pointer truncate rounded-md" (click)="act.value = activity">•&nbsp;&nbsp;{{ activity }}</span>
         <div class="flex">
           <p-button [disabled]="activities[0] == activity" [text]="true" (onClick)="move(activity, true)" icon="pi pi-angle-up" styleClass="w-auto" size="small" severity="secondary" />
           <p-button [disabled]="activities[activities.length - 1] == activity" [text]="true" (onClick)="move(activity)" icon="pi pi-angle-down" styleClass="w-auto" size="small" severity="secondary" />
           <p-button [text]="true" (onClick)="remove(activity)" icon="pi pi-trash" styleClass="w-auto" size="small" severity="danger" />
         </div>
       </div>
-      <p-inputGroup>
+      <p-inputgroup>
         <input #act pInputText placeholder="Activité" />
         <button [disabled]="!act.value" (click)="add(act.value)" type="button" pButton icon="pi pi-plus"></button>
-      </p-inputGroup>
+      </p-inputgroup>
     </label>
     <label class="md:col-span-2">
       Images
       <span class="opacity-50" *ngIf="isEditing && !images._files.length">&nbsp;(Aucune modification)</span>
-      <p-fileUpload #images [multiple]="true" accept="image/*">
+      <p-fileupload #images [multiple]="true" accept="image/*">
         <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
           <p-button [outlined]="true" (onClick)="chooseCallback()" icon="pi pi-images"></p-button>
           <p-button [outlined]="true" [disabled]="!files || files.length === 0" (onClick)="clearCallback()" icon="pi pi-times" severity="danger" />
         </ng-template>
-      </p-fileUpload>
+      </p-fileupload>
     </label>
     <div class="flex justify-end gap-2 md:col-span-2">
-      <p-button [text]="true" (onClick)="isShown = false">Annuler</p-button>
-      <p-button [disabled]="!form.valid" (onClick)="isEditing ? update(images._files) : create(images._files); isShown = false">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
+      <button [text]="true" (onClick)="isShown = false" pButton>Annuler</button>
+      <button [disabled]="!form.valid" (onClick)="isEditing ? update(images._files()) : create(images._files()); isShown = false" pButton>{{ isEditing ? "Modifier" : "Ajouter" }}</button>
     </div>
   </form>
 </p-dialog>

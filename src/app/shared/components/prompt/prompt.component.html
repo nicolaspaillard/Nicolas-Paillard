@@ -20,9 +20,9 @@
         </div>
       }
     </div>
-    <p-inputGroup>
+    <p-inputgroup>
       <input #prompt pInputText placeholder="Prompt" />
       <button [disabled]="!prompt.value || isThinking" [loading]="isThinking" (click)="this.prompt(prompt.value); prompt.value = ''" pButton label="Discuter"></button>
-    </p-inputGroup>
+    </p-inputgroup>
   </div>
 </p-dialog>

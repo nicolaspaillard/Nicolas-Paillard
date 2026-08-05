@@ -1,5 +1,5 @@
 import { provideCloudinaryLoader } from "@angular/common";
-import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from "@angular/common/http";
 import { provideZoneChangeDetection } from "@angular/core";
 import { getAnalytics, provideAnalytics, ScreenTrackingService, UserTrackingService } from "@angular/fire/analytics";
 import { getApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
@@ -16,9 +16,22 @@ import { Amber } from "./themes/amber.preset";
 bootstrapApplication(AppComponent, {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding(), withViewTransitions(), withInMemoryScrolling({ scrollPositionRestoration: "enabled", anchorScrolling: "enabled" })),
-    provideHttpClient(withInterceptorsFromDi()),
-    providePrimeNG({ theme: { preset: Amber }, ripple: true, overlayAppendTo: "body" }),
+    provideRouter(
+      routes,
+      withPreloading(PreloadAllModules),
+      withComponentInputBinding(),
+      withViewTransitions(),
+      withInMemoryScrolling({
+        scrollPositionRestoration: "enabled",
+        anchorScrolling: "enabled",
+      }),
+    ),
+    provideHttpClient(withXhr(), withInterceptorsFromDi()),
+    providePrimeNG({
+      theme: { preset: Amber },
+      ripple: true,
+      overlayAppendTo: "body",
+    }),
     ConfirmationService,
     MessageService,
     provideCloudinaryLoader("https://res.cloudinary.com/dsuvd32up"),
@@ -38,7 +51,12 @@ bootstrapApplication(AppComponent, {
     provideAnalytics(() => getAnalytics()),
     ScreenTrackingService,
     UserTrackingService,
-    provideAppCheck(() => initializeAppCheck(getApp(), { provider: new ReCaptchaEnterpriseProvider("6Lcwe_kqAAAAAA9b5kizgsjvlZNp1_stQSEc5iSs"), isTokenAutoRefreshEnabled: true })),
+    provideAppCheck(() =>
+      initializeAppCheck(getApp(), {
+        provider: new ReCaptchaEnterpriseProvider("6Lcwe_kqAAAAAA9b5kizgsjvlZNp1_stQSEc5iSs"),
+        isTokenAutoRefreshEnabled: true,
+      }),
+    ),
     provideFirestore(() => getFirestore()),
   ],
 }).catch(err => console.error(err));

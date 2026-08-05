@@ -1,5 +1,10 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { User } from "@angular/fire/auth";
 import { AuthService } from "@services/auth.service";
 import { DesignerService } from "@services/designer.service";
@@ -11,6 +16,7 @@ import { SplitButton } from "primeng/splitbutton";
 @Component({
   selector: "app-designer",
   imports: [ButtonModule, FileUploadModule, SplitButton, CommonModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: "./designer.component.html",
 })
 export class DesignerComponent implements OnInit, OnDestroy {
@@ -28,12 +34,18 @@ export class DesignerComponent implements OnInit, OnDestroy {
     {
       label: "Importer modèle",
       icon: "pi pi-upload",
-      command: () => (document.querySelector("#upload-model button")! as HTMLElement).click(),
+      command: () =>
+        (
+          document.querySelector("#upload-model button")! as HTMLElement
+        ).click(),
     },
     {
       label: "Importer template",
       icon: "pi pi-upload",
-      command: () => (document.querySelector("#upload-template button")! as HTMLElement).click(),
+      command: () =>
+        (
+          document.querySelector("#upload-template button")! as HTMLElement
+        ).click(),
     },
     {
       label: "Télécharger",
@@ -51,13 +63,15 @@ export class DesignerComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private designerService: DesignerService,
   ) {
-    this.authService.user().subscribe(user => (this.user = user));
+    this.authService.user().subscribe((user) => (this.user = user));
   }
   clear = () => this.designerService.clear();
   export = () => this.designerService.export({ editing: true });
   exportTemplate = () => this.designerService.exportTemplate();
-  import = (event: FileUploadHandlerEvent) => this.designerService.import(event.files[0]);
-  importTemplate = (event: FileUploadHandlerEvent) => this.designerService.importTemplate(event.files[0]);
+  import = (event: FileUploadHandlerEvent) =>
+    this.designerService.import(event.files[0]);
+  importTemplate = (event: FileUploadHandlerEvent) =>
+    this.designerService.importTemplate(event.files[0]);
   load = () => this.designerService.init("container");
   ngOnDestroy() {
     this.designerService.destroy();

@@ -1,12 +1,34 @@
 // import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
-import { AuthGuard, AuthPipe, customClaims, loggedIn } from "@angular/fire/auth-guard";
-import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
+import {
+  AuthGuard,
+  AuthPipe,
+  customClaims,
+  loggedIn,
+} from "@angular/fire/auth-guard";
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from "@angular/forms";
 import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
-import { ActivatedRoute, NavigationEnd, NavigationStart, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  NavigationStart,
+  Route,
+  Router,
+  RouterModule,
+  RouterOutlet,
+  Routes,
+} from "@angular/router";
 import { AnimationComponent } from "@components/animation/animation.component";
 import { usePreset } from "@primeuix/themes";
 import { AnimationService } from "@services/animation.service";
@@ -27,27 +49,67 @@ import { TooltipModule } from "primeng/tooltip";
 import { forkJoin, map, mergeMap, of, pipe } from "rxjs";
 
 const combined: AuthPipe = pipe(
-  mergeMap(user => forkJoin([loggedIn(of(user)), customClaims(of(user!))])),
+  mergeMap((user) => forkJoin([loggedIn(of(user)), customClaims(of(user!))])),
   map(([isLoggedIn, claims]) => (isLoggedIn && claims["admin"] ? true : "")),
 );
 
 export const routes: Routes = [
-  { path: "", title: "Nicolas Paillard", loadComponent: () => import("@routes/home/home.component").then(m => m.HomeComponent), data: { animation: 0 } },
-  { path: "career", title: "Carrière", loadComponent: () => import("@routes/career/career.component").then(m => m.CareerComponent), data: { animation: 1 } },
-  { path: "skills", title: "Compétences", loadComponent: () => import("@routes/skills/skills.component").then(m => m.SkillsComponent), data: { animation: 2 } },
-  { path: "projects", title: "Projets", loadComponent: () => import("@routes/projects/projects.component").then(m => m.ProjectsComponent), data: { animation: 3 } },
-  { path: "designer", title: "Designer", loadComponent: () => import("@routes/designer/designer.component").then(m => m.DesignerComponent), data: { animation: 4 } },
+  {
+    path: "",
+    title: "Nicolas Paillard",
+    loadComponent: () =>
+      import("@routes/home/home.component").then((m) => m.HomeComponent),
+    data: { animation: 0 },
+  },
+  {
+    path: "career",
+    title: "Carrière",
+    loadComponent: () =>
+      import("@routes/career/career.component").then((m) => m.CareerComponent),
+    data: { animation: 1 },
+  },
+  {
+    path: "skills",
+    title: "Compétences",
+    loadComponent: () =>
+      import("@routes/skills/skills.component").then((m) => m.SkillsComponent),
+    data: { animation: 2 },
+  },
+  {
+    path: "projects",
+    title: "Projets",
+    loadComponent: () =>
+      import("@routes/projects/projects.component").then(
+        (m) => m.ProjectsComponent,
+      ),
+    data: { animation: 3 },
+  },
+  {
+    path: "designer",
+    title: "Designer",
+    loadComponent: () =>
+      import("@routes/designer/designer.component").then(
+        (m) => m.DesignerComponent,
+      ),
+    data: { animation: 4 },
+  },
   {
     path: "applications",
     title: "Candidatures",
-    loadComponent: () => import("@routes/applications/applications.component").then(m => m.ApplicationsComponent),
+    loadComponent: () =>
+      import("@routes/applications/applications.component").then(
+        (m) => m.ApplicationsComponent,
+      ),
     canActivate: [AuthGuard],
     data: { animation: 5, authGuardPipe: () => combined },
   },
   {
     path: "profile",
     title: "Profil",
-    loadComponent: () => import("@routes/profile/profile.component").then(m => m.ProfileComponent),
+    loadComponent: () =>
+      import("@routes/profile/profile.component").then(
+        (m) => m.ProfileComponent,
+      ),
     canActivate: [AuthGuard],
     data: { animation: 6, authGuardPipe: () => combined },
   },
@@ -58,23 +120,56 @@ export const routes: Routes = [
 @Component({
   selector: "app-root",
   // animations: [trigger("routeAnimations", [transition(":increment", slideTo("right")), transition(":decrement", slideTo("left"))])],
-  imports: [CommonModule, RouterModule, RouterOutlet, TooltipModule, ReactiveFormsModule, ButtonModule, DialogModule, ToastModule, ConfirmDialogModule, ToggleSwitchModule, InputTextModule, PasswordModule, AnimationComponent, ProgressSpinnerModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    RouterOutlet,
+    TooltipModule,
+    ReactiveFormsModule,
+    ButtonModule,
+    DialogModule,
+    ToastModule,
+    ConfirmDialogModule,
+    ToggleSwitchModule,
+    InputTextModule,
+    PasswordModule,
+    AnimationComponent,
+    ProgressSpinnerModule,
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: "./app.component.html",
 })
 export class AppComponent implements OnInit {
   enableMatrix: boolean = false;
   formReset = new FormGroup(
     {
-      password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]),
+      password: new FormControl("", [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(4096),
+        Validators.pattern(
+          /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/,
+        ),
+      ]),
       passwordrepeat: new FormControl("", [Validators.required]),
     },
     { validators: CustomValidators.matchFields("password", "passwordrepeat") },
   );
-  formSignin = new FormGroup({ email: new FormControl("", [Validators.required, Validators.email]), password: new FormControl("", [Validators.required]) });
+  formSignin = new FormGroup({
+    email: new FormControl("", [Validators.required, Validators.email]),
+    password: new FormControl("", [Validators.required]),
+  });
   formSignup = new FormGroup(
     {
       email: new FormControl("", [Validators.required, Validators.email]),
-      password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]),
+      password: new FormControl("", [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(4096),
+        Validators.pattern(
+          /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/,
+        ),
+      ]),
       passwordrepeat: new FormControl("", [Validators.required]),
     },
     { validators: CustomValidators.matchFields("password", "passwordrepeat") },
@@ -90,7 +185,7 @@ export class AppComponent implements OnInit {
   isTransitioning: boolean = false;
   params: any = {};
   resume: SafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl("");
-  routes: Route[] = routes.filter(route => route.path && route.data);
+  routes: Route[] = routes.filter((route) => route.path && route.data);
   user: { admin: boolean; user: User } | undefined;
   // private enableDarkMode: boolean = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
   private interval: NodeJS.Timeout;
@@ -103,7 +198,9 @@ export class AppComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private animationService: AnimationService,
   ) {
-    this.route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => (this.params = params));
+    this.route.queryParams
+      .pipe(takeUntilDestroyed())
+      .subscribe((params) => (this.params = params));
     switch (location.pathname.split("/").pop()) {
       case "cv":
         this.downloadCV();
@@ -116,8 +213,8 @@ export class AppComponent implements OnInit {
         break;
     }
     // window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => (this.enableDarkMode = e.matches));
-    this.authService.user().subscribe(user => (this.user = user));
-    this.router.events.subscribe(event => {
+    this.authService.user().subscribe((user) => (this.user = user));
+    this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.isTransitioning = true;
         document.getElementById("router-container")!.scrollTop = 0;
@@ -137,9 +234,13 @@ export class AppComponent implements OnInit {
       let fontSize: number = 10;
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      for (let i = 0; i < canvas.width / fontSize; i++) drops[i] = canvas.height + 1;
+      for (let i = 0; i < canvas.width / fontSize; i++)
+        drops[i] = canvas.height + 1;
       this.interval = setInterval(() => {
-        let letters: string[] = "ABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZ".split("");
+        let letters: string[] =
+          "ABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZ".split(
+            "",
+          );
         context.fillStyle = "rgba(0, 0, 0, .18)";
         context.fillRect(0, 0, canvas.width, canvas.height);
         for (let i = 0; i < drops.length; i++) {
@@ -147,17 +248,28 @@ export class AppComponent implements OnInit {
           context.fillStyle = "rgba(0,200,0,0.8)";
           context.fillText(text, i * fontSize, drops[i] * fontSize);
           drops[i]++;
-          if (drops[i] * fontSize > canvas.height && Math.random() > 0.99) drops[i] = 0;
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.99)
+            drops[i] = 0;
         }
       }, 60);
     } else {
       if (document.querySelectorAll("#animation>span").length) return;
       for (let i = 0; i < 15; i++) {
         let shape = document.createElement("span");
-        shape.classList.add("border-primary", "border", "border-2", "absolute", "animate-slide", "rounded-lg");
+        shape.classList.add(
+          "border-primary",
+          "border",
+          "border-2",
+          "absolute",
+          "animate-slide",
+          "rounded-lg",
+        );
         shape.style.animationDelay = Math.random() * 3 + "s";
         shape.style.animationDuration = Math.random() * 4 + 4 + "s";
-        shape.style.setProperty("--slide-distance", (Math.random() < 0.5 ? "" : "-") + Math.random() * 100 + 50 + "px");
+        shape.style.setProperty(
+          "--slide-distance",
+          (Math.random() < 0.5 ? "" : "-") + Math.random() * 100 + 50 + "px",
+        );
         shape.style.width = Math.random() * 250 + 50 + "px";
         shape.style.height = Math.random() * 250 + 50 + "px";
         shape.style.left = Math.random() * 100 + "%";
@@ -172,35 +284,63 @@ export class AppComponent implements OnInit {
     this.animate();
   };
   downloadCV = () => {
-    this.designerService.export({ editing: false }).then(res => {
+    this.designerService.export({ editing: false }).then((res) => {
       this.resume = this.sanitizer.bypassSecurityTrustResourceUrl(res.url);
-      if (res.steps.length) this.animationService.animate({ steps: res.steps, callback: () => (this.isResumeShown = true) });
+      if (res.steps.length)
+        this.animationService.animate({
+          steps: res.steps,
+          callback: () => (this.isResumeShown = true),
+        });
     });
   };
   ngOnInit() {
     this.animate();
   }
-  prepareRoute = (outlet: RouterOutlet) => outlet && outlet.activatedRouteData && outlet.activatedRouteData["animation"];
+  prepareRoute = (outlet: RouterOutlet) =>
+    outlet &&
+    outlet.activatedRouteData &&
+    outlet.activatedRouteData["animation"];
   reset = () => {
     this.isResetting = true;
-    this.authService.reset(this.params.oobCode, this.formReset.controls.password.value!).then(result => {
-      this.isResetting = false;
-      if (result) {
-        this.toastService.success("Réinitialisation réussie", "Votre mot de passe à bien été réinitialisé, vous pouvez à présent vous connecter");
-        this.formSignin.controls.password.setValue(this.formReset.controls.password.value);
-        this.isResetShown = false;
-        this.isSigninShown = true;
-      } else this.toastService.error("Échec de la réinitialisation", "Une erreur est survenue lors de la réinitialisation du mot de passe");
-    });
+    this.authService
+      .reset(this.params.oobCode, this.formReset.controls.password.value!)
+      .then((result) => {
+        this.isResetting = false;
+        if (result) {
+          this.toastService.success(
+            "Réinitialisation réussie",
+            "Votre mot de passe à bien été réinitialisé, vous pouvez à présent vous connecter",
+          );
+          this.formSignin.controls.password.setValue(
+            this.formReset.controls.password.value,
+          );
+          this.isResetShown = false;
+          this.isSigninShown = true;
+        } else
+          this.toastService.error(
+            "Échec de la réinitialisation",
+            "Une erreur est survenue lors de la réinitialisation du mot de passe",
+          );
+      });
   };
   send = () => {
     if (!this.formSignin.controls.email.invalid) {
       this.isSending = true;
-      this.authService.send(this.formSignin.controls.email.value!).then(result => {
-        this.isSending = false;
-        if (result) this.toastService.success("Envoi effectué", `Le lien de réinitialisation de votre mot de passe vient de vous être envoyé`);
-        else this.toastService.error("Échec de l'envoi", `Une erreur est survenue lors de l'envoi`);
-      });
+      this.authService
+        .send(this.formSignin.controls.email.value!)
+        .then((result) => {
+          this.isSending = false;
+          if (result)
+            this.toastService.success(
+              "Envoi effectué",
+              `Le lien de réinitialisation de votre mot de passe vient de vous être envoyé`,
+            );
+          else
+            this.toastService.error(
+              "Échec de l'envoi",
+              `Une erreur est survenue lors de l'envoi`,
+            );
+        });
     } else {
       this.formSignin.controls.email.markAsTouched();
       this.formSignin.controls.email.setErrors({ required: true });
@@ -208,31 +348,41 @@ export class AppComponent implements OnInit {
   };
   signin = () => {
     this.isSigningIn = true;
-    this.authService.signin(this.formSignin.value.email!, this.formSignin.value.password!).then((valid: boolean) => {
-      if (!valid) this.formSignin.setErrors({ invalid: true });
-      else this.isSigninShown = false;
-      this.isSigningIn = false;
-    });
+    this.authService
+      .signin(this.formSignin.value.email!, this.formSignin.value.password!)
+      .then((valid: boolean) => {
+        if (!valid) this.formSignin.setErrors({ invalid: true });
+        else this.isSigninShown = false;
+        this.isSigningIn = false;
+      });
   };
-  signout = () => this.authService.signout().then(() => this.router.navigate([""]));
+  signout = () =>
+    this.authService.signout().then(() => this.router.navigate([""]));
   signup = () => {
     this.isSigningUp = true;
-    this.authService.signup(this.formSignup.value.email!, this.formSignup.value.password!).then(result => {
-      if (result === true) this.isSignupShown = false;
-      else {
-        this.formSignup.controls[result[0]].markAsTouched();
-        this.formSignup.controls[result[0]].markAsDirty();
-        this.formSignup.controls[result[0]].setErrors(result[1]);
-      }
-      this.isSigningUp = false;
-    });
+    this.authService
+      .signup(this.formSignup.value.email!, this.formSignup.value.password!)
+      .then((result) => {
+        if (result === true) this.isSignupShown = false;
+        else {
+          this.formSignup.controls[result[0]].markAsTouched();
+          this.formSignup.controls[result[0]].markAsDirty();
+          this.formSignup.controls[result[0]].setErrors(result[1]);
+        }
+        this.isSigningUp = false;
+      });
   };
 }
 
 class CustomValidators {
   static matchFields(a: string, b: string): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      if (control.get(a)!.value && control.get(b)!.value && control.get(a)!.value != control.get(b)!.value) control.get(b)!.setErrors({ notmatching: true });
+      if (
+        control.get(a)!.value &&
+        control.get(b)!.value &&
+        control.get(a)!.value != control.get(b)!.value
+      )
+        control.get(b)!.setErrors({ notmatching: true });
       return null;
     };
   }

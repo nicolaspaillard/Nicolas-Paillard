@@ -1,5 +1,11 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { User } from "@angular/fire/auth";
 import { AuthService } from "@app/shared/services/auth.service";
 import { Section } from "@classes/section";
@@ -8,6 +14,7 @@ import { ButtonModule } from "primeng/button";
 @Component({
   selector: "app-section",
   imports: [CommonModule, ButtonModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: "./section.component.html",
 })
 export class SectionComponent {

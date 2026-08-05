@@ -65,19 +65,19 @@
           <p-button [text]="true" (onClick)="remove(activity)" icon="pi pi-trash" styleClass="w-auto" size="small" severity="danger" />
         </div>
       </div>
-      <p-inputGroup>
+      <p-inputgroup>
         <input #act pInputText placeholder="Activité" />
         <p-button [disabled]="!act.value" (onClick)="add(act.value)" icon="pi pi-plus" />
-      </p-inputGroup>
+      </p-inputgroup>
     </label>
     <div class="grid gap-2 md:col-span-2 md:grid-cols-2">
       <label>
         Projets
-        <p-multiSelect [options]="projects" [showClear]="true" formControlName="skills" optionLabel="title" optionValue="id" placeholder="Choisir les projets"></p-multiSelect>
+        <p-select [multiple]="true" [options]="projects" [showClear]="true" formControlName="skills" optionLabel="title" optionValue="id" placeholder="Choisir les projets"></p-select>
       </label>
       <label>
         Compétences
-        <p-multiSelect [options]="skills" [showClear]="true" formControlName="skills" optionLabel="title" optionValue="id" placeholder="Choisir les compétences"></p-multiSelect>
+        <p-select [multiple]="true" [options]="skills" [showClear]="true" formControlName="skills" optionLabel="title" optionValue="id" placeholder="Choisir les compétences"></p-select>
       </label>
     </div>
     <div class="flex justify-end gap-2 md:col-span-2">

@@ -1,5 +1,11 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { User } from "@angular/fire/auth";
 import { ReactiveFormsModule } from "@angular/forms";
 import { AuthService } from "@app/shared/services/auth.service";
@@ -11,6 +17,7 @@ import { SkillComponent } from "./skill/skill.component";
 @Component({
   selector: "app-category",
   imports: [CommonModule, ReactiveFormsModule, SkillComponent, ButtonModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: "./category.component.html",
 })
 export class CategoryComponent {

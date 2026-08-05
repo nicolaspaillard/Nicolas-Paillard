@@ -1,5 +1,11 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { User } from "@angular/fire/auth";
 import { AuthService } from "@app/shared/services/auth.service";
 import { Experience } from "@classes/experience";
@@ -9,6 +15,7 @@ import { TagModule } from "primeng/tag";
 @Component({
   selector: "app-experience",
   imports: [CommonModule, ButtonModule, TagModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: "./experience.component.html",
 })
 export class ExperienceComponent {

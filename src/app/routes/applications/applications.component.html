@@ -5,35 +5,35 @@
       <tr>
         <th pSortableColumn="title">
           Titre
-          <p-sortIcon field="title" />
+          <p-sorticon field="title" />
         </th>
         <th pSortableColumn="activity">
           Activité
-          <p-sortIcon field="activity" />
+          <p-sorticon field="activity" />
         </th>
         <th pSortableColumn="company">
           Société
-          <p-sortIcon field="company" />
+          <p-sorticon field="company" />
         </th>
         <th pSortableColumn="sector">
           Secteur
-          <p-sortIcon field="sector" />
+          <p-sorticon field="sector" />
         </th>
         <th pSortableColumn="contactDate">
           Contact
-          <p-sortIcon field="contactDate" />
+          <p-sorticon field="contactDate" />
         </th>
         <th pSortableColumn="relaunchDate">
           Relance
-          <p-sortIcon field="relaunchDate" />
+          <p-sorticon field="relaunchDate" />
         </th>
         <th pSortableColumn="answerDate">
           Réponse
-          <p-sortIcon field="answerDate" />
+          <p-sorticon field="answerDate" />
         </th>
         <th pSortableColumn="answer">
           Réponse
-          <p-sortIcon field="answer" />
+          <p-sorticon field="answer" />
         </th>
       </tr>
     </ng-template>
@@ -138,10 +138,10 @@
           <p-button [text]="true" (onClick)="remove(link, 'links')" icon="pi pi-trash" size="small" severity="danger" />
         </div>
       </div>
-      <p-inputGroup>
+      <p-inputgroup>
         <input id="lnk" #lnk pInputText placeholder="Lien" />
         <button [disabled]="!lnk.value" (click)="add(lnk.value, 'links')" type="button" pButton icon="pi pi-plus"></button>
-      </p-inputGroup>
+      </p-inputgroup>
     </label>
     <label for="ctt">
       Contacts
@@ -155,10 +155,10 @@
           </div>
         </div>
       </ng-container>
-      <p-inputGroup>
+      <p-inputgroup>
         <input id="ctt" #ctt pInputText placeholder="Contact" />
         <button [disabled]="!ctt.value" (click)="add(ctt.value, 'contacts')" type="button" pButton icon="pi pi-plus"></button>
-      </p-inputGroup>
+      </p-inputgroup>
     </label>
     <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
       <label>
