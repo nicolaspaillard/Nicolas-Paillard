@@ -1,4 +1,3 @@
-import { CommonModule } from "@angular/common";
 import { Component, EventEmitter, Input, Output, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
@@ -8,7 +7,7 @@ import { ButtonModule } from "@openng/optimus-ui/button";
 
 @Component({
   selector: "app-section",
-  imports: [CommonModule, ButtonModule],
+  imports: [ButtonModule],
   templateUrl: "./section.component.html",
 })
 export class SectionComponent {
@@ -20,6 +19,6 @@ export class SectionComponent {
     this.authService
       .user()
       .pipe(takeUntilDestroyed())
-      .subscribe(user => this.user.set(user ? { ...user } : undefined));
+      .subscribe((user) => this.user.set(user ? { ...user } : undefined));
   }
 }

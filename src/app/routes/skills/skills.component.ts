@@ -1,4 +1,3 @@
-import { CommonModule } from "@angular/common";
 import { Component, Inject, InjectionToken, signal } from "@angular/core";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { Category, formCategory } from "@classes/category";
@@ -11,7 +10,11 @@ import { InputTextModule } from "@openng/optimus-ui/inputtext";
 import { SelectModule } from "@openng/optimus-ui/select";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
-import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
+import {
+  CrudService,
+  SERVICE_CONFIG,
+  ServiceConfig,
+} from "@services/crud.service";
 import { CategoryComponent } from "./category/category.component";
 
 const SERVICE_VARIABLE: ServiceConfig<Category> = {
@@ -23,9 +26,20 @@ const SERVICE_VARIABLE: ServiceConfig<Category> = {
 
 @Component({
   selector: "app-skills",
-  imports: [ReactiveFormsModule, CommonModule, CategoryComponent, ButtonModule, DialogModule, InputTextModule, SelectModule, InputNumberModule],
+  imports: [
+    ReactiveFormsModule,
+    CategoryComponent,
+    ButtonModule,
+    DialogModule,
+    InputTextModule,
+    SelectModule,
+    InputNumberModule,
+  ],
   templateUrl: "./skills.component.html",
-  providers: [CrudService<Category>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
+  providers: [
+    CrudService<Category>,
+    { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE },
+  ],
 })
 export class SkillsComponent extends CrudComponent<Category> {
   devIcons: string[] = [
@@ -1572,10 +1586,14 @@ export class SkillsComponent extends CrudComponent<Category> {
     confirmService: ConfirmService,
   ) {
     super(crudService, authService, confirmService);
-    this.crudServiceSkills.items().subscribe(skills => this.skills.set([...skills]));
+    this.crudServiceSkills
+      .items()
+      .subscribe((skills) => this.skills.set([...skills]));
   }
   createCategory = async () =>
-    !this.items().some(category => category.id === formSkill.get("category")?.value)
+    !this.items().some(
+      (category) => category.id === formSkill.get("category")?.value,
+    )
       ? formSkill.get("category")?.setValue(
           await this.create({
             id: "",
@@ -1584,12 +1602,19 @@ export class SkillsComponent extends CrudComponent<Category> {
           }),
         )
       : null;
-  createSkill = async () => this.createCategory().then(() => this.crudServiceSkills.create(formSkill.value));
+  createSkill = async () =>
+    this.createCategory().then(() =>
+      this.crudServiceSkills.create(formSkill.value),
+    );
   deleteSkill = (skill: Skill) =>
     this.confirmService.confirm({
       message: `Voulez-vous vraiment supprimer ${skill.title}`,
       accept: () => this.crudServiceSkills.delete(skill),
     });
-  filter = (category: Category) => (skill: Skill) => skill.category === category.id;
-  updateSkill = async () => this.createCategory().then(() => this.crudServiceSkills.update(formSkill.value));
+  filter = (category: Category) => (skill: Skill) =>
+    skill.category === category.id;
+  updateSkill = async () =>
+    this.createCategory().then(() =>
+      this.crudServiceSkills.update(formSkill.value),
+    );
 }

@@ -1,36 +1,99 @@
-<div class="flex min-h-full flex-col items-center justify-center gap-5 p-5 lg:gap-10 lg:p-10">
+<div
+  class="flex min-h-full flex-col items-center justify-center gap-5 p-5 lg:gap-10 lg:p-10"
+>
   <div class="flex w-75 max-w-full flex-col lg:w-auto lg:flex-row">
-    <div class="group relative aspect-square w-75 max-w-full overflow-hidden rounded-t-(--p-overlay-modal-border-radius) lg:rounded-l-(--p-overlay-modal-border-radius) lg:rounded-t-none">
-      <img ngSrc="nicolaspaillard/profile" sizes="(max-width: 768px) 100vw, 30vw" priority placeholder fill />
+    <div
+      class="group relative aspect-square w-75 max-w-full overflow-hidden rounded-t-(--p-overlay-modal-border-radius) lg:rounded-l-(--p-overlay-modal-border-radius) lg:rounded-t-none"
+    >
+      <img
+        ngSrc="nicolaspaillard/profile"
+        sizes="(max-width: 768px) 100vw, 30vw"
+        priority
+        placeholder
+        fill
+      />
     </div>
-    <div class="card flex flex-col justify-center rounded-t-none border-t-0 p-5 lg:rounded-l-none lg:rounded-t-(--p-overlay-modal-border-radius) lg:border-l-0 lg:border-t-2 lg:p-10">
-      <h1 class="m-0 -mb-2 truncate text-2xl font-light tracking-wider lg:text-4xl">{{ profile ? profile.firstName : "" }} {{ profile ? profile.lastName : "" }}</h1>
-      <ngx-typed-js class="text-lg lg:text-xl" [strings]="strings" [loop]="true" [shuffle]="true" [backSpeed]="30" [typeSpeed]="30">
+    <div
+      class="card flex flex-col justify-center rounded-t-none border-t-0 p-5 lg:rounded-l-none lg:rounded-t-(--p-overlay-modal-border-radius) lg:border-l-0 lg:border-t-2 lg:p-10"
+    >
+      <h1
+        class="m-0 -mb-2 truncate text-2xl font-light tracking-wider lg:text-4xl"
+      >
+        {{ profile ? profile.firstName : "" }}
+        {{ profile ? profile.lastName : "" }}
+      </h1>
+      <ngx-typed-js
+        class="text-lg lg:text-xl"
+        [strings]="strings"
+        [loop]="true"
+        [shuffle]="true"
+        [backSpeed]="30"
+        [typeSpeed]="30"
+      >
         <i class="block truncate">
           Développeur
           <span class="[&>span]:text-primary!">
-            <span class="typing after:border-primary relative after:absolute after:left-0 after:top-full after:z-10 after:w-full after:-translate-y-full after:border-b-2 after:border-solid after:content-['']"></span>
+            <span
+              class="typing after:border-primary relative after:absolute after:left-0 after:top-full after:z-10 after:w-full after:-translate-y-full after:border-b-2 after:border-solid after:content-['']"
+            ></span>
           </span>
         </i>
       </ngx-typed-js>
       <div class="mt-3 flex gap-2">
-        <a href="https://{{ profile ? profile.linkedin : '' }}" target="_blank"><img class="w-8" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/linkedin/linkedin-original.svg" /></a>
-        <a href="https://{{ profile ? profile.github : '' }}" target="_blank"><img class="invert w-8" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" /></a>
-        <a href="https://{{ profile ? profile.gitlab : '' }}" target="_blank"><img class="w-8" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/gitlab/gitlab-original.svg" /></a>
+        <a href="https://{{ profile ? profile.linkedin : '' }}" target="_blank"
+          ><img
+            class="w-8"
+            src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/linkedin/linkedin-original.svg"
+        /></a>
+        <a href="https://{{ profile ? profile.github : '' }}" target="_blank"
+          ><img
+            class="invert w-8"
+            src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg"
+        /></a>
+        <a href="https://{{ profile ? profile.gitlab : '' }}" target="_blank"
+          ><img
+            class="w-8"
+            src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/gitlab/gitlab-original.svg"
+        /></a>
       </div>
     </div>
   </div>
   <div>
     <div class="flex flex-wrap justify-center gap-5 lg:gap-10">
-      <app-section class="flex-[0_0_100%] sm:flex-[0_0_calc(50%-(--spacing(calc(5/2))))] lg:flex-[0_0_calc(50%-(--spacing(calc(10/2))))]" *ngFor="let section of items()" [section]="section" (onEdit)="open(section)" (onRemove)="delete(section, 'text')"></app-section>
-      <div class="card flex flex-[0_0_100%] items-center justify-center sm:flex-[0_0_calc(50%-(--spacing(calc(5/2))))] lg:flex-[0_0_calc(50%-(--spacing(calc(10/2))))]" *ngIf="user()?.admin">
-        <p-button class="block text-center" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
-      </div>
+      @for (section of items(); track section) {
+        <app-section
+          class="flex-[0_0_100%] sm:flex-[0_0_calc(50%-(--spacing(calc(5/2))))] lg:flex-[0_0_calc(50%-(--spacing(calc(10/2))))]"
+          [section]="section"
+          (onEdit)="open(section)"
+          (onRemove)="delete(section, 'text')"
+        ></app-section>
+      }
+      @if (user()?.admin) {
+        <div
+          class="card flex flex-[0_0_100%] items-center justify-center sm:flex-[0_0_calc(50%-(--spacing(calc(5/2))))] lg:flex-[0_0_calc(50%-(--spacing(calc(10/2))))]"
+        >
+          <p-button
+            class="block text-center"
+            [text]="true"
+            (onClick)="open()"
+            size="large"
+            icon="pi pi-plus"
+          ></p-button>
+        </div>
+      }
     </div>
   </div>
 </div>
-<p-dialog [(visible)]="isShown" [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' un paragraphe'" [dismissableMask]="true">
-  <form class="flex flex-col gap-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col" [formGroup]="form">
+<p-dialog
+  [(visible)]="isShown"
+  [modal]="true"
+  [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' un paragraphe'"
+  [dismissableMask]="true"
+>
+  <form
+    class="flex flex-col gap-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col"
+    [formGroup]="form"
+  >
     <input type="hidden" formControlName="id" />
     <label>
       Rang
@@ -39,14 +102,24 @@
     <label>
       <div class="flex items-center gap-1">
         Texte
-        <app-prompt-button (onClick)="promptedField = 'text'; isPrompting = true"></app-prompt-button>
+        <app-prompt-button
+          (onClick)="promptedField = 'text'; isPrompting = true"
+        ></app-prompt-button>
       </div>
       <textarea class="min-h-40" pTextarea formControlName="text"></textarea>
     </label>
     <div class="flex justify-end gap-2">
       <p-button [text]="true" (onClick)="isShown = false">Annuler</p-button>
-      <p-button [disabled]="!form.valid" (onClick)="isEditing ? update() : create()">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
+      <p-button
+        [disabled]="!form.valid"
+        (onClick)="isEditing ? update() : create()"
+        >{{ isEditing ? "Modifier" : "Ajouter" }}</p-button
+      >
     </div>
   </form>
 </p-dialog>
-<app-prompt [(isPrompting)]="isPrompting" [(form)]="form" [field]="promptedField"></app-prompt>
+<app-prompt
+  [(isPrompting)]="isPrompting"
+  [(form)]="form"
+  [field]="promptedField"
+></app-prompt>

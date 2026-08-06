@@ -1,21 +1,51 @@
 <div class="flex min-h-full flex-col justify-center p-5 lg:p-10">
   <div class="grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-    <app-project *ngFor="let project of items()" [project]="project" (onProjectEdit)="open(project)" (onProjectRemoved)="delete(project, 'title')"></app-project>
-    <div class="card flex items-center justify-center p-5 lg:p-10" *ngIf="user()?.admin">
-      <p-button class="block text-center" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
-    </div>
+    @for (project of items(); track project) {
+      <app-project
+        [project]="project"
+        (onProjectEdit)="open(project)"
+        (onProjectRemoved)="delete(project, 'title')"
+      ></app-project>
+    }
+    @if (user()?.admin) {
+      <div class="card flex items-center justify-center p-5 lg:p-10">
+        <p-button
+          class="block text-center"
+          [text]="true"
+          (onClick)="open()"
+          size="large"
+          icon="pi pi-plus"
+        ></p-button>
+      </div>
+    }
   </div>
 </div>
-<p-dialog [(visible)]="isShown" [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' un projet'" [dismissableMask]="true">
-  <form class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col" [formGroup]="form">
+<p-dialog
+  [(visible)]="isShown"
+  [modal]="true"
+  [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' un projet'"
+  [dismissableMask]="true"
+>
+  <form
+    class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col"
+    [formGroup]="form"
+  >
     <input type="hidden" formControlName="id" />
     <label>
       Début
-      <p-datepicker styleClass="w-full" formControlName="start" dateFormat="dd/mm/yy" />
+      <p-datepicker
+        styleClass="w-full"
+        formControlName="start"
+        dateFormat="dd/mm/yy"
+      />
     </label>
     <label>
       Fin
-      <p-datepicker styleClass="w-full" formControlName="end" dateFormat="dd/mm/yy" />
+      <p-datepicker
+        styleClass="w-full"
+        formControlName="end"
+        dateFormat="dd/mm/yy"
+      />
     </label>
     <label>
       Titre
@@ -28,7 +58,9 @@
     <label class="md:col-span-2">
       <div class="flex items-center gap-1">
         Texte
-        <app-prompt-button (onClick)="promptedField = 'text'; isPrompting = true"></app-prompt-button>
+        <app-prompt-button
+          (onClick)="promptedField = 'text'; isPrompting = true"
+        ></app-prompt-button>
       </div>
       <textarea pTextarea formControlName="text"></textarea>
     </label>
@@ -50,33 +82,97 @@
     </label>
     <label class="md:col-span-2">
       Activités
-      <div class="relative flex items-center justify-between" *ngFor="let activity of activities">
-        <span class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="act.value = activity">•&nbsp;&nbsp;{{ activity }}</span>
-        <div class="flex">
-          <p-button [disabled]="activities[0] == activity" [text]="true" (onClick)="move(activity, true)" icon="pi pi-angle-up" styleClass="w-auto" size="small" severity="secondary" />
-          <p-button [disabled]="activities[activities.length - 1] == activity" [text]="true" (onClick)="move(activity)" icon="pi pi-angle-down" styleClass="w-auto" size="small" severity="secondary" />
-          <p-button [text]="true" (onClick)="remove(activity)" icon="pi pi-trash" styleClass="w-auto" size="small" severity="danger" />
+      @for (activity of activities; track activity) {
+        <div class="relative flex items-center justify-between">
+          <span
+            class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md"
+            (click)="act.value = activity"
+            >•&nbsp;&nbsp;{{ activity }}</span
+          >
+          <div class="flex">
+            <p-button
+              [disabled]="activities[0] == activity"
+              [text]="true"
+              (onClick)="move(activity, true)"
+              icon="pi pi-angle-up"
+              styleClass="w-auto"
+              size="small"
+              severity="secondary"
+            />
+            <p-button
+              [disabled]="activities[activities.length - 1] == activity"
+              [text]="true"
+              (onClick)="move(activity)"
+              icon="pi pi-angle-down"
+              styleClass="w-auto"
+              size="small"
+              severity="secondary"
+            />
+            <p-button
+              [text]="true"
+              (onClick)="remove(activity)"
+              icon="pi pi-trash"
+              styleClass="w-auto"
+              size="small"
+              severity="danger"
+            />
+          </div>
         </div>
-      </div>
+      }
       <p-inputGroup>
         <input #act pInputText placeholder="Activité" />
-        <button [disabled]="!act.value" (click)="add(act.value)" type="button" pButton icon="pi pi-plus"></button>
+        <button
+          [disabled]="!act.value"
+          (click)="add(act.value)"
+          type="button"
+          pButton
+          icon="pi pi-plus"
+        ></button>
       </p-inputGroup>
     </label>
     <label class="md:col-span-2">
       Images
-      <span class="opacity-50" *ngIf="isEditing && !images._files.length">&nbsp;(Aucune modification)</span>
+      @if (isEditing && !images._files.length) {
+        <span class="opacity-50">&nbsp;(Aucune modification)</span>
+      }
       <p-fileUpload #images [multiple]="true" accept="image/*">
-        <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
-          <p-button [outlined]="true" (onClick)="chooseCallback()" icon="pi pi-images"></p-button>
-          <p-button [outlined]="true" [disabled]="!files || files.length === 0" (onClick)="clearCallback()" icon="pi pi-times" severity="danger" />
+        <ng-template
+          pTemplate="header"
+          let-files
+          let-chooseCallback="chooseCallback"
+          let-clearCallback="clearCallback"
+          let-uploadCallback="uploadCallback"
+        >
+          <p-button
+            [outlined]="true"
+            (onClick)="chooseCallback()"
+            icon="pi pi-images"
+          ></p-button>
+          <p-button
+            [outlined]="true"
+            [disabled]="!files || files.length === 0"
+            (onClick)="clearCallback()"
+            icon="pi pi-times"
+            severity="danger"
+          />
         </ng-template>
       </p-fileUpload>
     </label>
     <div class="flex justify-end gap-2 md:col-span-2">
       <p-button [text]="true" (onClick)="isShown = false">Annuler</p-button>
-      <p-button [disabled]="!form.valid" (onClick)="isEditing ? update(images._files) : create(images._files); isShown = false">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
+      <p-button
+        [disabled]="!form.valid"
+        (onClick)="
+          isEditing ? update(images._files) : create(images._files);
+          isShown = false
+        "
+        >{{ isEditing ? "Modifier" : "Ajouter" }}</p-button
+      >
     </div>
   </form>
 </p-dialog>
-<app-prompt [(isPrompting)]="isPrompting" [(form)]="form" [field]="promptedField"></app-prompt>
+<app-prompt
+  [(isPrompting)]="isPrompting"
+  [(form)]="form"
+  [field]="promptedField"
+></app-prompt>

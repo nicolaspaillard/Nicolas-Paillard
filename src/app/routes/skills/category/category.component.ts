@@ -1,4 +1,3 @@
-import { CommonModule } from "@angular/common";
 import { Component, EventEmitter, Input, Output, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
@@ -11,7 +10,7 @@ import { SkillComponent } from "./skill/skill.component";
 
 @Component({
   selector: "app-category",
-  imports: [CommonModule, ReactiveFormsModule, SkillComponent, ButtonModule],
+  imports: [ReactiveFormsModule, SkillComponent, ButtonModule],
   templateUrl: "./category.component.html",
 })
 export class CategoryComponent {
@@ -27,7 +26,7 @@ export class CategoryComponent {
     this.authService
       .user()
       .pipe(takeUntilDestroyed())
-      .subscribe(user => this.user.set(user ? { ...user } : undefined));
+      .subscribe((user) => this.user.set(user ? { ...user } : undefined));
   }
   // ngOnInit() {
   //   getDocs(query(collection(this.db, "data", "skills", "skills"), orderBy("title"), where("category", "==", this.category.id))).then((items) => {

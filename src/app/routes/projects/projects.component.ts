@@ -1,4 +1,3 @@
-import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
 import { Firestore } from "@angular/fire/firestore";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -35,7 +34,6 @@ const SERVICE_VARIABLE: ServiceConfig<Project> = {
 @Component({
   selector: "app-projects",
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     ProjectComponent,
     ButtonModule,

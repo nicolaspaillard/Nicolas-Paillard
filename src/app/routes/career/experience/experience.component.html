@@ -1,26 +1,74 @@
-<div class="card group relative flex w-full p-5 lg:w-[calc(50%-(--spacing(10)))] lg:p-10 lg:before:content-['']" [ngClass]="['lg:before:bg-primary lg:before:absolute lg:before:top-1/2 lg:before:h-[2px] lg:before:w-10 lg:before:-translate-y-full', right ? 'lg:ml-auto lg:before:-left-[calc(--spacing(10)+1px)]' : 'lg:before:-right-[calc(--spacing(10)+1px)]']">
-  <p-tag class="absolute top-0 mx-2 mt-2" [ngClass]="right ? 'right-0' : 'left-0'" [value]="experience.type" />
-  <div class="absolute top-0 transition-opacity group-hover:opacity-100 lg:opacity-0" *ngIf="user()?.admin" [ngClass]="right ? 'right-0 lg:left-0' : 'right-0'">
-    <p-button class="*:h-fit" [text]="true" (onClick)="onExperienceEdit.emit(experience)" icon="pi pi-pencil" size="small" />
-    <p-button class="*:h-fit" [text]="true" (onClick)="onExperienceRemoved.emit(experience)" icon="pi pi-trash" size="small" severity="danger" />
-  </div>
-  <div class="flex shrink flex-col border-0 border-r border-solid border-white/25 pr-5 text-end">
+<div
+  class="card group relative flex w-full p-5 lg:w-[calc(50%-(--spacing(10)))] lg:p-10 lg:before:content-['']"
+  [ngClass]="[
+    'lg:before:bg-primary lg:before:absolute lg:before:top-1/2 lg:before:h-[2px] lg:before:w-10 lg:before:-translate-y-full',
+    right
+      ? 'lg:ml-auto lg:before:-left-[calc(--spacing(10)+1px)]'
+      : 'lg:before:-right-[calc(--spacing(10)+1px)]',
+  ]"
+>
+  <p-tag
+    class="absolute top-0 mx-2 mt-2"
+    [ngClass]="right ? 'right-0' : 'left-0'"
+    [value]="experience.type"
+  />
+  @if (user()?.admin) {
+    <div
+      class="absolute top-0 transition-opacity group-hover:opacity-100 lg:opacity-0"
+      [ngClass]="right ? 'right-0 lg:left-0' : 'right-0'"
+    >
+      <p-button
+        class="*:h-fit"
+        [text]="true"
+        (onClick)="onExperienceEdit.emit(experience)"
+        icon="pi pi-pencil"
+        size="small"
+      />
+      <p-button
+        class="*:h-fit"
+        [text]="true"
+        (onClick)="onExperienceRemoved.emit(experience)"
+        icon="pi pi-trash"
+        size="small"
+        severity="danger"
+      />
+    </div>
+  }
+  <div
+    class="flex shrink flex-col border-0 border-r border-solid border-white/25 pr-5 text-end"
+  >
     <i class="text-primary text-xs sm:text-nowrap">
-      <ng-container *ngIf="experience.end; else day">{{ experience.start | date: "MM/yyyy" }} - {{ experience.end | date: "MM/yyyy" }}</ng-container>
-      <ng-template #day>{{ experience.start | date: "dd/MM/yyyy" }}</ng-template>
+      @if (experience.end) {
+        {{ experience.start | date: "MM/yyyy" }} -
+        {{ experience.end | date: "MM/yyyy" }}
+      } @else {
+        {{ experience.start | date: "dd/MM/yyyy" }}
+      }
     </i>
-    <h3 class="mb-2 block text-lg font-bold leading-none" *ngIf="experience.company">{{ experience.company }}</h3>
-    <span *ngIf="experience.address">{{ experience.address }}</span>
-    <span *ngIf="experience.city || experience.postcode">{{ experience.city }} {{ experience.postcode }}</span>
+    @if (experience.company) {
+      <h3 class="mb-2 block text-lg font-bold leading-none">
+        {{ experience.company }}
+      </h3>
+    }
+    @if (experience.address) {
+      <span>{{ experience.address }}</span>
+    }
+    @if (experience.city || experience.postcode) {
+      <span>{{ experience.city }} {{ experience.postcode }}</span>
+    }
   </div>
   <div class="pl-5">
     <h2 class="text-xl font-bold leading-none">{{ experience.title }}</h2>
-    <p class="mt-3" *ngIf="experience.text">{{ experience.text }}</p>
-    <ng-container *ngIf="experience.activities">
+    @if (experience.text) {
+      <p class="mt-3">{{ experience.text }}</p>
+    }
+    @if (experience.activities) {
       <h3 class="mt-2 text-lg">Activités</h3>
       <ul class="list-inside list-disc">
-        <li *ngFor="let activity of experience.activities.split(';')">{{ activity }}</li>
+        @for (activity of experience.activities.split(";"); track activity) {
+          <li>{{ activity }}</li>
+        }
       </ul>
-    </ng-container>
+    }
   </div>
 </div>

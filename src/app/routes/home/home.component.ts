@@ -1,4 +1,4 @@
-import { CommonModule, NgOptimizedImage } from "@angular/common";
+import { NgOptimizedImage } from "@angular/common";
 import { Component } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { Profile } from "@classes/profile";
@@ -13,7 +13,11 @@ import { InputTextModule } from "@openng/optimus-ui/inputtext";
 import { TextareaModule } from "@openng/optimus-ui/textarea";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
-import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
+import {
+  CrudService,
+  SERVICE_CONFIG,
+  ServiceConfig,
+} from "@services/crud.service";
 import { NgxTypedJsModule } from "ngx-typed-js";
 import { SectionComponent } from "./section/section.component";
 
@@ -27,16 +31,49 @@ const SERVICE_VARIABLE: ServiceConfig<Section> = {
 
 @Component({
   selector: "app-home",
-  imports: [CommonModule, NgxTypedJsModule, ButtonModule, NgOptimizedImage, CommonModule, SectionComponent, ReactiveFormsModule, DialogModule, ButtonModule, InputTextModule, TextareaModule, InputNumberModule, PromptComponent, PromptButtonComponent],
+  imports: [
+    NgxTypedJsModule,
+    ButtonModule,
+    NgOptimizedImage,
+    SectionComponent,
+    ReactiveFormsModule,
+    DialogModule,
+    ButtonModule,
+    InputTextModule,
+    TextareaModule,
+    InputNumberModule,
+    PromptComponent,
+    PromptButtonComponent,
+  ],
   templateUrl: "./home.component.html",
-  providers: [CrudService<Section>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
+  providers: [
+    CrudService<Section>,
+    { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE },
+  ],
 })
 export class HomeComponent extends CrudComponent<Section> {
   profile?: Profile;
-  strings: string[] = ["Web", "Backend", "Frontend", "FullStack", "SQL", "TypeScript", ".NET", "Angular", "Java", "Python"];
-  constructor(crudService: CrudService<Section>, authService: AuthService, confirmService: ConfirmService) {
+  strings: string[] = [
+    "Web",
+    "Backend",
+    "Frontend",
+    "FullStack",
+    "SQL",
+    "TypeScript",
+    ".NET",
+    "Angular",
+    "Java",
+    "Python",
+  ];
+  constructor(
+    crudService: CrudService<Section>,
+    authService: AuthService,
+    confirmService: ConfirmService,
+  ) {
     super(crudService, authService, confirmService);
-    crudService.getData(Profile, "profile", ["lastName"]).then(profile => (this.profile = profile[0]));
+    crudService
+      .getData(Profile, "profile", ["lastName"])
+      .then((profile) => (this.profile = profile[0]));
   }
 
   // testGPT = async () => {

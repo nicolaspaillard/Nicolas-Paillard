@@ -1,4 +1,3 @@
-import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { Category } from "@classes/category";
@@ -37,7 +36,6 @@ const SERVICE_VARIABLE: ServiceConfig<Experience> = {
 @Component({
   selector: "app-career",
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     ExperienceComponent,
     DialogModule,
