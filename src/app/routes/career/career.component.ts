@@ -10,16 +10,20 @@ import { PromptButtonComponent } from "@components/prompt-button/prompt-button.c
 import { PromptComponent } from "@components/prompt/prompt.component";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
-import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
-import { ButtonModule } from "primeng/button";
-import { DatePickerModule } from "primeng/datepicker";
-import { DialogModule } from "primeng/dialog";
-import { InputGroupModule } from "primeng/inputgroup";
-import { InputTextModule } from "primeng/inputtext";
-import { MultiSelectModule } from "primeng/multiselect";
-import { SelectModule } from "primeng/select";
-import { TextareaModule } from "primeng/textarea";
-import { TooltipModule } from "primeng/tooltip";
+import {
+  CrudService,
+  SERVICE_CONFIG,
+  ServiceConfig,
+} from "@services/crud.service";
+import { ButtonModule } from "@openng/optimus-ui/button";
+import { DatePickerModule } from "@openng/optimus-ui/datepicker";
+import { DialogModule } from "@openng/optimus-ui/dialog";
+import { InputGroupModule } from "@openng/optimus-ui/inputgroup";
+import { InputTextModule } from "@openng/optimus-ui/inputtext";
+import { MultiSelectModule } from "@openng/optimus-ui/multiselect";
+import { SelectModule } from "@openng/optimus-ui/select";
+import { TextareaModule } from "@openng/optimus-ui/textarea";
+import { TooltipModule } from "@openng/optimus-ui/tooltip";
 import { ExperienceComponent } from "./experience/experience.component";
 
 const SERVICE_VARIABLE: ServiceConfig<Experience> = {
@@ -32,20 +36,48 @@ const SERVICE_VARIABLE: ServiceConfig<Experience> = {
 
 @Component({
   selector: "app-career",
-  imports: [CommonModule, ReactiveFormsModule, ExperienceComponent, DialogModule, DatePickerModule, MultiSelectModule, SelectModule, TextareaModule, InputTextModule, ButtonModule, InputGroupModule, TooltipModule, PromptComponent, PromptButtonComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ExperienceComponent,
+    DialogModule,
+    DatePickerModule,
+    MultiSelectModule,
+    SelectModule,
+    TextareaModule,
+    InputTextModule,
+    ButtonModule,
+    InputGroupModule,
+    TooltipModule,
+    PromptComponent,
+    PromptButtonComponent,
+  ],
   templateUrl: "./career.component.html",
-  providers: [CrudService<Experience>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
+  providers: [
+    CrudService<Experience>,
+    { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE },
+  ],
 })
 export class CareerComponent extends CrudComponent<Experience> {
   activities: string[] = [];
   categories: Category[] = [];
   projects: Project[] = [];
   skills: Skill[] = [];
-  constructor(crudService: CrudService<Experience>, authService: AuthService, confirmService: ConfirmService) {
+  constructor(
+    crudService: CrudService<Experience>,
+    authService: AuthService,
+    confirmService: ConfirmService,
+  ) {
     super(crudService, authService, confirmService);
-    crudService.getData(Project, "projects", ["start", "desc"]).then(projects => (this.projects = projects));
-    crudService.getData(Skill, "skills", ["title"]).then(skills => (this.skills = skills));
-    crudService.getData(Category, "categories", ["title"]).then(categories => (this.categories = categories));
+    crudService
+      .getData(Project, "projects", ["start", "desc"])
+      .then((projects) => (this.projects = projects));
+    crudService
+      .getData(Skill, "skills", ["title"])
+      .then((skills) => (this.skills = skills));
+    crudService
+      .getData(Category, "categories", ["title"])
+      .then((categories) => (this.categories = categories));
   }
   add = (activity: string) => {
     this.activities.push(activity);
@@ -53,7 +85,11 @@ export class CareerComponent extends CrudComponent<Experience> {
   };
   move = (activity: string, up: boolean = false) => {
     let fromIndex = this.activities.indexOf(activity);
-    if ((fromIndex == 0 && up) || (fromIndex == this.activities.length - 1 && !up)) return;
+    if (
+      (fromIndex == 0 && up) ||
+      (fromIndex == this.activities.length - 1 && !up)
+    )
+      return;
     var element = this.activities[fromIndex];
     this.activities.splice(fromIndex, 1);
     this.activities.splice(fromIndex + (up ? -1 : 1), 0, element);
@@ -65,7 +101,7 @@ export class CareerComponent extends CrudComponent<Experience> {
     super.open(item);
   }
   remove = (activity: string) => {
-    this.activities = this.activities.filter(act => act != activity);
+    this.activities = this.activities.filter((act) => act != activity);
     this.form.patchValue({ activities: this.activities.join(";") });
   };
 }

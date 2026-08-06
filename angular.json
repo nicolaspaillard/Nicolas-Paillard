@@ -31,7 +31,7 @@
             "outputPath": { "base": "public/", "browser": "" },
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "stylePreprocessorOptions": { "sass": { "silenceDeprecations": ["import"] } },
@@ -42,9 +42,32 @@
           "configurations": { "production": { "outputHashing": "all" }, "development": { "optimization": false, "extractLicenses": false, "sourceMap": true } },
           "defaultConfiguration": "production"
         },
-        "serve": { "builder": "@angular/build:dev-server", "options": { "buildTarget": "nicolaspaillard:build", "host": "0.0.0.0" }, "configurations": { "production": { "buildTarget": "nicolaspaillard:build:production" }, "development": { "buildTarget": "nicolaspaillard:build:development" } }, "defaultConfiguration": "development" },
-        "extract-i18n": { "builder": "@angular/build:extract-i18n" },
-        "test": { "builder": "@angular/build:karma", "options": { "polyfills": ["zone.js", "zone.js/testing"], "tsConfig": "tsconfig.spec.json", "inlineStyleLanguage": "scss", "assets": ["src/assets", { "glob": "favicon.ico", "input": "src/favicon/", "output": "./" }], "styles": ["src/styles.scss"], "scripts": [] } }
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": {
+            "buildTarget": "nicolaspaillard:build",
+            "host": "0.0.0.0"
+          },
+          "configurations": {
+            "production": { "buildTarget": "nicolaspaillard:build:production" },
+            "development": { "buildTarget": "nicolaspaillard:build:development" }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "polyfills": [],
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": ["src/assets", { "glob": "favicon.ico", "input": "src/favicon/", "output": "./" }],
+            "styles": ["src/styles.scss"],
+            "scripts": []
+          }
+        }
       }
     }
   },

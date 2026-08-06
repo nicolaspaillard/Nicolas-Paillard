@@ -11,7 +11,7 @@ A modern, interactive portfolio website built with Angular, featuring a unique m
 - **Frontend**: Angular
 - **Backend**: Firebase
 - **Styling**: Tailwind
-- **UI Components**: PrimeNG
+- **UI Components**: OpenNG
 - **Image Management**: Cloudinary
 - **Authentication**: Firebase Auth
 - **Database**: Firestore

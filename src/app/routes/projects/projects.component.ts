@@ -9,15 +9,19 @@ import { PromptComponent } from "@components/prompt/prompt.component";
 import { sha1 } from "@helpers/helpers";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
-import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
-import { ButtonModule } from "primeng/button";
-import { DatePickerModule } from "primeng/datepicker";
-import { DialogModule } from "primeng/dialog";
-import { FileUploadModule } from "primeng/fileupload";
-import { InputGroupModule } from "primeng/inputgroup";
-import { InputTextModule } from "primeng/inputtext";
-import { TextareaModule } from "primeng/textarea";
-import { TooltipModule } from "primeng/tooltip";
+import {
+  CrudService,
+  SERVICE_CONFIG,
+  ServiceConfig,
+} from "@services/crud.service";
+import { ButtonModule } from "@openng/optimus-ui/button";
+import { DatePickerModule } from "@openng/optimus-ui/datepicker";
+import { DialogModule } from "@openng/optimus-ui/dialog";
+import { FileUploadModule } from "@openng/optimus-ui/fileupload";
+import { InputGroupModule } from "@openng/optimus-ui/inputgroup";
+import { InputTextModule } from "@openng/optimus-ui/inputtext";
+import { TextareaModule } from "@openng/optimus-ui/textarea";
+import { TooltipModule } from "@openng/optimus-ui/tooltip";
 import { ProjectComponent } from "./project/project.component";
 
 const SERVICE_VARIABLE: ServiceConfig<Project> = {
@@ -30,15 +34,36 @@ const SERVICE_VARIABLE: ServiceConfig<Project> = {
 
 @Component({
   selector: "app-projects",
-  imports: [CommonModule, ReactiveFormsModule, ProjectComponent, ButtonModule, DialogModule, TooltipModule, InputGroupModule, DatePickerModule, InputTextModule, TextareaModule, FileUploadModule, PromptComponent, PromptButtonComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ProjectComponent,
+    ButtonModule,
+    DialogModule,
+    TooltipModule,
+    InputGroupModule,
+    DatePickerModule,
+    InputTextModule,
+    TextareaModule,
+    FileUploadModule,
+    PromptComponent,
+    PromptButtonComponent,
+  ],
   templateUrl: "./projects.component.html",
-  providers: [CrudService<Project>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
+  providers: [
+    CrudService<Project>,
+    { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE },
+  ],
 })
 export class ProjectsComponent extends CrudComponent<Project> {
   activities: string[] = [];
   images: string;
   private db: Firestore;
-  constructor(crudService: CrudService<Project>, authService: AuthService, confirmService: ConfirmService) {
+  constructor(
+    crudService: CrudService<Project>,
+    authService: AuthService,
+    confirmService: ConfirmService,
+  ) {
     super(crudService, authService, confirmService);
   }
   add = (activity: string) => {
@@ -52,7 +77,11 @@ export class ProjectsComponent extends CrudComponent<Project> {
   }
   move = (activity: string, up: boolean = false) => {
     let fromIndex = this.activities.indexOf(activity);
-    if ((fromIndex == 0 && up) || (fromIndex == this.activities.length - 1 && !up)) return;
+    if (
+      (fromIndex == 0 && up) ||
+      (fromIndex == this.activities.length - 1 && !up)
+    )
+      return;
     var element = this.activities[fromIndex];
     this.activities.splice(fromIndex, 1);
     this.activities.splice(fromIndex + (up ? -1 : 1), 0, element);
@@ -64,34 +93,52 @@ export class ProjectsComponent extends CrudComponent<Project> {
     super.open(item);
   }
   remove = (activity: string) => {
-    this.activities = this.activities.filter(act => act != activity);
+    this.activities = this.activities.filter((act) => act != activity);
     this.form.patchValue({ activities: this.activities.join(";") });
   };
   override async update(images: File[]) {
-    const result = images.length ? (await this.deleteImages(this.images)) && (await this.uploadImages(images)) : (this.form.value as Project).images;
+    const result = images.length
+      ? (await this.deleteImages(this.images)) &&
+        (await this.uploadImages(images))
+      : (this.form.value as Project).images;
     if (result === false) return;
     super.update({ ...this.form.value, images: result } as Project);
   }
   private deleteImages = async (images: string) => {
     if (images === "") return true;
-    const timestamp: string = Math.round(new Date().getTime() / 1000).toString();
+    const timestamp: string = Math.round(
+      new Date().getTime() / 1000,
+    ).toString();
     let promises: Promise<boolean>[] = [];
     const cloudinary = (await this.getCloudinary())!;
     for (let image of images.split(";")) {
       const formdata = new FormData();
       formdata.append("public_id", "nicolasPaillard/" + image);
-      formdata.append("signature", sha1.hash(new URLSearchParams({ public_id: "nicolasPaillard/" + image, timestamp: timestamp }).toString().replace("%2F", "/") + cloudinary.api_secret));
+      formdata.append(
+        "signature",
+        sha1.hash(
+          new URLSearchParams({
+            public_id: "nicolasPaillard/" + image,
+            timestamp: timestamp,
+          })
+            .toString()
+            .replace("%2F", "/") + cloudinary.api_secret,
+        ),
+      );
       formdata.append("api_key", cloudinary.api_key);
       formdata.append("timestamp", timestamp);
       promises.push(
-        fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/destroy`, { method: "POST", body: formdata })
-          .then(async response => {
+        fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/destroy`, {
+          method: "POST",
+          body: formdata,
+        })
+          .then(async (response) => {
             const data = JSON.parse(await response.text());
             if (["ok", "not found"].includes(data.result)) return true;
             console.error(data);
             return false;
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error);
             return false;
           }),
@@ -101,7 +148,9 @@ export class ProjectsComponent extends CrudComponent<Project> {
   };
   private uploadImages = async (files: File[]) => {
     if (!files.length) return "";
-    const timestamp: string = Math.round(new Date().getTime() / 1000).toString();
+    const timestamp: string = Math.round(
+      new Date().getTime() / 1000,
+    ).toString();
     let promises: Promise<boolean | string>[] = [];
     const cloudinary = (await this.getCloudinary())!;
     for (let file of files) {
@@ -110,17 +159,29 @@ export class ProjectsComponent extends CrudComponent<Project> {
       formData.append("api_key", cloudinary.api_key);
       formData.append("upload_preset", "ml_default");
       formData.append("timestamp", timestamp);
-      formData.append("signature", sha1.hash(new URLSearchParams({ folder: "nicolasPaillard", timestamp: timestamp, upload_preset: "ml_default" }).toString() + cloudinary.api_secret));
+      formData.append(
+        "signature",
+        sha1.hash(
+          new URLSearchParams({
+            folder: "nicolasPaillard",
+            timestamp: timestamp,
+            upload_preset: "ml_default",
+          }).toString() + cloudinary.api_secret,
+        ),
+      );
       formData.append("folder", "nicolasPaillard");
       promises.push(
-        fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/upload`, { method: "POST", body: formData })
-          .then(async response => {
+        fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/upload`, {
+          method: "POST",
+          body: formData,
+        })
+          .then(async (response) => {
             const data = JSON.parse(await response.text());
             if (data.public_id) return data.public_id.split("/")[1];
             console.error(data);
             return false;
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error);
             return false;
           }),

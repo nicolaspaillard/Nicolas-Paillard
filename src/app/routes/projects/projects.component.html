@@ -1,7 +1,7 @@
 <div class="flex min-h-full flex-col justify-center p-5 lg:p-10">
   <div class="grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-    <app-project *ngFor="let project of items" [project]="project" (onProjectEdit)="open(project)" (onProjectRemoved)="delete(project, 'title')"></app-project>
-    <div class="card flex items-center justify-center p-5 lg:p-10" *ngIf="user?.admin">
+    <app-project *ngFor="let project of items()" [project]="project" (onProjectEdit)="open(project)" (onProjectRemoved)="delete(project, 'title')"></app-project>
+    <div class="card flex items-center justify-center p-5 lg:p-10" *ngIf="user()?.admin">
       <p-button class="block text-center" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
     </div>
   </div>

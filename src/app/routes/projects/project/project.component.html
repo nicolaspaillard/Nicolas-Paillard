@@ -5,7 +5,7 @@
       <a class="text-primary" [href]="'https://' + project.url" target="_blank"><i class="pi pi-link"></i></a>
     </span>
   </h2>
-  <div class="absolute right-0 top-0 z-10 transition-opacity group-hover:opacity-100 lg:opacity-0" *ngIf="user?.admin">
+  <div class="absolute right-0 top-0 z-10 transition-opacity group-hover:opacity-100 lg:opacity-0" *ngIf="user()?.admin">
     <p-button [text]="true" (onClick)="onProjectEdit.emit(project)" icon="pi pi-pencil" size="small" />
     <p-button [text]="true" (onClick)="onProjectRemoved.emit(project)" icon="pi pi-trash" size="small" severity="danger" />
   </div>

@@ -1,12 +1,13 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, signal } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
+import { MenuItem } from "@openng/optimus-ui/api";
+import { ButtonModule } from "@openng/optimus-ui/button";
+import { FileUploadHandlerEvent, FileUploadModule } from "@openng/optimus-ui/fileupload";
+import { SplitButton } from "@openng/optimus-ui/splitbutton";
 import { AuthService } from "@services/auth.service";
 import { DesignerService } from "@services/designer.service";
-import { MenuItem } from "primeng/api";
-import { ButtonModule } from "primeng/button";
-import { FileUploadHandlerEvent, FileUploadModule } from "primeng/fileupload";
-import { SplitButton } from "primeng/splitbutton";
 
 @Component({
   selector: "app-designer",
@@ -46,12 +47,15 @@ export class DesignerComponent implements OnInit, OnDestroy {
       command: () => this.export(),
     },
   ];
-  user: { admin: boolean; user: User } | undefined;
+  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   constructor(
     private authService: AuthService,
     private designerService: DesignerService,
   ) {
-    this.authService.user().subscribe(user => (this.user = user));
+    this.authService
+      .user()
+      .pipe(takeUntilDestroyed())
+      .subscribe(user => this.user.set(user ? { ...user } : undefined));
   }
   clear = () => this.designerService.clear();
   export = () => this.designerService.export({ editing: true });

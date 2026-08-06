@@ -1,10 +1,11 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, EventEmitter, Input, Output, signal } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { AuthService } from "@app/shared/services/auth.service";
 import { Experience } from "@classes/experience";
-import { ButtonModule } from "primeng/button";
-import { TagModule } from "primeng/tag";
+import { ButtonModule } from "@openng/optimus-ui/button";
+import { TagModule } from "@openng/optimus-ui/tag";
 
 @Component({
   selector: "app-experience",
@@ -13,11 +14,14 @@ import { TagModule } from "primeng/tag";
 })
 export class ExperienceComponent {
   @Input() experience: Experience;
-  @Input() right: boolean;
-  @Output() onExperienceRemoved = new EventEmitter<Experience>();
   @Output() onExperienceEdit = new EventEmitter<Experience>();
-  user: { user: User; admin: boolean } | undefined;
+  @Output() onExperienceRemoved = new EventEmitter<Experience>();
+  @Input() right: boolean;
+  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   constructor(private authService: AuthService) {
-    this.authService.user().subscribe((user) => (this.user = user));
+    this.authService
+      .user()
+      .pipe(takeUntilDestroyed())
+      .subscribe(user => this.user.set(user ? { ...user } : undefined));
   }
 }

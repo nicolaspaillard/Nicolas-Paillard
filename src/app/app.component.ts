@@ -1,6 +1,6 @@
 // import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { AuthGuard, AuthPipe, customClaims, loggedIn } from "@angular/fire/auth-guard";
@@ -8,22 +8,22 @@ import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validatio
 import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 import { ActivatedRoute, NavigationEnd, NavigationStart, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
 import { AnimationComponent } from "@components/animation/animation.component";
-import { usePreset } from "@primeuix/themes";
+import { usePreset } from "@openng/optimus-ui-themes";
+import { ButtonModule } from "@openng/optimus-ui/button";
+import { ConfirmDialogModule } from "@openng/optimus-ui/confirmdialog";
+import { DialogModule } from "@openng/optimus-ui/dialog";
+import { InputTextModule } from "@openng/optimus-ui/inputtext";
+import { PasswordModule } from "@openng/optimus-ui/password";
+import { ProgressSpinnerModule } from "@openng/optimus-ui/progressspinner";
+import { ToastModule } from "@openng/optimus-ui/toast";
+import { ToggleSwitchModule } from "@openng/optimus-ui/toggleswitch";
+import { TooltipModule } from "@openng/optimus-ui/tooltip";
 import { AnimationService } from "@services/animation.service";
 import { AuthService } from "@services/auth.service";
 import { DesignerService } from "@services/designer.service";
 import { ToastService } from "@services/toast.service";
 import { Amber } from "@themes/amber.preset";
 import { Matrix } from "@themes/matrix.preset";
-import { ButtonModule } from "primeng/button";
-import { ConfirmDialogModule } from "primeng/confirmdialog";
-import { DialogModule } from "primeng/dialog";
-import { InputTextModule } from "primeng/inputtext";
-import { PasswordModule } from "primeng/password";
-import { ProgressSpinnerModule } from "primeng/progressspinner";
-import { ToastModule } from "primeng/toast";
-import { ToggleSwitchModule } from "primeng/toggleswitch";
-import { TooltipModule } from "primeng/tooltip";
 import { forkJoin, map, mergeMap, of, pipe } from "rxjs";
 
 const combined: AuthPipe = pipe(
@@ -32,11 +32,36 @@ const combined: AuthPipe = pipe(
 );
 
 export const routes: Routes = [
-  { path: "", title: "Nicolas Paillard", loadComponent: () => import("@routes/home/home.component").then(m => m.HomeComponent), data: { animation: 0 } },
-  { path: "career", title: "Carrière", loadComponent: () => import("@routes/career/career.component").then(m => m.CareerComponent), data: { animation: 1 } },
-  { path: "skills", title: "Compétences", loadComponent: () => import("@routes/skills/skills.component").then(m => m.SkillsComponent), data: { animation: 2 } },
-  { path: "projects", title: "Projets", loadComponent: () => import("@routes/projects/projects.component").then(m => m.ProjectsComponent), data: { animation: 3 } },
-  { path: "designer", title: "Designer", loadComponent: () => import("@routes/designer/designer.component").then(m => m.DesignerComponent), data: { animation: 4 } },
+  {
+    path: "",
+    title: "Nicolas Paillard",
+    loadComponent: () => import("@routes/home/home.component").then(m => m.HomeComponent),
+    data: { animation: 0 },
+  },
+  {
+    path: "career",
+    title: "Carrière",
+    loadComponent: () => import("@routes/career/career.component").then(m => m.CareerComponent),
+    data: { animation: 1 },
+  },
+  {
+    path: "skills",
+    title: "Compétences",
+    loadComponent: () => import("@routes/skills/skills.component").then(m => m.SkillsComponent),
+    data: { animation: 2 },
+  },
+  {
+    path: "projects",
+    title: "Projets",
+    loadComponent: () => import("@routes/projects/projects.component").then(m => m.ProjectsComponent),
+    data: { animation: 3 },
+  },
+  {
+    path: "designer",
+    title: "Designer",
+    loadComponent: () => import("@routes/designer/designer.component").then(m => m.DesignerComponent),
+    data: { animation: 4 },
+  },
   {
     path: "applications",
     title: "Candidatures",
@@ -70,7 +95,10 @@ export class AppComponent implements OnInit {
     },
     { validators: CustomValidators.matchFields("password", "passwordrepeat") },
   );
-  formSignin = new FormGroup({ email: new FormControl("", [Validators.required, Validators.email]), password: new FormControl("", [Validators.required]) });
+  formSignin = new FormGroup({
+    email: new FormControl("", [Validators.required, Validators.email]),
+    password: new FormControl("", [Validators.required]),
+  });
   formSignup = new FormGroup(
     {
       email: new FormControl("", [Validators.required, Validators.email]),
@@ -91,8 +119,7 @@ export class AppComponent implements OnInit {
   params: any = {};
   resume: SafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl("");
   routes: Route[] = routes.filter(route => route.path && route.data);
-  user: { admin: boolean; user: User } | undefined;
-  // private enableDarkMode: boolean = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   private interval: NodeJS.Timeout;
   constructor(
     private router: Router,
@@ -116,7 +143,10 @@ export class AppComponent implements OnInit {
         break;
     }
     // window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => (this.enableDarkMode = e.matches));
-    this.authService.user().subscribe(user => (this.user = user));
+    this.authService
+      .user()
+      .pipe(takeUntilDestroyed())
+      .subscribe(user => this.user.set(user ? { ...user } : undefined));
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         this.isTransitioning = true;
@@ -174,7 +204,11 @@ export class AppComponent implements OnInit {
   downloadCV = () => {
     this.designerService.export({ editing: false }).then(res => {
       this.resume = this.sanitizer.bypassSecurityTrustResourceUrl(res.url);
-      if (res.steps.length) this.animationService.animate({ steps: res.steps, callback: () => (this.isResumeShown = true) });
+      if (res.steps.length)
+        this.animationService.animate({
+          steps: res.steps,
+          callback: () => (this.isResumeShown = true),
+        });
     });
   };
   ngOnInit() {

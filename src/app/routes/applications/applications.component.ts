@@ -5,25 +5,53 @@ import { Application, formApplication } from "@classes/application";
 import { CrudComponent } from "@components/crud.component";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
-import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
-import { ButtonModule } from "primeng/button";
-import { DatePickerModule } from "primeng/datepicker";
-import { DialogModule } from "primeng/dialog";
-import { FileUploadModule } from "primeng/fileupload";
-import { InputGroupModule } from "primeng/inputgroup";
-import { InputTextModule } from "primeng/inputtext";
-import { SelectModule } from "primeng/select";
-import { TableModule } from "primeng/table";
-import { TextareaModule } from "primeng/textarea";
-import { TooltipModule } from "primeng/tooltip";
+import {
+  CrudService,
+  SERVICE_CONFIG,
+  ServiceConfig,
+} from "@services/crud.service";
+import { ButtonModule } from "@openng/optimus-ui/button";
+import { DatePickerModule } from "@openng/optimus-ui/datepicker";
+import { DialogModule } from "@openng/optimus-ui/dialog";
+import { FileUploadModule } from "@openng/optimus-ui/fileupload";
+import { InputGroupModule } from "@openng/optimus-ui/inputgroup";
+import { InputTextModule } from "@openng/optimus-ui/inputtext";
+import { SelectModule } from "@openng/optimus-ui/select";
+import { TableModule } from "@openng/optimus-ui/table";
+import { TextareaModule } from "@openng/optimus-ui/textarea";
+import { TooltipModule } from "@openng/optimus-ui/tooltip";
 
-const SERVICE_VARIABLE: ServiceConfig<Application> = { type: Application, form: formApplication, collection: "applications", order: ["title"], compareFn: (a, b) => (a.title < b.title ? -1 : a.title > b.title ? 1 : 0) };
+const SERVICE_VARIABLE: ServiceConfig<Application> = {
+  type: Application,
+  form: formApplication,
+  collection: "applications",
+  order: ["title"],
+  compareFn: (a, b) => (a.title < b.title ? -1 : a.title > b.title ? 1 : 0),
+};
 
 @Component({
   selector: "app-applications",
-  imports: [DialogModule, DatePickerModule, ReactiveFormsModule, TooltipModule, SelectModule, ButtonModule, InputGroupModule, FileUploadModule, CommonModule, InputTextModule, TextareaModule, DialogModule, DatePickerModule, TableModule],
+  imports: [
+    DialogModule,
+    DatePickerModule,
+    ReactiveFormsModule,
+    TooltipModule,
+    SelectModule,
+    ButtonModule,
+    InputGroupModule,
+    FileUploadModule,
+    CommonModule,
+    InputTextModule,
+    TextareaModule,
+    DialogModule,
+    DatePickerModule,
+    TableModule,
+  ],
   templateUrl: "./applications.component.html",
-  providers: [CrudService<Application>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
+  providers: [
+    CrudService<Application>,
+    { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE },
+  ],
 })
 export class ApplicationsComponent extends CrudComponent<Application> {
   contacts: string[] = [];
@@ -49,7 +77,11 @@ Pour plus de renseignements je vous invite à consulter mon CV en pièce jointe 
 Je reste à votre entière disposition via ce mail ou mon numéro de portable.%0D%0A
 Cordialement%0D%0A
   `;
-  constructor(crudService: CrudService<Application>, authService: AuthService, confirmService: ConfirmService) {
+  constructor(
+    crudService: CrudService<Application>,
+    authService: AuthService,
+    confirmService: ConfirmService,
+  ) {
     super(crudService, authService, confirmService);
   }
   add = (item: string, field: string) => {
@@ -58,13 +90,34 @@ Cordialement%0D%0A
   };
   mail = (application: Application) => {
     let body = this.model;
-    [["annonce", "entreprise"]].forEach((value, index) => (body = body.replace(`[${index}]`, value[application.type === "Annonce" ? 0 : 1])));
-    [["link", application.links.split(";")[0].split("://").pop()]].forEach(value => (body = body.replace(`[${value[0]}]`, value[1] ? value[1] + "%0D%0A" : "")));
-    open("mailto:" + application.contacts.split(",") + "?subject=Candidature " + application.title + " Nicolas Paillard&body=" + body, "_blank");
+    [["annonce", "entreprise"]].forEach(
+      (value, index) =>
+        (body = body.replace(
+          `[${index}]`,
+          value[application.type === "Annonce" ? 0 : 1],
+        )),
+    );
+    [["link", application.links.split(";")[0].split("://").pop()]].forEach(
+      (value) =>
+        (body = body.replace(
+          `[${value[0]}]`,
+          value[1] ? value[1] + "%0D%0A" : "",
+        )),
+    );
+    open(
+      "mailto:" +
+        application.contacts.split(",") +
+        "?subject=Candidature " +
+        application.title +
+        " Nicolas Paillard&body=" +
+        body,
+      "_blank",
+    );
   };
   move = (item: string, field: string, up: boolean = false) => {
     let fromIndex = this[field].indexOf(item);
-    if ((fromIndex == 0 && up) || (fromIndex == this.links.length - 1 && !up)) return;
+    if ((fromIndex == 0 && up) || (fromIndex == this.links.length - 1 && !up))
+      return;
     var element = this.links[fromIndex];
     this[field].splice(fromIndex, 1);
     this[field].splice(fromIndex + (up ? -1 : 1), 0, element);

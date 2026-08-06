@@ -1,17 +1,16 @@
 import { CommonModule, NgOptimizedImage } from "@angular/common";
 import { Component } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ReactiveFormsModule } from "@angular/forms";
 import { formProfile, Profile } from "@classes/profile";
 import { CrudComponent } from "@components/crud.component";
 import { sha1 } from "@helpers/helpers";
+import { ButtonModule } from "@openng/optimus-ui/button";
+import { FileUpload, FileUploadHandlerEvent } from "@openng/optimus-ui/fileupload";
+import { InputTextModule } from "@openng/optimus-ui/inputtext";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
 import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
 import { ToastService } from "@services/toast.service";
-import { ButtonModule } from "primeng/button";
-import { FileUpload, FileUploadHandlerEvent } from "primeng/fileupload";
-import { InputTextModule } from "primeng/inputtext";
 
 const SERVICE_VARIABLE: ServiceConfig<Profile> = {
   type: Profile,
@@ -35,13 +34,14 @@ export class ProfileComponent extends CrudComponent<Profile> {
     confirmService: ConfirmService,
     private toastService: ToastService,
   ) {
-    crudService
-      .items()
-      .pipe(takeUntilDestroyed())
-      .subscribe(items => {
-        if (items.length) this.form.setValue(new Profile(items[0]));
-      });
+    // crudService
+    //   .items()
+    //   .pipe(takeUntilDestroyed())
+    //   .subscribe(items => {
+    //     if (items().length) this.form.setValue(new Profile(items[0]));
+    //   });
     super(crudService, authService, confirmService);
+    if (this.items().length) this.form.setValue(this.items()[0]);
   }
   override async create() {}
   override delete() {}
@@ -69,9 +69,23 @@ export class ProfileComponent extends CrudComponent<Profile> {
     formData.append("api_key", cloudinary.api_key);
     formData.append("upload_preset", "ml_default");
     formData.append("timestamp", timestamp);
-    formData.append("signature", sha1.hash(new URLSearchParams({ folder: "nicolasPaillard", invalidate: "true", public_id: "profile", timestamp: timestamp, upload_preset: "ml_default" }).toString() + cloudinary.api_secret));
+    formData.append(
+      "signature",
+      sha1.hash(
+        new URLSearchParams({
+          folder: "nicolasPaillard",
+          invalidate: "true",
+          public_id: "profile",
+          timestamp: timestamp,
+          upload_preset: "ml_default",
+        }).toString() + cloudinary.api_secret,
+      ),
+    );
     formData.append("folder", "nicolasPaillard");
-    fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/upload`, { method: "POST", body: formData })
+    fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/upload`, {
+      method: "POST",
+      body: formData,
+    })
       .then(async response => {
         const data = JSON.parse(await response.text());
         if (data.public_id) return data.public_id.split("/")[1];

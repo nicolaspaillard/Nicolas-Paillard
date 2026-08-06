@@ -1,6 +1,6 @@
 <div class="flex min-h-full flex-col">
-  <p-button class="mt-2 block text-center" *ngIf="user?.admin" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
-  <p-table [value]="items" [expandedRowKeys]="expandedRows" dataKey="id" size="small">
+  <p-button class="mt-2 block text-center" *ngIf="user()?.admin" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
+  <p-table [value]="items()" [expandedRowKeys]="expandedRows" dataKey="id" size="small">
     <ng-template #header>
       <tr>
         <th pSortableColumn="title">

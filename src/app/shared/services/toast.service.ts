@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { MessageService } from "primeng/api";
+import { MessageService } from "@openng/optimus-ui/api";
 
 @Injectable({
   providedIn: "root",
@@ -7,19 +7,35 @@ import { MessageService } from "primeng/api";
 export class ToastService {
   constructor(private messageService: MessageService) {}
   success(title: string, message?: string) {
-    this.messageService.add({ severity: "success", summary: title, detail: message });
+    this.messageService.add({
+      severity: "success",
+      summary: title,
+      detail: message,
+    });
     return;
   }
   info(title: string, message?: string) {
-    this.messageService.add({ severity: "info", summary: title, detail: message });
+    this.messageService.add({
+      severity: "info",
+      summary: title,
+      detail: message,
+    });
     return;
   }
   warn(title: string, message?: string) {
-    this.messageService.add({ severity: "warn", summary: title, detail: message });
+    this.messageService.add({
+      severity: "warn",
+      summary: title,
+      detail: message,
+    });
     return;
   }
   error(title: string, message?: string) {
-    this.messageService.add({ severity: "error", summary: title, detail: message });
+    this.messageService.add({
+      severity: "error",
+      summary: title,
+      detail: message,
+    });
     return;
   }
 }

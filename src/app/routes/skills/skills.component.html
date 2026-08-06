@@ -1,16 +1,16 @@
 <div class="flex min-h-full flex-col justify-center p-5 lg:p-10">
   <div class="flex flex-wrap items-center justify-center gap-5 lg:gap-10">
     <app-category
-      class="flex-[0_0_100%] md:flex-[0_0_calc(50%-calc(var(--spacing)*5))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))]"
-      *ngFor="let category of items"
+      class="flex-[0_0_100%] md:flex-[0_0_calc(50%-(--spacing(5)))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))]"
+      *ngFor="let category of items()"
       [category]="category"
-      [skills]="skills.filter(filter(category))"
+      [skills]="skills().filter(filter(category))"
       (onEdit)="open(category)"
       (onRemove)="delete(category)"
       (onSkillEdit)="formSkill.setValue($event); isEditingSkill = true; isShownSkill = true"
       (onSkillRemove)="deleteSkill($event)"
       (onSkillAdd)="formSkill.reset(); formSkill.get('category')?.setValue($event.id); isShownSkill = true"></app-category>
-    <div class="card flex-[0_0_100%] p-5 md:flex-[0_0_calc(50%-calc(var(--spacing)*5))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))] lg:p-10" *ngIf="user?.admin">
+    <div class="card flex-[0_0_100%] p-5 md:flex-[0_0_calc(50%-(--spacing(5)))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))] lg:p-10" *ngIf="user()?.admin">
       <p-button class="block text-center" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
     </div>
   </div>
@@ -25,7 +25,7 @@
     </label>
     <label>
       Rang
-      <p-inputnumber class="row-span-2 w-fit!" [min]="1" [max]="items.length" [showButtons]="true" [inputStyle]="{ width: '3rem' }" formControlName="rank" buttonLayout="vertical" spinnerMode="vertical">
+      <p-inputnumber class="row-span-2 w-fit!" [min]="1" [max]="items().length" [showButtons]="true" [inputStyle]="{ width: '3rem' }" formControlName="rank" buttonLayout="vertical" spinnerMode="vertical">
         <ng-template #incrementbuttonicon>
           <span class="pi pi-plus"></span>
         </ng-template>
@@ -52,7 +52,7 @@
         </label>
         <label>
           Catégorie
-          <p-select [options]="items" [editable]="true" formControlName="category" placeholder="Catégorie" optionLabel="title" optionValue="id" />
+          <p-select [options]="items()" [editable]="true" formControlName="category" placeholder="Catégorie" optionLabel="title" optionValue="id" />
         </label>
       </div>
     </div>

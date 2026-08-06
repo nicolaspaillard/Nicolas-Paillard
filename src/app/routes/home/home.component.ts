@@ -6,15 +6,15 @@ import { formSection, Section } from "@classes/section";
 import { CrudComponent } from "@components/crud.component";
 import { PromptButtonComponent } from "@components/prompt-button/prompt-button.component";
 import { PromptComponent } from "@components/prompt/prompt.component";
+import { ButtonModule } from "@openng/optimus-ui/button";
+import { DialogModule } from "@openng/optimus-ui/dialog";
+import { InputNumberModule } from "@openng/optimus-ui/inputnumber";
+import { InputTextModule } from "@openng/optimus-ui/inputtext";
+import { TextareaModule } from "@openng/optimus-ui/textarea";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
 import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
 import { NgxTypedJsModule } from "ngx-typed-js";
-import { ButtonModule } from "primeng/button";
-import { DialogModule } from "primeng/dialog";
-import { InputNumberModule } from "primeng/inputnumber";
-import { InputTextModule } from "primeng/inputtext";
-import { TextareaModule } from "primeng/textarea";
 import { SectionComponent } from "./section/section.component";
 
 const SERVICE_VARIABLE: ServiceConfig<Section> = {
@@ -50,14 +50,14 @@ export class HomeComponent extends CrudComponent<Section> {
   // };
   // moveSections = (rank: number) => {
   //   let previousRank: number = rank;
-  //   this.items.slice(rank).forEach((section) => {
+  //   this.items().slice(rank).forEach((section) => {
   //     if (section.rank > previousRank) return;
-  //     this.items[this.items.indexOf(section)].rank++;
+  //     this.items[this.items().indexOf(section)].rank++;
   //     this.update({ ...section, rank: section.rank + 1 });
   //   });
   // };
   // override open(item?: Section): void {
-  //   this.form.controls["rank"].setValue(item ? item.rank : this.items[this.items.length - 1].rank + 1);
+  //   this.form.controls["rank"].setValue(item ? item.rank : this.items[this.items().length - 1].rank + 1);
   //   super.open(item);
   // }
 }

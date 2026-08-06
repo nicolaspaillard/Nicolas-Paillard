@@ -1,9 +1,10 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, EventEmitter, Input, Output, signal } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { AuthService } from "@app/shared/services/auth.service";
 import { Skill } from "@classes/skill";
-import { ButtonModule } from "primeng/button";
+import { ButtonModule } from "@openng/optimus-ui/button";
 
 @Component({
   selector: "app-skill",
@@ -17,8 +18,11 @@ export class SkillComponent {
   @Input() skill: Skill;
   bootstrapDefs =
     '<defs><linearGradient id="a" x1="76.079" x2="523.48" y1="10.798" y2="365.95" gradientTransform="translate(1.11 14.613) scale(.24566)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#9013fe"></stop><stop offset="1" stop-color="#6610f2"></stop></linearGradient><linearGradient id="b" x1="193.51" x2="293.51" y1="109.74" y2="278.87" gradientTransform="translate(0 52)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff"></stop><stop offset="1" stop-color="#f1e5fc"></stop></linearGradient><filter id="c" width="197" height="249" x="161.9" y="135.46" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"></feColorMatrix><feOffset dy="4"></feOffset><feGaussianBlur stdDeviation="8"></feGaussianBlur><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"></feColorMatrix><feBlend in2="BackgroundImageFix" result="effect1_dropShadow"></feBlend><feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape"></feBlend></filter></defs>';
-  user: { admin: boolean; user: User } | undefined;
+  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   constructor(private authService: AuthService) {
-    this.authService.user().subscribe(user => (this.user = user));
+    this.authService
+      .user()
+      .pipe(takeUntilDestroyed())
+      .subscribe(user => this.user.set(user ? { ...user } : undefined));
   }
 }

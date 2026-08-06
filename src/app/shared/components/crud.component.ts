@@ -1,3 +1,4 @@
+import { signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { FormGroup } from "@angular/forms";
@@ -11,9 +12,9 @@ export class CrudComponent<T extends Base> {
   isEditing: boolean = false;
   isPrompting: boolean = false;
   isShown: boolean = false;
-  items: T[] = [];
+  items = signal<T[]>([]);
   promptedField: string = "";
-  user: { admin: boolean; user: User } | undefined;
+  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   constructor(
     private crudService: CrudService<T>,
     private authService: AuthService,
@@ -22,13 +23,13 @@ export class CrudComponent<T extends Base> {
     this.authService
       .user()
       .pipe(takeUntilDestroyed())
-      .subscribe(user => (this.user = user));
+      .subscribe(user => this.user.set(user ? { ...user } : undefined));
     this.crudService
       .items()
       .pipe(takeUntilDestroyed())
       .subscribe(items => {
         if (this.sort) this.sort(items);
-        this.items = items;
+        this.items.set([...items]);
       });
     this.form = this.crudService.form;
   }
