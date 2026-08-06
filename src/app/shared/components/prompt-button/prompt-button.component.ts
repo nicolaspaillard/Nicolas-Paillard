@@ -1,10 +1,5 @@
-import {
-  Component,
-  EventEmitter,
-  Output,
-  ChangeDetectionStrategy,
-} from "@angular/core";
-import { TooltipModule } from "primeng/tooltip";
+import { Component, EventEmitter, Output } from "@angular/core";
+import { TooltipModule } from "@openng/optimus-ui/tooltip";
 
 @Component({
   selector: "app-prompt-button",

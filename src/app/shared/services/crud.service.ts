@@ -1,6 +1,20 @@
-import { inject, Inject, Injectable, InjectionToken } from "@angular/core";
+import { inject, Injectable, InjectionToken } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { addDoc, collection, deleteDoc, doc, FieldPath, Firestore, getDoc, getDocs, orderBy, OrderByDirection, query, setDoc, WhereFilterOp } from "@angular/fire/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  FieldPath,
+  Firestore,
+  getDoc,
+  getDocs,
+  orderBy,
+  OrderByDirection,
+  query,
+  setDoc,
+  WhereFilterOp,
+} from "@angular/fire/firestore";
 import { FormGroup } from "@angular/forms";
 import { ReplaySubject, Subject } from "rxjs";
 import { Base } from "../classes/base";
@@ -10,33 +24,45 @@ export interface ServiceConfig<T> {
   compareFn?: (a: T, b: T) => number;
   form: FormGroup;
   order: [string, OrderByDirection?];
-  type: { new (...args: any[]): T };
+  type: new (...args: any[]) => T;
   where?: [string | FieldPath, WhereFilterOp, any];
 }
 
-export const SERVICE_CONFIG = new InjectionToken<ServiceConfig<any>>("sets parameters for crud service constructor", {
-  providedIn: "root",
-  factory: () => <any>{},
-});
+export const SERVICE_CONFIG = new InjectionToken<ServiceConfig<any>>(
+  "sets parameters for crud service constructor",
+  {
+    providedIn: "root",
+    factory: () => ({}) as any,
+  },
+);
 
 @Injectable({ providedIn: "root" })
 export class CrudService<T extends Base> {
   form: FormGroup;
-  type: { new (...args: any[]): T };
+  type: new (...args: any[]) => T;
   private __items: T[] = [];
   private _items: Subject<T[]> = new ReplaySubject(1);
   private collection: string;
   private compareFn?: (a: T, b: T) => number;
   private db: Firestore = inject(Firestore);
-  constructor(@Inject(SERVICE_CONFIG) config: ServiceConfig<T>) {
+  constructor() {
+    const config = inject<ServiceConfig<T>>(SERVICE_CONFIG);
+
     if (Object.keys(config).length === 0) return;
     this.type = config.type;
     this.form = config.form;
     this.collection = config.collection;
     if (config.compareFn) this.compareFn = config.compareFn;
     try {
-      getDocs(query(collection(this.db, "data", config.collection, config.collection), orderBy(...config.order))).then(items => {
-        items.docs.forEach(doc => this.__items.push(new config.type({ ...doc.data(), id: doc.id })));
+      getDocs(
+        query(
+          collection(this.db, "data", config.collection, config.collection),
+          orderBy(...config.order),
+        ),
+      ).then((items) => {
+        items.docs.forEach((doc) =>
+          this.__items.push(new config.type({ ...doc.data(), id: doc.id })),
+        );
         this._items.next(this.__items);
       });
     } catch (error) {
@@ -45,7 +71,12 @@ export class CrudService<T extends Base> {
   }
   create = async (item: T) => {
     try {
-      item.id = (await addDoc(collection(this.db, "data", this.collection, this.collection), Object.assign({}, this.removeId(item)))).id;
+      item.id = (
+        await addDoc(
+          collection(this.db, "data", this.collection, this.collection),
+          Object.assign({}, this.removeId(item)),
+        )
+      ).id;
       this.__items.push(item);
       if (this.compareFn) this.__items.sort(this.compareFn);
       this._items.next(this.__items);
@@ -55,9 +86,11 @@ export class CrudService<T extends Base> {
   };
   delete = async (item: T) => {
     try {
-      deleteDoc(doc(this.db, "data", this.collection, this.collection, item.id));
+      deleteDoc(
+        doc(this.db, "data", this.collection, this.collection, item.id),
+      );
       this.__items.splice(
-        this.__items.findIndex(tmp => tmp.id === item.id),
+        this.__items.findIndex((tmp) => tmp.id === item.id),
         1,
       );
       this._items.next(this.__items);
@@ -65,7 +98,9 @@ export class CrudService<T extends Base> {
       console.error(error);
     }
   };
-  getCloudinary = async (): Promise<{ api_key: string; api_secret: string } | undefined> => {
+  getCloudinary = async (): Promise<
+    { api_key: string; api_secret: string } | undefined
+  > => {
     try {
       return (await getDoc(doc(this.db, "keys", "cloudinary"))).data() as any;
     } catch (error) {
@@ -73,13 +108,25 @@ export class CrudService<T extends Base> {
       return;
     }
   };
-  getData = <T>(type: { new (...args: any[]): T }, name: string, order: [string, OrderByDirection?]): Promise<T[]> => getDocs(query(collection(this.db, "data", name, name), orderBy(...order))).then(result => result.docs.map(doc => new type({ ...doc.data(), id: doc.id })));
+  getData = <T>(
+    type: new (...args: any[]) => T,
+    name: string,
+    order: [string, OrderByDirection?],
+  ): Promise<T[]> =>
+    getDocs(
+      query(collection(this.db, "data", name, name), orderBy(...order)),
+    ).then((result) =>
+      result.docs.map((doc) => new type({ ...doc.data(), id: doc.id })),
+    );
 
   items = () => this._items.pipe(takeUntilDestroyed());
   update = async (item: T) => {
     try {
-      setDoc(doc(this.db, "data", this.collection, this.collection, item.id), Object.assign({}, this.removeId(item)));
-      this.__items[this.__items.findIndex(tmp => tmp.id === item.id)] = item;
+      setDoc(
+        doc(this.db, "data", this.collection, this.collection, item.id),
+        Object.assign({}, this.removeId(item)),
+      );
+      this.__items[this.__items.findIndex((tmp) => tmp.id === item.id)] = item;
       if (this.compareFn) this.__items.sort(this.compareFn);
       this._items.next(this.__items);
     } catch (error) {
@@ -87,7 +134,7 @@ export class CrudService<T extends Base> {
     }
   };
   private removeId = (item: T): T => {
-    let noid: any = new this.type(item);
+    const noid: any = new this.type(item);
     delete noid.id;
     return noid;
   };

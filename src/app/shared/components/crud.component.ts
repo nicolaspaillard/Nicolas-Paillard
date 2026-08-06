@@ -1,3 +1,4 @@
+import { signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { FormGroup } from "@angular/forms";
@@ -8,12 +9,12 @@ import { Base } from "../classes/base";
 
 export class CrudComponent<T extends Base> {
   form: FormGroup;
-  isEditing: boolean = false;
-  isPrompting: boolean = false;
-  isShown: boolean = false;
-  items: T[] = [];
-  promptedField: string = "";
-  user: { admin: boolean; user: User } | undefined;
+  isEditing = false;
+  isPrompting = false;
+  isShown = false;
+  items = signal<T[]>([]);
+  promptedField = "";
+  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   constructor(
     private crudService: CrudService<T>,
     private authService: AuthService,
@@ -22,18 +23,18 @@ export class CrudComponent<T extends Base> {
     this.authService
       .user()
       .pipe(takeUntilDestroyed())
-      .subscribe(user => (this.user = user));
+      .subscribe(user => this.user.set(user ? { ...user } : undefined));
     this.crudService
       .items()
       .pipe(takeUntilDestroyed())
       .subscribe(items => {
         if (this.sort) this.sort(items);
-        this.items = items;
+        this.items.set([...items]);
       });
     this.form = this.crudService.form;
   }
-  async create(item?: any) {
-    await this.crudService.create(item ? item : (this.form.value as T)).then(id => (this.isShown = false));
+  async create(item?: T) {
+    await this.crudService.create(item ? item : (this.form.value as T)).then(() => (this.isShown = false));
   }
   delete(item: T, field?: string) {
     this.confirmService.confirm({ message: `Voulez-vous vraiment supprimer '${field ? item[field] : item.title}' ?`, accept: () => this.crudService.delete(item) });
@@ -44,8 +45,8 @@ export class CrudComponent<T extends Base> {
     else this.form.reset();
     this.isShown = true;
   }
-  async update(item?: any) {
-    await this.crudService.update(item ? item : this.form.value).then(() => (this.isShown = false));
+  async update(item?: T) {
+    await this.crudService.update(item ? item : (this.form.value as T)).then(() => (this.isShown = false));
   }
 
   protected getCloudinary = async () => await this.crudService.getCloudinary().then(cloudinary => cloudinary);
