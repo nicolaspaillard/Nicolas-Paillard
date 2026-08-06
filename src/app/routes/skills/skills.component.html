@@ -1,17 +1,18 @@
 <div class="flex min-h-full flex-col justify-center p-5 lg:p-10">
   <div class="flex flex-wrap items-center justify-center gap-5 lg:gap-10">
-    <app-category
-      class="flex-[0_0_100%] md:flex-[0_0_calc(50%-calc(var(--spacing)*5))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))]"
-      *ngFor="let category of items"
-      [category]="category"
-      [skills]="skills.filter(filter(category))"
-      (onEdit)="open(category)"
-      (onRemove)="delete(category)"
-      (onSkillEdit)="formSkill.setValue($event); isEditingSkill = true; isShownSkill = true"
-      (onSkillRemove)="deleteSkill($event)"
-      (onSkillAdd)="formSkill.reset(); formSkill.get('category')?.setValue($event.id); isShownSkill = true"></app-category>
-    <div class="card flex-[0_0_100%] p-5 md:flex-[0_0_calc(50%-calc(var(--spacing)*5))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))] lg:p-10" *ngIf="user?.admin">
-      <p-button class="block text-center" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
+    @for (category of items(); track $index) {
+      <app-category
+        class="flex-[0_0_100%] md:flex-[0_0_calc(50%-calc(var(--spacing)*5))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))]"
+        [category]="category"
+        [skills]="skills().filter(filter(category))"
+        (onEdit)="open(category)"
+        (onRemove)="delete(category)"
+        (onSkillEdit)="formSkill.setValue($event); isEditingSkill = true; isShownSkill = true"
+        (onSkillRemove)="deleteSkill($event)"
+        (onSkillAdd)="formSkill.reset(); formSkill.get('category')?.setValue($event.id); isShownSkill = true"></app-category>
+    }
+    <div class="card flex-[0_0_100%] p-5 md:flex-[0_0_calc(50%-calc(var(--spacing)*5))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))] lg:p-10" *ngIf="user()?.admin">
+      <button class="block text-center" [text]="true" (onClick)="open()" pButton size="large" icon="pi pi-plus"></button>
     </div>
   </div>
 </div>
@@ -25,7 +26,7 @@
     </label>
     <label>
       Rang
-      <p-inputnumber class="row-span-2 w-fit!" [min]="1" [max]="items.length" [showButtons]="true" [inputStyle]="{ width: '3rem' }" formControlName="rank" buttonLayout="vertical" spinnerMode="vertical">
+      <p-inputnumber class="row-span-2 w-fit!" [min]="1" [max]="items().length" [showButtons]="true" [inputStyle]="{ width: '3rem' }" formControlName="rank" buttonLayout="vertical" spinnerMode="vertical">
         <ng-template #incrementbuttonicon>
           <span class="pi pi-plus"></span>
         </ng-template>
@@ -35,8 +36,8 @@
       </p-inputnumber>
     </label>
     <div class="flex justify-end gap-2">
-      <p-button [text]="true" (onClick)="isShown = false">Annuler</p-button>
-      <p-button [disabled]="!form.valid" [label]="isEditing ? 'Modifier' : 'Ajouter'" (onClick)="isEditing ? update() : create(); isShown = false"></p-button>
+      <button [text]="true" (onClick)="isShown = false" pButton>Annuler</button>
+      <button [disabled]="!form.valid" (onClick)="isEditing ? update() : create(); isShown = false" pButton>{{ isEditing ? "Modifier" : "Ajouter" }}</button>
     </div>
   </form>
 </p-dialog>
@@ -52,7 +53,7 @@
         </label>
         <label>
           Catégorie
-          <p-select [options]="items" [editable]="true" formControlName="category" placeholder="Catégorie" optionLabel="title" optionValue="id" />
+          <p-select [options]="items()" [editable]="true" formControlName="category" placeholder="Catégorie" optionLabel="title" optionValue="id" />
         </label>
       </div>
     </div>
@@ -75,8 +76,8 @@
       </p-select>
     </label>
     <div class="flex justify-end gap-2 md:col-span-2">
-      <p-button [text]="true" (onClick)="isShownSkill = false">Annuler</p-button>
-      <p-button [disabled]="!formSkill.valid" (onClick)="isEditingSkill ? updateSkill() : createSkill(); isShownSkill = false">{{ isEditingSkill ? "Modifier" : "Ajouter" }}</p-button>
+      <button [text]="true" (onClick)="isShownSkill = false" pButton>Annuler</button>
+      <button [disabled]="!formSkill.valid" (onClick)="isEditingSkill ? updateSkill() : createSkill(); isShownSkill = false" pButton>{{ isEditingSkill ? "Modifier" : "Ajouter" }}</button>
     </div>
   </form>
 </p-dialog>

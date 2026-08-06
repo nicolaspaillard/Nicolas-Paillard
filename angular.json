@@ -3,7 +3,8 @@
   "version": 1,
   "cli": {
     "analytics": false,
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "schematicCollections": ["angular-eslint"]
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -15,11 +16,21 @@
           "standalone": true,
           "skipTests": true
         },
-        "@schematics/angular:service": { "skipTests": true },
-        "@schematics/angular:directive": { "skipTests": true },
-        "@schematics/angular:class": { "skipTests": true },
-        "@schematics/angular:interceptor": { "skipTests": true },
-        "@schematics/angular:guard": { "skipTests": true }
+        "@schematics/angular:service": {
+          "skipTests": true
+        },
+        "@schematics/angular:directive": {
+          "skipTests": true
+        },
+        "@schematics/angular:class": {
+          "skipTests": true
+        },
+        "@schematics/angular:interceptor": {
+          "skipTests": true
+        },
+        "@schematics/angular:guard": {
+          "skipTests": true
+        }
       },
       "root": "",
       "sourceRoot": "src",
@@ -28,18 +39,27 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": { "base": "public/", "browser": "" },
+            "outputPath": {
+              "base": "public/",
+              "browser": ""
+            },
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "stylePreprocessorOptions": {
-              "sass": { "silenceDeprecations": ["import"] }
+              "sass": {
+                "silenceDeprecations": ["import"]
+              }
             },
             "assets": [
               "src/assets",
-              { "glob": "favicon.ico", "input": "src/favicon/", "output": "./" }
+              {
+                "glob": "favicon.ico",
+                "input": "src/favicon/",
+                "output": "./"
+              }
             ],
             "styles": ["src/styles.scss"],
             "scripts": []
@@ -57,7 +77,7 @@
               "aot": false,
               "optimization": false,
               "extractLicenses": false,
-              "polyfills": ["zone.js", "zone.js/testing"]
+              "polyfills": []
             }
           },
           "defaultConfiguration": "production"
@@ -69,20 +89,30 @@
             "host": "0.0.0.0"
           },
           "configurations": {
-            "production": { "buildTarget": "nicolaspaillard:build:production" },
+            "production": {
+              "buildTarget": "nicolaspaillard:build:production"
+            },
             "development": {
               "buildTarget": "nicolaspaillard:build:development"
             }
           },
           "defaultConfiguration": "development"
         },
-        "extract-i18n": { "builder": "@angular/build:extract-i18n" },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "tsconfig.spec.json",
             "buildTarget": ":build:testing",
             "runner": "vitest"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }

@@ -1,18 +1,15 @@
 import { CommonModule, NgOptimizedImage } from "@angular/common";
-import { Component, ChangeDetectionStrategy } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { Profile } from "@classes/profile";
 import { formSection, Section } from "@classes/section";
 import { CrudComponent } from "@components/crud.component";
 import { PromptButtonComponent } from "@components/prompt-button/prompt-button.component";
 import { PromptComponent } from "@components/prompt/prompt.component";
+import { PIcon } from "@primeicons/angular/p-icon";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
-import {
-  CrudService,
-  SERVICE_CONFIG,
-  ServiceConfig,
-} from "@services/crud.service";
+import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
 import { NgxTypedJsModule } from "ngx-typed-js";
 import { ButtonModule } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
@@ -31,52 +28,23 @@ const SERVICE_VARIABLE: ServiceConfig<Section> = {
 
 @Component({
   selector: "app-home",
-  imports: [
-    CommonModule,
-    NgxTypedJsModule,
-    ButtonModule,
-    NgOptimizedImage,
-    CommonModule,
-    SectionComponent,
-    ReactiveFormsModule,
-    DialogModule,
-    ButtonModule,
-    InputTextModule,
-    TextareaModule,
-    InputNumberModule,
-    PromptComponent,
-    PromptButtonComponent,
-  ],
+  imports: [CommonModule, NgxTypedJsModule, PIcon, ButtonModule, NgOptimizedImage, CommonModule, SectionComponent, ReactiveFormsModule, DialogModule, ButtonModule, InputTextModule, TextareaModule, InputNumberModule, PromptComponent, PromptButtonComponent],
   templateUrl: "./home.component.html",
-  changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    CrudService<Section>,
-    { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE },
-  ],
+  providers: [CrudService<Section>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class HomeComponent extends CrudComponent<Section> {
-  profile?: Profile;
-  strings: string[] = [
-    "Web",
-    "Backend",
-    "Frontend",
-    "FullStack",
-    "SQL",
-    "TypeScript",
-    ".NET",
-    "Angular",
-    "Java",
-    "Python",
-  ];
-  constructor(
-    crudService: CrudService<Section>,
-    authService: AuthService,
-    confirmService: ConfirmService,
-  ) {
+  profile = signal<Profile[]>([]);
+  strings: string[] = ["Web", "Backend", "Frontend", "FullStack", "SQL", "TypeScript", ".NET", "Angular", "Java", "Python"];
+
+  constructor() {
+    const crudService = inject<CrudService<Section>>(CrudService);
+    const authService = inject(AuthService);
+    const confirmService = inject(ConfirmService);
     super(crudService, authService, confirmService);
     crudService
       .getData(Profile, "profile", ["lastName"])
-      .then((profile) => (this.profile = profile[0]));
+      .then(profile => this.profile.set([...profile]))
+      .catch(err => console.error(err));
   }
 
   // testGPT = async () => {

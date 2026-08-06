@@ -1,8 +1,8 @@
 <div class="flex min-h-full flex-col justify-center p-5 lg:p-10">
   <div class="grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-    <app-project *ngFor="let project of items" [project]="project" (onProjectEdit)="open(project)" (onProjectRemoved)="delete(project, 'title')"></app-project>
-    <div class="card flex items-center justify-center p-5 lg:p-10" *ngIf="user?.admin">
-      <p-button class="block text-center" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
+    <app-project *ngFor="let project of items()" [project]="project" (onProjectEdit)="open(project)" (onProjectRemoved)="delete(project, 'title')"></app-project>
+    <div class="card flex items-center justify-center p-5 lg:p-10" *ngIf="user()?.admin">
+      <button class="block text-center" [text]="true" (onClick)="open()" pButton size="large" icon="pi pi-plus"></button>
     </div>
   </div>
 </div>
@@ -51,16 +51,16 @@
     <label class="md:col-span-2">
       Activités
       <div class="relative flex items-center justify-between" *ngFor="let activity of activities">
-        <span class="p-button-sm p-button-text p-button-contrast max-w-75 cursor-pointer truncate rounded-md" (click)="act.value = activity">•&nbsp;&nbsp;{{ activity }}</span>
+        <span class="button-sm button-text button-contrast max-w-75 cursor-pointer truncate rounded-md" (click)="act.value = activity">•&nbsp;&nbsp;{{ activity }}</span>
         <div class="flex">
-          <p-button [disabled]="activities[0] == activity" [text]="true" (onClick)="move(activity, true)" icon="pi pi-angle-up" styleClass="w-auto" size="small" severity="secondary" />
-          <p-button [disabled]="activities[activities.length - 1] == activity" [text]="true" (onClick)="move(activity)" icon="pi pi-angle-down" styleClass="w-auto" size="small" severity="secondary" />
-          <p-button [text]="true" (onClick)="remove(activity)" icon="pi pi-trash" styleClass="w-auto" size="small" severity="danger" />
+          <button [disabled]="activities[0] == activity" [text]="true" (onClick)="move(activity, true)" pButton icon="pi pi-angle-up" styleClass="w-auto" size="small" severity="secondary"></button>
+          <button [disabled]="activities[activities.length - 1] == activity" [text]="true" (onClick)="move(activity)" pButton icon="pi pi-angle-down" styleClass="w-auto" size="small" severity="secondary"></button>
+          <button [text]="true" (onClick)="remove(activity)" pButton icon="pi pi-trash" styleClass="w-auto" size="small" severity="danger"></button>
         </div>
       </div>
       <p-inputgroup>
         <input #act pInputText placeholder="Activité" />
-        <button [disabled]="!act.value" (click)="add(act.value)" type="button" pButton icon="pi pi-plus"></button>
+        <button [disabled]="!act.value" (click)="add(act.value)" pButton type="button" pButton icon="pi pi-plus"></button>
       </p-inputgroup>
     </label>
     <label class="md:col-span-2">
@@ -68,14 +68,14 @@
       <span class="opacity-50" *ngIf="isEditing && !images._files.length">&nbsp;(Aucune modification)</span>
       <p-fileupload #images [multiple]="true" accept="image/*">
         <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
-          <p-button [outlined]="true" (onClick)="chooseCallback()" icon="pi pi-images"></p-button>
-          <p-button [outlined]="true" [disabled]="!files || files.length === 0" (onClick)="clearCallback()" icon="pi pi-times" severity="danger" />
+          <button [outlined]="true" (onClick)="chooseCallback()" pButton icon="pi pi-images"></button>
+          <button [outlined]="true" [disabled]="!files || files.length === 0" (onClick)="clearCallback()" pButton icon="pi pi-times" severity="danger"></button>
         </ng-template>
       </p-fileupload>
     </label>
     <div class="flex justify-end gap-2 md:col-span-2">
-      <button [text]="true" (onClick)="isShown = false" pButton>Annuler</button>
-      <button [disabled]="!form.valid" (onClick)="isEditing ? update(images._files()) : create(images._files()); isShown = false" pButton>{{ isEditing ? "Modifier" : "Ajouter" }}</button>
+      <button [text]="true" (onClick)="isShown = false" pButton pButton>Annuler</button>
+      <button [disabled]="!form.valid" (onClick)="isEditing ? update(images._files()) : create(images._files()); isShown = false" pButton pButton>{{ isEditing ? "Modifier" : "Ajouter" }}</button>
     </div>
   </form>
 </p-dialog>

@@ -5,7 +5,7 @@
         <div class="flex flex-col">
           @if (message.ai) {
             <div class="flex gap-2 items-center">
-              <p-button class="*:p-0!" (click)="pick(response.innerText)" link>Accepter</p-button>
+              <button class="*:p-0!" (click)="pick(response.innerText)" pButton link>Accepter</button>
               <div class="text-muted-color text-sm">{{ message.model?.replace("models/", "") }}</div>
             </div>
           }
@@ -22,7 +22,7 @@
     </div>
     <p-inputgroup>
       <input #prompt pInputText placeholder="Prompt" />
-      <button [disabled]="!prompt.value || isThinking" [loading]="isThinking" (click)="this.prompt(prompt.value); prompt.value = ''" pButton label="Discuter"></button>
+      <button [disabled]="!prompt.value || isThinking" [loading]="isThinking" (click)="this.prompt(prompt.value); prompt.value = ''" pButton pButton label="Discuter"></button>
     </p-inputgroup>
   </div>
 </p-dialog>

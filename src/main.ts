@@ -1,6 +1,6 @@
 import { provideCloudinaryLoader } from "@angular/common";
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from "@angular/common/http";
-import { provideZoneChangeDetection } from "@angular/core";
+import { provideZonelessChangeDetection } from "@angular/core";
 import { getAnalytics, provideAnalytics, ScreenTrackingService, UserTrackingService } from "@angular/fire/analytics";
 import { getApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
 import { initializeAppCheck, provideAppCheck, ReCaptchaEnterpriseProvider } from "@angular/fire/app-check";
@@ -15,7 +15,7 @@ import { Amber } from "./themes/amber.preset";
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZonelessChangeDetection(),
     provideRouter(
       routes,
       withPreloading(PreloadAllModules),
@@ -31,6 +31,7 @@ bootstrapApplication(AppComponent, {
       theme: { preset: Amber },
       ripple: true,
       overlayAppendTo: "body",
+      // license: "eyJpZCI6IjcwYjI2ZDA3LWI5MmQtNDJlMy05ZDA3LTFmYTAxZjdhMmYxMSIsInByb2R1Y3QiOiJwcmltZXVpIiwidGllciI6ImNvbW11bml0eSIsInR5cGUiOiJkZXYiLCJpYXQiOjE3ODU5NjQ0NzYsImV4cCI6MTgxNzUwMDQ3Nn0.WyTFkjsoquU5EL5CIk1JExBvOcXJE214cMABinrpzuc1Twjvd-Ac_q-BjMOAzs07QjBl8bw-ZZoZcUyY4OMPAQ",
     }),
     ConfirmationService,
     MessageService,

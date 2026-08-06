@@ -1,11 +1,5 @@
 import { CommonModule } from "@angular/common";
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  ChangeDetectionStrategy,
-} from "@angular/core";
+import { Component, EventEmitter, inject, input, Output, signal } from "@angular/core";
 import { User } from "@angular/fire/auth";
 import { ReactiveFormsModule } from "@angular/forms";
 import { AuthService } from "@app/shared/services/auth.service";
@@ -17,24 +11,20 @@ import { SkillComponent } from "./skill/skill.component";
 @Component({
   selector: "app-category",
   imports: [CommonModule, ReactiveFormsModule, SkillComponent, ButtonModule],
-  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: "./category.component.html",
 })
 export class CategoryComponent {
-  @Input() category: Category;
   @Output() onEdit = new EventEmitter<Category>();
   @Output() onRemove = new EventEmitter<Category>();
   @Output() onSkillAdd = new EventEmitter<Category>();
   @Output() onSkillEdit = new EventEmitter<Skill>();
   @Output() onSkillRemove = new EventEmitter<Skill>();
-  @Input() skills: Skill[] = [];
-  user: { admin: boolean; user: User } | undefined;
-  constructor(private authService: AuthService) {
-    this.authService.user().subscribe((user) => (this.user = user));
+  category = input.required<Category>();
+  skills = input.required<Skill[]>();
+  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
+
+  constructor() {
+    const authService = inject(AuthService);
+    authService.user().subscribe(user => this.user.set(user ? { ...user } : undefined));
   }
-  // ngOnInit() {
-  //   getDocs(query(collection(this.db, "data", "skills", "skills"), orderBy("title"), where("category", "==", this.category.id))).then((items) => {
-  //     items.docs.forEach((doc) => this.skills.push(new Skill({ ...doc.data(), id: doc.id } as Skill)));
-  //   });
-  // }
 }

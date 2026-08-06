@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { formProject, Project } from "@classes/project";
 import { CrudComponent } from "@components/crud.component";
@@ -31,13 +31,16 @@ const SERVICE_VARIABLE: ServiceConfig<Project> = {
   selector: "app-projects",
   imports: [CommonModule, ReactiveFormsModule, ProjectComponent, ButtonModule, DialogModule, TooltipModule, InputGroupModule, DatePickerModule, InputTextModule, TextareaModule, FileUploadModule, PromptComponent, PromptButtonComponent],
   templateUrl: "./projects.component.html",
-  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [CrudService<Project>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class ProjectsComponent extends CrudComponent<Project> {
   activities: string[] = [];
   images: string;
-  constructor(crudService: CrudService<Project>, authService: AuthService, confirmService: ConfirmService) {
+
+  constructor() {
+    const crudService = inject<CrudService<Project>>(CrudService);
+    const authService = inject(AuthService);
+    const confirmService = inject(ConfirmService);
     super(crudService, authService, confirmService);
   }
   add = (activity: string) => {
@@ -49,10 +52,10 @@ export class ProjectsComponent extends CrudComponent<Project> {
     if (result === false) return;
     await super.create({ ...this.form.value, images: result } as Project);
   }
-  move = (activity: string, up: boolean = false) => {
-    let fromIndex = this.activities.indexOf(activity);
+  move = (activity: string, up = false) => {
+    const fromIndex = this.activities.indexOf(activity);
     if ((fromIndex == 0 && up) || (fromIndex == this.activities.length - 1 && !up)) return;
-    var element = this.activities[fromIndex];
+    const element = this.activities[fromIndex];
     this.activities.splice(fromIndex, 1);
     this.activities.splice(fromIndex + (up ? -1 : 1), 0, element);
     this.form.patchValue({ activities: this.activities.join(";") });
@@ -74,9 +77,9 @@ export class ProjectsComponent extends CrudComponent<Project> {
   private deleteImages = async (images: string) => {
     if (images === "") return true;
     const timestamp: string = Math.round(new Date().getTime() / 1000).toString();
-    let promises: Promise<boolean>[] = [];
+    const promises: Promise<boolean>[] = [];
     const cloudinary = (await this.getCloudinary())!;
-    for (let image of images.split(";")) {
+    for (const image of images.split(";")) {
       const formdata = new FormData();
       formdata.append("public_id", "nicolasPaillard/" + image);
       formdata.append(
@@ -114,9 +117,9 @@ export class ProjectsComponent extends CrudComponent<Project> {
   private uploadImages = async (files: File[]) => {
     if (!files.length) return "";
     const timestamp: string = Math.round(new Date().getTime() / 1000).toString();
-    let promises: Promise<boolean | string>[] = [];
+    const promises: Promise<boolean | string>[] = [];
     const cloudinary = (await this.getCloudinary())!;
-    for (let file of files) {
+    for (const file of files) {
       const formData: FormData = new FormData();
       formData.append("file", file);
       formData.append("api_key", cloudinary.api_key);

@@ -2,32 +2,35 @@
 <div class="absolute top-0 left-0 right-0 bottom-0 overflow-hidden" id="animation" [ngClass]="{ hidden: enableMatrix }"></div>
 <div class="flex h-full w-full flex-col overflow-hidden">
   <nav class="card container fixed left-1/2 z-20 -translate-x-1/2 [&_button]:h-full [&_button]:w-full">
-    <div class="flex justify-between gap-2 p-2 lg:justify-center" #nav>
+    <div class="flex justify-between gap-2 p-2 lg:justify-center [&_button]:w-fit!" #nav>
       <div class="flex gap-2">
-        <p-button class="lg:hidden" [text]="true" [ngClass]="{ '[&>button]:border-primary!': menuShown.checked }" (onClick)="menuShown.checked = !menuShown.checked" icon="pi pi-bars"></p-button>
-        <p-button [ngClass]="{ '[&>button]:border-none!': menuShown.checked }" [routerLinkActiveOptions]="{ exact: true }" [text]="true" routerLink="/" size="large" routerLinkActive="[&>button]:border-primary!" icon="pi pi-home"></p-button>
-        <p-button (onClick)="downloadCV()" size="large">CV</p-button>
+        <button class="lg:hidden!" [text]="true" [ngClass]="{ 'border-primary!': menuShown.checked }" (click)="menuShown.checked = !menuShown.checked" pButton iconOnly size="large"><svg [pIcon]="'bars'" size="20"></svg></button>
+        <button [ngClass]="{ 'border-none!': menuShown.checked }" [routerLinkActiveOptions]="{ exact: true }" [text]="true" pButton iconOnly routerLink="/" size="large" routerLinkActive="border-primary!"><svg [pIcon]="'home'" size="20"></svg></button>
+        <button class="" (click)="downloadCV()" pButton size="large">CV</button>
         <input class="peer hidden" #menuShown type="checkbox" />
         <div class="hidden gap-2 overflow-hidden lg:flex">
-          <ng-container *ngFor="let route of routes">
-            <p-button class="mb-2 lg:mb-0" *ngIf="!route.canActivate || user?.admin" [routerLink]="route.path" [label]="route.title + ''" [text]="true" (onClick)="menuShown.checked = false" size="large" routerLinkActive="[&>button]:border-primary!"></p-button>
-          </ng-container>
+          @for (route of routes; track $index) {
+            @if (!route.canActivate || user()?.admin) {
+              <button class="mb-2 lg:mb-0" [routerLink]="route.path" [text]="true" (click)="menuShown.checked = false" pButton size="large" routerLinkActive="border-primary!">{{ route.title }}</button>
+            }
+          }
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <p-toggleswitch class="flex" [pTooltip]="enableMatrix ? 'Blue pill' : 'Red pill'" (onChange)="this.enableMatrix = !this.enableMatrix; applyPreset()" tooltipPosition="bottom">
+        <p-toggleswitch class="inline-flex" [pTooltip]="enableMatrix ? 'Blue pill ?' : 'Red pill ?'" (onChange)="this.enableMatrix = !this.enableMatrix; applyPreset()" tooltipPosition="bottom">
           <ng-template #handle let-checked="checked">
             <i class="text-[10px]! pi" [ngClass]="[checked ? 'pi-check' : 'pi-times']"></i>
           </ng-template>
         </p-toggleswitch>
-        <p-button *ngIf="!user" (onClick)="isSigninShown = true" size="large">Connexion</p-button>
-        <p-button *ngIf="user" (onClick)="signout()" size="large">Déconnexion</p-button>
+        <button (click)="user() ? signout() : (isSigninShown = true)" pButton size="large">{{ user() ? "Déconnexion" : "Connexion" }}</button>
       </div>
     </div>
     <div class="flex max-h-0 w-full flex-col overflow-hidden px-2 transition-[max-height] lg:hidden" [ngClass]="{ 'max-h-249.75!': menuShown.checked }">
-      <ng-container *ngFor="let route of routes">
-        <p-button class="mb-2" *ngIf="!route.canActivate || user?.admin" [routerLink]="route.path" [label]="route.title + ''" [text]="true" (onClick)="menuShown.checked = false" size="large" routerLinkActive="[&>button]:border-primary!"></p-button>
-      </ng-container>
+      @for (route of routes; track $index) {
+        @if (!route.canActivate || user()?.admin) {
+          <button class="mb-2" [routerLink]="route.path" [text]="true" (click)="menuShown.checked = false" pButton size="large" routerLinkActive="[&>button]:border-primary!">{{ route.title }}</button>
+        }
+      }
     </div>
   </nav>
   <div class="shrink-0" [style.height.px]="nav.getBoundingClientRect().height + 4"></div>
@@ -52,10 +55,10 @@
     </label>
     <small class="text-red-500" *ngIf="formSignin.invalid && (formSignin.dirty || formSignin.touched) && formSignin.hasError('invalid')">Email ou mot de passe invalide</small>
     <div class="flex justify-between gap-2">
-      <p-button [disabled]="!formSignin.controls.email.valid" [loading]="isSending" (onClick)="send()">Mdp oublié</p-button>
+      <button [disabled]="!formSignin.controls.email.valid" [loading]="isSending" (click)="send()" pButton>Mdp oublié</button>
       <div class="flex gap-2">
-        <p-button *ngIf="!user" [outlined]="true" (onClick)="isSigninShown = false; isSignupShown = true">Inscription</p-button>
-        <p-button [disabled]="!formSignin.valid || isSigningIn" [loading]="isSigningIn" (onClick)="isSigningIn = true; signin()" type="submit">Connexion</p-button>
+        <button *ngIf="!user" [outlined]="true" (click)="isSigninShown = false; isSignupShown = true" pButton>Inscription</button>
+        <button [disabled]="!formSignin.valid || isSigningIn" [loading]="isSigningIn" (click)="isSigningIn = true; signin()" pButton type="submit">Connexion</button>
       </div>
     </div>
   </form>
@@ -92,8 +95,8 @@
       </p-password>
     </label>
     <div class="flex justify-end gap-2">
-      <p-button [text]="true" (onClick)="isSignupShown = false">Annuler</p-button>
-      <p-button [disabled]="!formSignup.valid || isSigningUp" [loading]="isSigningUp" (onClick)="isSigningUp = true; signup()" type="submit">Inscription</p-button>
+      <button [text]="true" (click)="isSignupShown = false" pButton>Annuler</button>
+      <button [disabled]="!formSignup.valid || isSigningUp" [loading]="isSigningUp" (click)="isSigningUp = true; signup()" pButton type="submit">Inscription</button>
     </div>
   </form>
 </p-dialog>
@@ -119,7 +122,7 @@
       </p-password>
     </label>
     <div class="flex justify-end gap-2">
-      <p-button [disabled]="!formReset.valid || isResetting" [loading]="isResetting" (onClick)="isResetting = true; reset()" type="submit">Sauvegarder</p-button>
+      <button [disabled]="!formReset.valid || isResetting" [loading]="isResetting" (click)="isResetting = true; reset()" pButton type="submit">Sauvegarder</button>
     </div>
   </form>
 </p-dialog>

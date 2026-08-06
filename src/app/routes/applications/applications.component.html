@@ -1,6 +1,6 @@
 <div class="flex min-h-full flex-col">
-  <p-button class="mt-2 block text-center" *ngIf="user?.admin" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
-  <p-table [value]="items" [expandedRowKeys]="expandedRows" dataKey="id" size="small">
+  <button class="mt-2 block text-center" *ngIf="user()?.admin" [text]="true" (onClick)="open()" pButton size="large" icon="pi pi-plus"></button>
+  <p-table [value]="items()" [expandedRowKeys]="expandedRows" dataKey="id" size="small">
     <ng-template #header>
       <tr>
         <th pSortableColumn="title">
@@ -41,10 +41,12 @@
       <tr class="group relative">
         <td>
           <div class="me-2 inline-block">
-            <p-button [pRowToggler]="application" [text]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" type="button" pRipple size="small" />
-            <p-button [text]="true" (onClick)="open(application)" icon="pi pi-pencil" size="small" />
-            <p-button [text]="true" (onClick)="delete(application, 'title')" icon="pi pi-trash" size="small" severity="danger" />
-            <p-button *ngIf="application.contacts" [text]="true" (onClick)="mail(application)" size="small" severity="success" icon="pi pi-send" />
+            <button [pRowToggler]="application" [text]="true" [plain]="true" iconOnly pButton type="button" pRipple size="small"><svg [pIcon]="expanded ? 'chevron-down' : 'chevron-right'"></svg></button>
+            <button [text]="true" (onClick)="open(application)" pButton iconOnly size="small"><svg [pIcon]="'pencil'"></svg></button>
+            <button [text]="true" (onClick)="delete(application, 'title')" pButton iconOnly size="small" severity="danger"><svg [pIcon]="'trash'"></svg></button>
+            @if (application.contacts) {
+              <button [text]="true" (onClick)="mail(application)" pButton iconOnly size="small" severity="success"><svg [pIcon]="'send'"></svg></button>
+            }
           </div>
           <span class="inline-block">{{ application.title }}</span>
         </td>
@@ -131,33 +133,33 @@
     <label for="lnk">
       Liens
       <div class="relative flex items-center justify-between" *ngFor="let link of links">
-        <span class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="lnk.value = link">•&nbsp;&nbsp;{{ link }}</span>
+        <span class="button-sm button-text button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="lnk.value = link">•&nbsp;&nbsp;{{ link }}</span>
         <div class="flex">
-          <p-button [disabled]="links[0] == link" [text]="true" (onClick)="move(link, 'links', true)" icon="pi pi-angle-up" size="small" severity="secondary" />
-          <p-button [disabled]="links[links.length - 1] == link" [text]="true" (onClick)="move(link, 'links')" icon="pi pi-angle-down" size="small" severity="secondary" />
-          <p-button [text]="true" (onClick)="remove(link, 'links')" icon="pi pi-trash" size="small" severity="danger" />
+          <button [disabled]="links[0] == link" [text]="true" (onClick)="move(link, 'links', true)" pButton icon="pi pi-angle-up" size="small" severity="secondary"></button>
+          <button [disabled]="links[links.length - 1] == link" [text]="true" (onClick)="move(link, 'links')" pButton icon="pi pi-angle-down" size="small" severity="secondary"></button>
+          <button [text]="true" (onClick)="remove(link, 'links')" pButton icon="pi pi-trash" size="small" severity="danger"></button>
         </div>
       </div>
       <p-inputgroup>
         <input id="lnk" #lnk pInputText placeholder="Lien" />
-        <button [disabled]="!lnk.value" (click)="add(lnk.value, 'links')" type="button" pButton icon="pi pi-plus"></button>
+        <button [disabled]="!lnk.value" (click)="add(lnk.value, 'links')" pButton type="button" pButton icon="pi pi-plus"></button>
       </p-inputgroup>
     </label>
     <label for="ctt">
       Contacts
       <ng-container *ngIf="contacts && contacts.length">
         <div class="relative flex items-center justify-between" *ngFor="let contact of contacts">
-          <span class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="ctt.value = contact">•&nbsp;&nbsp;{{ contact }}</span>
+          <span class="button-sm button-text button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="ctt.value = contact">•&nbsp;&nbsp;{{ contact }}</span>
           <div class="flex">
-            <p-button [disabled]="contacts[0] == contact" [text]="true" (onClick)="move(contact, 'contacts', true)" icon="pi pi-angle-up" size="small" severity="secondary" />
-            <p-button [disabled]="contacts[contacts.length - 1] == contact" [text]="true" (onClick)="move(contact, 'contacts')" icon="pi pi-angle-down" size="small" severity="secondary" />
-            <p-button [text]="true" (onClick)="remove(contact, 'contacts')" icon="pi pi-trash" size="small" severity="danger" />
+            <button [disabled]="contacts[0] == contact" [text]="true" (onClick)="move(contact, 'contacts', true)" pButton icon="pi pi-angle-up" size="small" severity="secondary"></button>
+            <button [disabled]="contacts[contacts.length - 1] == contact" [text]="true" (onClick)="move(contact, 'contacts')" pButton icon="pi pi-angle-down" size="small" severity="secondary"></button>
+            <button [text]="true" (onClick)="remove(contact, 'contacts')" pButton icon="pi pi-trash" size="small" severity="danger"></button>
           </div>
         </div>
       </ng-container>
       <p-inputgroup>
         <input id="ctt" #ctt pInputText placeholder="Contact" />
-        <button [disabled]="!ctt.value" (click)="add(ctt.value, 'contacts')" type="button" pButton icon="pi pi-plus"></button>
+        <button [disabled]="!ctt.value" (click)="add(ctt.value, 'contacts')" pButton type="button" pButton icon="pi pi-plus"></button>
       </p-inputgroup>
     </label>
     <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
@@ -175,8 +177,8 @@
       </label>
     </div>
     <div class="flex justify-end gap-2 md:col-span-2">
-      <p-button [text]="true" (onClick)="isShown = false">Annuler</p-button>
-      <p-button [disabled]="!form.valid" (onClick)="isEditing ? update() : create(); isShown = false">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
+      <button [text]="true" (onClick)="isShown = false" pButton>Annuler</button>
+      <button [disabled]="!form.valid" (onClick)="isEditing ? update() : create(); isShown = false" pButton>{{ isEditing ? "Modifier" : "Ajouter" }}</button>
     </div>
   </form>
 </p-dialog>

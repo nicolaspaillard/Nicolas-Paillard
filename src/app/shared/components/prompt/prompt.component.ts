@@ -1,9 +1,4 @@
-import {
-  Component,
-  input,
-  model,
-  ChangeDetectionStrategy,
-} from "@angular/core";
+import { Component, inject, input, model } from "@angular/core";
 import { FormGroup, ɵInternalFormsSharedModule } from "@angular/forms";
 import { PromptService } from "@services/prompt.service";
 import { ButtonModule } from "primeng/button";
@@ -14,16 +9,9 @@ import { SelectModule } from "primeng/select";
 
 @Component({
   selector: "app-prompt",
-  imports: [
-    DialogModule,
-    InputTextModule,
-    InputGroupModule,
-    ButtonModule,
-    SelectModule,
-    ɵInternalFormsSharedModule,
-  ],
+  imports: [DialogModule, InputTextModule, InputGroupModule, ButtonModule, SelectModule, ɵInternalFormsSharedModule],
   templateUrl: "./prompt.component.html",
-  changeDetection: ChangeDetectionStrategy.Eager,
+
   styles: ``,
 })
 export class PromptComponent {
@@ -31,13 +19,18 @@ export class PromptComponent {
   field = input<string>("");
   form = model<FormGroup>();
   isPrompting = model<boolean>(false);
-  isThinking: boolean = false;
+  isThinking = false;
   models: string[] = [];
-  constructor(private promptService: PromptService) {
-    promptService.getModels().then((models) => (this.models = models));
+
+  private promptService = inject(PromptService);
+
+  constructor() {
+    const promptService = this.promptService;
+
+    promptService.getModels().then(models => (this.models = models));
   }
   pick = async (message: string) => {
-    this.form.update((current) => {
+    this.form.update(current => {
       current?.patchValue({ [this.field()]: message });
       return current;
     });
@@ -54,14 +47,14 @@ export class PromptComponent {
     scroll();
     await this.promptService
       .prompt(prompt)
-      .then((response) =>
+      .then(response =>
         this.chat.push({
           ai: true,
           message: response.text,
           model: response.model,
         }),
       )
-      .catch((error) => this.chat.push({ ai: true, message: error.message }))
+      .catch(error => this.chat.push({ ai: true, message: error.message }))
       .finally(() => {
         this.isThinking = false;
         scroll();

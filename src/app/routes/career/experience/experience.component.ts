@@ -1,11 +1,5 @@
 import { CommonModule } from "@angular/common";
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  ChangeDetectionStrategy,
-} from "@angular/core";
+import { Component, EventEmitter, inject, Input, Output } from "@angular/core";
 import { User } from "@angular/fire/auth";
 import { AuthService } from "@app/shared/services/auth.service";
 import { Experience } from "@classes/experience";
@@ -15,16 +9,19 @@ import { TagModule } from "primeng/tag";
 @Component({
   selector: "app-experience",
   imports: [CommonModule, ButtonModule, TagModule],
-  changeDetection: ChangeDetectionStrategy.Eager,
+
   templateUrl: "./experience.component.html",
 })
 export class ExperienceComponent {
   @Input() experience: Experience;
-  @Input() right: boolean;
-  @Output() onExperienceRemoved = new EventEmitter<Experience>();
   @Output() onExperienceEdit = new EventEmitter<Experience>();
-  user: { user: User; admin: boolean } | undefined;
-  constructor(private authService: AuthService) {
-    this.authService.user().subscribe((user) => (this.user = user));
+  @Output() onExperienceRemoved = new EventEmitter<Experience>();
+  @Input() right: boolean;
+  user: { admin: boolean; user: User } | undefined;
+
+  private authService = inject(AuthService);
+
+  constructor() {
+    this.authService.user().subscribe(user => (this.user = user));
   }
 }
