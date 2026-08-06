@@ -9,20 +9,24 @@
     <p-button [text]="true" (onClick)="onProjectEdit.emit(project)" icon="pi pi-pencil" size="small" />
     <p-button [text]="true" (onClick)="onProjectRemoved.emit(project)" icon="pi pi-trash" size="small" severity="danger" />
   </div>
-  <p-carousel *ngIf="project.images && project.images.split(';').length > 1" [value]="project.images.split(';')" [numVisible]="1" [numScroll]="1" [showIndicators]="false" [circular]="true" autoplayInterval="3000">
-    <ng-template let-image pTemplate="item">
-      <p-image class="[&_button]:w-full!" [src]="getURL(image)" [previewImageSrc]="getURL(image, false)" [preview]="true" imageClass="w-full" width="250">
-        <ng-template #indicator>
-          <i class="pi pi-search"></i>
-        </ng-template>
-      </p-image>
-    </ng-template>
-  </p-carousel>
-  <p-image class="[&_button]:w-full!" *ngIf="project.images.split(';').length === 1" [src]="getURL(project.images.split(';')[0])" [previewImageSrc]="getURL(project.images.split(';')[0], false)" [preview]="true" imageClass="w-full" width="250">
-    <ng-template #indicator>
-      <i class="pi pi-search"></i>
-    </ng-template>
-  </p-image>
+  @if (project.images && project.images.split(";").length) {
+    <p-carousel [value]="project.images.split(';')" [numVisible]="1" [numScroll]="1" [showIndicators]="false" [circular]="true" autoplayInterval="3000">
+      <ng-template let-image pTemplate="item">
+        <p-image class="[&_button]:w-full!" [src]="getURL(image)" [previewImageSrc]="getURL(image, false)" [preview]="true" imageClass="w-full" width="250">
+          <ng-template #indicator>
+            <i class="pi pi-search"></i>
+          </ng-template>
+        </p-image>
+      </ng-template>
+    </p-carousel>
+  } @else {
+    <p-image class="[&_button]:w-full!" [src]="getURL(project.images.split(';')[0])" [previewImageSrc]="getURL(project.images.split(';')[0], false)" [preview]="true" imageClass="w-full" width="250">
+      <ng-template #indicator>
+        <i class="pi pi-search"></i>
+      </ng-template>
+    </p-image>
+  }
+
   <i class="block text-center">
     {{ project.company }} | {{ project.start | date: "MM/yyyy" }}
     <ng-container *ngIf="project.start.getMonth() != project.end.getMonth() || project.start.getFullYear() != project.end.getFullYear()">&nbsp;- {{ project.end | date: "MM/yyyy" }}</ng-container>
