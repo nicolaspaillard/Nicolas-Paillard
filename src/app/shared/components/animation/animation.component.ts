@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnDestroy } from "@angular/core";
+import { Component, OnDestroy, inject } from "@angular/core";
 import { Router } from "@angular/router";
 import { SafeHtmlPipe } from "@helpers/safehtml.pipe";
 import { Animation, AnimationService } from "@services/animation.service";
@@ -12,15 +12,15 @@ import { Subscription } from "rxjs";
   templateUrl: "./animation.component.html",
 })
 export class AnimationComponent implements OnDestroy {
+  private animationService = inject(AnimationService);
+  private router = inject(Router);
+
   animationSubscription: Subscription;
   callback?: Function;
   interval: NodeJS.Timeout;
-  isAnimationShown: boolean = false;
+  isAnimationShown = false;
   text: string[] = [];
-  constructor(
-    private animationService: AnimationService,
-    private router: Router,
-  ) {
+  constructor() {
     this.animationSubscription = this.animationService
       .animations()
       .subscribe((animation) => this.animate(animation));

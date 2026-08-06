@@ -9,6 +9,6 @@ export class Category extends Base {
 }
 export const formCategory: FormGroup = new FormGroup({
   id: new FormControl(""),
-  title: new FormControl("", [Validators.required]),
-  rank: new FormControl(0, [Validators.required]),
+  title: new FormControl("", [control => Validators.required(control)]),
+  rank: new FormControl(0, [control => Validators.required(control)]),
 });

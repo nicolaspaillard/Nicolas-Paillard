@@ -17,13 +17,13 @@ export class Profile extends Base {
 
 export const formProfile: FormGroup = new FormGroup({
   id: new FormControl(""),
-  firstName: new FormControl("", [Validators.required]),
-  lastName: new FormControl("", [Validators.required]),
-  address: new FormControl("", [Validators.required]),
-  phone: new FormControl("", [Validators.required]),
-  email: new FormControl("", [Validators.required, Validators.email]),
-  linkedin: new FormControl("", [Validators.required]),
-  github: new FormControl("", [Validators.required]),
-  gitlab: new FormControl("", [Validators.required]),
-  title: new FormControl("", [Validators.required]),
+  firstName: new FormControl("", [control => Validators.required(control)]),
+  lastName: new FormControl("", [control => Validators.required(control)]),
+  address: new FormControl("", [control => Validators.required(control)]),
+  phone: new FormControl("", [control => Validators.required(control)]),
+  email: new FormControl("", [control => Validators.required(control), Validators.email]),
+  linkedin: new FormControl("", [control => Validators.required(control)]),
+  github: new FormControl("", [control => Validators.required(control)]),
+  gitlab: new FormControl("", [control => Validators.required(control)]),
+  title: new FormControl("", [control => Validators.required(control)]),
 });

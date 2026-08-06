@@ -1,4 +1,4 @@
-import { Component, input, model } from "@angular/core";
+import { Component, input, model, inject } from "@angular/core";
 import { FormGroup, ɵInternalFormsSharedModule } from "@angular/forms";
 import { PromptService } from "@services/prompt.service";
 import { ButtonModule } from "@openng/optimus-ui/button";
@@ -21,13 +21,17 @@ import { SelectModule } from "@openng/optimus-ui/select";
   styles: ``,
 })
 export class PromptComponent {
+  private promptService = inject(PromptService);
+
   chat: { ai: boolean; message: string; model?: string }[] = [];
   field = input<string>("");
   form = model<FormGroup>();
   isPrompting = model<boolean>(false);
-  isThinking: boolean = false;
+  isThinking = false;
   models: string[] = [];
-  constructor(private promptService: PromptService) {
+  constructor() {
+    const promptService = this.promptService;
+
     promptService.getModels().then((models) => (this.models = models));
   }
   pick = async (message: string) => {

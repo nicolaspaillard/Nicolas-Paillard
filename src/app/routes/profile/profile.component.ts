@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { formProfile, Profile } from "@classes/profile";
 import { CrudComponent } from "@components/crud.component";
@@ -43,13 +43,14 @@ const SERVICE_VARIABLE: ServiceConfig<Profile> = {
   ],
 })
 export class ProfileComponent extends CrudComponent<Profile> {
-  isUpdating: boolean = false;
-  constructor(
-    crudService: CrudService<Profile>,
-    authService: AuthService,
-    confirmService: ConfirmService,
-    private toastService: ToastService,
-  ) {
+  private toastService = inject(ToastService);
+
+  isUpdating = false;
+  constructor() {
+    const crudService = inject<CrudService<Profile>>(CrudService);
+    const authService = inject(AuthService);
+    const confirmService = inject(ConfirmService);
+
     // crudService
     //   .items()
     //   .pipe(takeUntilDestroyed())
@@ -83,8 +84,8 @@ export class ProfileComponent extends CrudComponent<Profile> {
     ).toString();
     const cloudinary = (await this.getCloudinary())!;
     const formData: FormData = new FormData();
-    let photo = new File(
-      [(await event.files[0].arrayBuffer()) as BlobPart],
+    const photo = new File(
+      [(await event.files[0].arrayBuffer())],
       "profile",
     );
     formData.append("public_id", "profile");

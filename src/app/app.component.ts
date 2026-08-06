@@ -1,12 +1,12 @@
 // import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
-import { Component, OnInit, signal } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { AuthGuard, AuthPipe, customClaims, loggedIn } from "@angular/fire/auth-guard";
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
-import { ActivatedRoute, NavigationEnd, NavigationStart, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
+import { ActivatedRoute, NavigationStart, Params, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
 import { AnimationComponent } from "@components/animation/animation.component";
 import { usePreset } from "@openng/optimus-ui-themes";
 import { ButtonModule } from "@openng/optimus-ui/button";
@@ -87,49 +87,50 @@ export const routes: Routes = [
   templateUrl: "./app.component.html",
 })
 export class AppComponent implements OnInit {
-  enableMatrix: boolean = false;
+  enableMatrix = false;
   formReset = new FormGroup(
     {
-      password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]),
-      passwordrepeat: new FormControl("", [Validators.required]),
+      password: new FormControl("", [control => Validators.required(control), Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]),
+      passwordrepeat: new FormControl("", [control => Validators.required(control)]),
     },
     { validators: CustomValidators.matchFields("password", "passwordrepeat") },
   );
   formSignin = new FormGroup({
-    email: new FormControl("", [Validators.required, Validators.email]),
-    password: new FormControl("", [Validators.required]),
+    email: new FormControl("", [control => Validators.required(control), Validators.email]),
+    password: new FormControl("", [control => Validators.required(control)]),
   });
   formSignup = new FormGroup(
     {
-      email: new FormControl("", [Validators.required, Validators.email]),
-      password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]),
-      passwordrepeat: new FormControl("", [Validators.required]),
+      email: new FormControl("", [control => Validators.required(control), Validators.email]),
+      password: new FormControl("", [control => Validators.required(control), Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]),
+      passwordrepeat: new FormControl("", [control => Validators.required(control)]),
     },
     { validators: CustomValidators.matchFields("password", "passwordrepeat") },
   );
-  isResetShown: boolean = false;
-  isResetting: boolean = false;
-  isResumeShown: boolean = false;
-  isSending: boolean = false;
-  isSigninShown: boolean = false;
-  isSigningIn: boolean = false;
-  isSigningUp: boolean = false;
-  isSignupShown: boolean = false;
-  isTransitioning: boolean = false;
-  params: any = {};
-  resume: SafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl("");
+  isResetShown = false;
+  isResetting = false;
+  isResumeShown = false;
+  isSending = false;
+  isSigninShown = false;
+  isSigningIn = false;
+  isSigningUp = false;
+  isSignupShown = false;
+  isTransitioning = false;
+  params: Params = {};
+  resume: SafeUrl;
   routes: Route[] = routes.filter(route => route.path && route.data);
   user = signal<{ admin: boolean; user: User } | undefined>(undefined);
+  private animationService = inject(AnimationService);
+
+  private authService = inject(AuthService);
+  private designerService = inject(DesignerService);
   private interval: NodeJS.Timeout;
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private authService: AuthService,
-    private designerService: DesignerService,
-    private toastService: ToastService,
-    private sanitizer: DomSanitizer,
-    private animationService: AnimationService,
-  ) {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private sanitizer = inject(DomSanitizer);
+  private toastService = inject(ToastService);
+  constructor() {
+    this.resume = this.sanitizer.bypassSecurityTrustResourceUrl("");
     this.route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => (this.params = params));
     switch (location.pathname.split("/").pop()) {
       case "cv":
@@ -142,38 +143,37 @@ export class AppComponent implements OnInit {
         this.isResetShown = true;
         break;
     }
-    // window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => (this.enableDarkMode = e.matches));
     this.authService
       .user()
       .pipe(takeUntilDestroyed())
       .subscribe(user => this.user.set(user ? { ...user } : undefined));
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
-        this.isTransitioning = true;
+        // this.isTransitioning = true;
         document.getElementById("router-container")!.scrollTop = 0;
-        setTimeout(() => (this.isTransitioning = false), 600);
+        // setTimeout(() => (this.isTransitioning = false), 600);
       }
-      if (event instanceof NavigationEnd) {
-      }
+      // if (event instanceof NavigationEnd) {
+      // }
     });
   }
   animate = () => {
     clearInterval(this.interval);
     if (this.enableMatrix) {
-      let canvas: HTMLCanvasElement = document.querySelector("canvas")!;
-      let context: CanvasRenderingContext2D = canvas.getContext("2d")!;
+      const canvas: HTMLCanvasElement = document.querySelector("canvas")!;
+      const context: CanvasRenderingContext2D = canvas.getContext("2d")!;
       context.reset();
-      let drops: number[] = [];
-      let fontSize: number = 10;
+      const drops: number[] = [];
+      const fontSize = 10;
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       for (let i = 0; i < canvas.width / fontSize; i++) drops[i] = canvas.height + 1;
       this.interval = setInterval(() => {
-        let letters: string[] = "ABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZ".split("");
+        const letters: string[] = "ABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZ".split("");
         context.fillStyle = "rgba(0, 0, 0, .18)";
         context.fillRect(0, 0, canvas.width, canvas.height);
         for (let i = 0; i < drops.length; i++) {
-          let text = letters[Math.floor(Math.random() * letters.length)];
+          const text = letters[Math.floor(Math.random() * letters.length)];
           context.fillStyle = "rgba(0,200,0,0.8)";
           context.fillText(text, i * fontSize, drops[i] * fontSize);
           drops[i]++;
@@ -183,7 +183,7 @@ export class AppComponent implements OnInit {
     } else {
       if (document.querySelectorAll("#animation>span").length) return;
       for (let i = 0; i < 15; i++) {
-        let shape = document.createElement("span");
+        const shape = document.createElement("span");
         shape.classList.add("border-primary", "border", "border-2", "absolute", "animate-slide", "rounded-lg");
         shape.style.animationDelay = Math.random() * 3 + "s";
         shape.style.animationDuration = Math.random() * 4 + 4 + "s";
@@ -217,7 +217,7 @@ export class AppComponent implements OnInit {
   prepareRoute = (outlet: RouterOutlet) => outlet && outlet.activatedRouteData && outlet.activatedRouteData["animation"];
   reset = () => {
     this.isResetting = true;
-    this.authService.reset(this.params.oobCode, this.formReset.controls.password.value!).then(result => {
+    this.authService.reset(this.params["oobCode"], this.formReset.controls.password.value!).then(result => {
       this.isResetting = false;
       if (result) {
         this.toastService.success("Réinitialisation réussie", "Votre mot de passe à bien été réinitialisé, vous pouvez à présent vous connecter");

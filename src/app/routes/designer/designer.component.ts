@@ -1,12 +1,9 @@
-import { Component, OnDestroy, OnInit, signal } from "@angular/core";
+import { Component, inject, OnDestroy, OnInit, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { MenuItem } from "@openng/optimus-ui/api";
 import { ButtonModule } from "@openng/optimus-ui/button";
-import {
-  FileUploadHandlerEvent,
-  FileUploadModule,
-} from "@openng/optimus-ui/fileupload";
+import { FileUploadHandlerEvent, FileUploadModule } from "@openng/optimus-ui/fileupload";
 import { SplitButton } from "@openng/optimus-ui/splitbutton";
 import { AuthService } from "@services/auth.service";
 import { DesignerService } from "@services/designer.service";
@@ -31,18 +28,12 @@ export class DesignerComponent implements OnInit, OnDestroy {
     {
       label: "Importer modèle",
       icon: "pi pi-upload",
-      command: () =>
-        (
-          document.querySelector("#upload-model button")! as HTMLElement
-        ).click(),
+      command: () => document.querySelector<HTMLElement>("#upload-model button")!.click(),
     },
     {
       label: "Importer template",
       icon: "pi pi-upload",
-      command: () =>
-        (
-          document.querySelector("#upload-template button")! as HTMLElement
-        ).click(),
+      command: () => document.querySelector<HTMLElement>("#upload-template button")!.click(),
     },
     {
       label: "Télécharger",
@@ -56,22 +47,20 @@ export class DesignerComponent implements OnInit, OnDestroy {
     },
   ];
   user = signal<{ admin: boolean; user: User } | undefined>(undefined);
-  constructor(
-    private authService: AuthService,
-    private designerService: DesignerService,
-  ) {
+  private authService = inject(AuthService);
+  private designerService = inject(DesignerService);
+
+  constructor() {
     this.authService
       .user()
       .pipe(takeUntilDestroyed())
-      .subscribe((user) => this.user.set(user ? { ...user } : undefined));
+      .subscribe(user => this.user.set(user ? { ...user } : undefined));
   }
   clear = () => this.designerService.clear();
   export = () => this.designerService.export({ editing: true });
   exportTemplate = () => this.designerService.exportTemplate();
-  import = (event: FileUploadHandlerEvent) =>
-    this.designerService.import(event.files[0]);
-  importTemplate = (event: FileUploadHandlerEvent) =>
-    this.designerService.importTemplate(event.files[0]);
+  import = (event: FileUploadHandlerEvent) => this.designerService.import(event.files[0]);
+  importTemplate = (event: FileUploadHandlerEvent) => this.designerService.importTemplate(event.files[0]);
   load = () => this.designerService.init("container");
   ngOnDestroy() {
     this.designerService.destroy();

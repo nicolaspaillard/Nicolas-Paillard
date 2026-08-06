@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, Output, signal } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  signal,
+  inject,
+} from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -14,6 +21,8 @@ import { SkillComponent } from "./skill/skill.component";
   templateUrl: "./category.component.html",
 })
 export class CategoryComponent {
+  private authService = inject(AuthService);
+
   @Input() category: Category;
   @Output() onEdit = new EventEmitter<Category>();
   @Output() onRemove = new EventEmitter<Category>();
@@ -22,7 +31,7 @@ export class CategoryComponent {
   @Output() onSkillRemove = new EventEmitter<Skill>();
   @Input() skills: Skill[] = [];
   user = signal<{ admin: boolean; user: User } | undefined>(undefined);
-  constructor(private authService: AuthService) {
+  constructor() {
     this.authService
       .user()
       .pipe(takeUntilDestroyed())

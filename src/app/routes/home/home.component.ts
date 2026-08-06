@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { Profile } from "@classes/profile";
 import { formSection, Section } from "@classes/section";
@@ -65,11 +65,11 @@ export class HomeComponent extends CrudComponent<Section> {
     "Java",
     "Python",
   ];
-  constructor(
-    crudService: CrudService<Section>,
-    authService: AuthService,
-    confirmService: ConfirmService,
-  ) {
+  constructor() {
+    const crudService = inject<CrudService<Section>>(CrudService);
+    const authService = inject(AuthService);
+    const confirmService = inject(ConfirmService);
+
     super(crudService, authService, confirmService);
     crudService
       .getData(Profile, "profile", ["lastName"])

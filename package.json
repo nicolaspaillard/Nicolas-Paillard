@@ -5,7 +5,8 @@
   "scripts": {
     "build": "ng build",
     "start": "ng serve",
-    "update": "ng update"
+    "update": "ng update",
+    "lint": "ng lint"
   },
   "overrides": {
     "@angular/fire": {
@@ -45,8 +46,11 @@
     "@angular/build": "^21.2.20",
     "@angular/cli": "^21.2.20",
     "@angular/compiler-cli": "^21.2.19",
+    "@eslint/js": "^10.0.1",
     "@types/fontkit": "^2.0.9",
     "@types/jasmine": "~5.1.0",
+    "angular-eslint": "21.4.0",
+    "eslint": "^10.3.0",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -61,6 +65,7 @@
     "prettier-plugin-sort-members": "^0.2.4",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^4.0.7",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "typescript-eslint": "8.59.2"
   }
 }

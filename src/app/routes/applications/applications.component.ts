@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { Application, formApplication } from "@classes/application";
 import { CrudComponent } from "@components/crud.component";
@@ -57,7 +57,7 @@ export class ApplicationsComponent extends CrudComponent<Application> {
   contacts: string[] = [];
   expandedRows = {};
   links: string[] = [];
-  model: string = `
+  model = `
 Bonjour,%0D%0A
 Je suis récemment tombé sur votre [0], et celle-ci me plait beaucoup !%0D%0A
 [link]%0D%0A
@@ -77,11 +77,11 @@ Pour plus de renseignements je vous invite à consulter mon CV en pièce jointe 
 Je reste à votre entière disposition via ce mail ou mon numéro de portable.%0D%0A
 Cordialement%0D%0A
   `;
-  constructor(
-    crudService: CrudService<Application>,
-    authService: AuthService,
-    confirmService: ConfirmService,
-  ) {
+  constructor() {
+    const crudService = inject<CrudService<Application>>(CrudService);
+    const authService = inject(AuthService);
+    const confirmService = inject(ConfirmService);
+
     super(crudService, authService, confirmService);
   }
   add = (item: string, field: string) => {
@@ -114,11 +114,11 @@ Cordialement%0D%0A
       "_blank",
     );
   };
-  move = (item: string, field: string, up: boolean = false) => {
-    let fromIndex = this[field].indexOf(item);
+  move = (item: string, field: string, up = false) => {
+    const fromIndex = this[field].indexOf(item);
     if ((fromIndex == 0 && up) || (fromIndex == this.links.length - 1 && !up))
       return;
-    var element = this.links[fromIndex];
+    const element = this.links[fromIndex];
     this[field].splice(fromIndex, 1);
     this[field].splice(fromIndex + (up ? -1 : 1), 0, element);
     this.form.patchValue({ [field]: this[field].join(";") });

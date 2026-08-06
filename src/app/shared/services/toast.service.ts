@@ -1,11 +1,12 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { MessageService } from "@openng/optimus-ui/api";
 
 @Injectable({
   providedIn: "root",
 })
 export class ToastService {
-  constructor(private messageService: MessageService) {}
+  private messageService = inject(MessageService);
+
   success(title: string, message?: string) {
     this.messageService.add({
       severity: "success",

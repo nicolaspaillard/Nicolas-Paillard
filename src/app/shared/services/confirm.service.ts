@@ -1,11 +1,12 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { Confirmation, ConfirmationService } from "@openng/optimus-ui/api";
 
 @Injectable({
   providedIn: "root",
 })
 export class ConfirmService {
-  constructor(private confirmationService: ConfirmationService) {}
+  private confirmationService = inject(ConfirmationService);
+
   confirm(confirmation: Confirmation) {
     this.confirmationService.confirm({
       header: confirmation.header || "Confirmation",
