@@ -12,8 +12,7 @@
     "@angular/fire": {
       "@angular/common": "$@angular/common",
       "@angular/core": "$@angular/core",
-      "@angular/platform-browser": "$@angular/platform-browser",
-      "@angular/platform-browser-dynamic": "$@angular/platform-browser-dynamic"
+      "@angular/platform-browser": "$@angular/platform-browser"
     },
     "@openng/optimus-ui": {
       "@angular/common": "$@angular/common",
@@ -24,14 +23,12 @@
     }
   },
   "dependencies": {
-    "@angular/animations": "^22.1.0",
     "@angular/common": "^22.1.0",
     "@angular/compiler": "^22.1.0",
     "@angular/core": "^22.1.0",
     "@angular/fire": "^21.0.0-rc.0",
     "@angular/forms": "^22.1.0",
     "@angular/platform-browser": "^22.1.0",
-    "@angular/platform-browser-dynamic": "^22.1.0",
     "@angular/router": "^22.1.0",
     "@cloudinary/url-gen": "^1.22.0",
     "@google/genai": "^2.15.0",
