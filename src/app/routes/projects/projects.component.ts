@@ -39,13 +39,13 @@ const SERVICE_VARIABLE: ServiceConfig<Project> = {
 })
 export class ProjectsComponent extends CrudComponent<Project> {
   activities: string[] = [];
-  categories: Category[] = [];
-  experiences: Experience[] = [];
-  experiencesOptions: { label: string; value: string }[] = [];
+  categories = signal<Category[]>([]);
+  experiences = signal<Experience[]>([]);
+  // experiencesOptions = signal<{ label: string; value: string }[]>([]);
   // TODO remove useless "images"
   images: string;
   imagesFiles: File[] = [];
-  skills: Skill[] = [];
+  skills = signal<Skill[]>([]);
   skillsGroups = signal<
     {
       items: { icon: string; label: string; value: string }[];
@@ -60,13 +60,13 @@ export class ProjectsComponent extends CrudComponent<Project> {
     super(crudService, authService, confirmService);
     Promise.all([crudService.getData(Experience, "experiences", ["start", "desc"]), crudService.getData(Skill, "skills", ["title"]), crudService.getData(Category, "categories", ["title"])])
       .then(([experiences, skills, categories]) => {
-        this.experiences = experiences;
-        this.experiencesOptions = experiences.map(experience => ({
-          value: experience.id,
-          label: experience.company + " - " + experience.title,
-        }));
-        this.skills = skills;
-        this.categories = categories;
+        this.experiences.set([...experiences]);
+        // this.experiencesOptions = experiences.map(experience => ({
+        //   value: experience.id,
+        //   label: experience.company + " - " + experience.title,
+        // }));
+        this.skills.set([...skills]);
+        this.categories.set([...categories]);
         skills.map(skill => {
           const skillGroup = this.skillsGroups().find(sg => sg.value === skill.category);
           if (skillGroup) {
@@ -104,7 +104,7 @@ export class ProjectsComponent extends CrudComponent<Project> {
     if (!project.experience || !project.experience.length) return;
     return {
       id: project.experience,
-      title: this.experiences.find(experience => experience.id === project.experience)!.title,
+      title: this.experiences().find(experience => experience.id === project.experience)!.title,
     };
   };
   getSkills = (project: Project) => {
@@ -115,9 +115,9 @@ export class ProjectsComponent extends CrudComponent<Project> {
       title: string;
     }[] = [];
     project.skills.forEach(skillId => {
-      const newSkill = this.skills.find(skill => skill.id === skillId);
+      const newSkill = this.skills().find(skill => skill.id === skillId);
       if (!newSkill) return;
-      const newCategory = this.categories.find(category => category.id === newSkill.category)!;
+      const newCategory = this.categories().find(category => category.id === newSkill.category)!;
       if (!newCategory) return;
       const category = categories.find(category => category.id === newCategory.id)!;
       if (category) {

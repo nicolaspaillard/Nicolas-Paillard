@@ -37,9 +37,9 @@ const SERVICE_VARIABLE: ServiceConfig<Experience> = {
 })
 export class CareerComponent extends CrudComponent<Experience> {
   activities: string[] = [];
-  categories: Category[] = [];
-  projects: Project[] = [];
-  skills: Skill[] = [];
+  categories = signal<Category[]>([]);
+  projects = signal<Project[]>([]);
+  skills = signal<Skill[]>([]);
   skillsGroups = signal<
     {
       items: { icon: string; label: string; value: string }[];
@@ -55,9 +55,9 @@ export class CareerComponent extends CrudComponent<Experience> {
     // TODO skip if not admin
     Promise.all([crudService.getData(Project, "projects", ["start", "desc"]), crudService.getData(Skill, "skills", ["title"]), crudService.getData(Category, "categories", ["title"])])
       .then(([projects, skills, categories]) => {
-        this.projects = projects;
-        this.skills = skills;
-        this.categories = categories;
+        this.projects.set([...projects]);
+        this.skills.set([...skills]);
+        this.categories.set([...categories]);
         skills.map(skill => {
           const skillGroup = this.skillsGroups().find(sg => sg.value === skill.category);
           if (skillGroup) {
@@ -93,7 +93,7 @@ export class CareerComponent extends CrudComponent<Experience> {
     if (!experience.projects || !experience.projects.length) return [];
     return experience.projects.map(projectId => ({
       id: projectId,
-      title: this.projects.find(project => project.id === projectId)!.title,
+      title: this.projects().find(project => project.id === projectId)!.title,
     }));
   };
   getSkills = (experience: Experience) => {
@@ -104,9 +104,9 @@ export class CareerComponent extends CrudComponent<Experience> {
       title: string;
     }[] = [];
     experience.skills.forEach(skillId => {
-      const newSkill = this.skills.find(skill => skill.id === skillId);
+      const newSkill = this.skills().find(skill => skill.id === skillId);
       if (!newSkill) return;
-      const newCategory = this.categories.find(category => category.id === newSkill.category);
+      const newCategory = this.categories().find(category => category.id === newSkill.category);
       if (!newCategory) return;
       const category = categories.find(category => category.id === newCategory.id)!;
       if (category) {

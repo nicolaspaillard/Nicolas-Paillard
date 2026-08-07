@@ -8,7 +8,7 @@
       </div>
     }
     <!-- TODO highlight if url#id matches with id  -->
-    @if (skills.length && projects.length) {
+    @if (skills().length && projects().length) {
       @for (experience of items(); track experience; let index = $index) {
         <app-experience class="nth-[n+3]:mt-5 lg:nth-[n+3]:-mt-10 block" [experience]="experience" [skills]="getSkills(experience)" [projects]="getProjects(experience)" [right]="index % 2 !== 0" (remove)="delete(experience, 'title')" (edit)="open(experience)"></app-experience>
       }
@@ -83,7 +83,7 @@
       <div class="grid gap-2 md:col-span-2 md:grid-cols-2">
         <label for="projects">
           Projets
-          <p-multiSelect id="projects" [options]="projects" [showClear]="true" formControlName="projects" optionLabel="title" optionValue="id" placeholder="Choisir les projets"></p-multiSelect>
+          <p-multiSelect id="projects" [options]="projects()" [showClear]="true" formControlName="projects" optionLabel="title" optionValue="id" placeholder="Choisir les projets"></p-multiSelect>
         </label>
         <label for="skills">
           Compétences

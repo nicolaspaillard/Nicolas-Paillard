@@ -1,6 +1,6 @@
 <div class="flex min-h-full flex-col justify-center p-5 lg:p-10">
   <div class="grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-    @if (skills.length && experiences.length) {
+    @if (skills().length && experiences().length) {
       @for (project of items(); track project) {
         <app-project [project]="project" [skills]="getSkills(project)" [experience]="getExperience(project)" (onProjectEdit)="open(project)" (onProjectRemoved)="delete(project, 'title')"></app-project>
       }
@@ -104,7 +104,7 @@
       <label for="experience">
         Expérience
         <div #expwrapper>
-          <p-select class="w-full" id="experience" [options]="experiencesOptions" [showClear]="true" [panelStyle]="{ width: expwrapper.offsetWidth + 'px' }" formControlName="experience" placeholder="Choisir l'expérience">
+          <p-select class="w-full" id="experience" [options]="experiences()" [showClear]="true" [panelStyle]="{ width: expwrapper.offsetWidth + 'px' }" optionLabel="title" optionValue="id" formControlName="experience" placeholder="Choisir l'expérience">
             <ng-template let-experience pTemplate="item">
               <span class="w-full truncate" [pTooltip]="experience.label">{{ experience.label }}</span>
             </ng-template>
