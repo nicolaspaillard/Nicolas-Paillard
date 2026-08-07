@@ -24,11 +24,11 @@ import { DesignerService } from "@services/designer.service";
 import { ToastService } from "@services/toast.service";
 import { Amber } from "@themes/amber.preset";
 import { Matrix } from "@themes/matrix.preset";
-import { forkJoin, map, mergeMap, of, pipe } from "rxjs";
+import { forkJoin, map, mergeMap, Observable, of, pipe } from "rxjs";
 
 const combined: AuthPipe = pipe(
-  mergeMap(user => forkJoin([loggedIn(of(user)), customClaims(of(user!))])),
-  map(([isLoggedIn, claims]) => (isLoggedIn && claims["admin"] ? true : "")),
+  mergeMap(user => (user ? forkJoin([loggedIn(of(user)) as Observable<boolean>, customClaims(of(user))]) : of([false, {}] as [boolean, { admin?: boolean }]))),
+  map(([isLoggedIn, claims]: [boolean, { admin?: boolean }]) => (isLoggedIn && claims.admin ? true : false)),
 );
 
 export const routes: Routes = [
@@ -121,7 +121,6 @@ export class AppComponent implements OnInit {
   routes: Route[] = routes.filter(route => route.path && route.data);
   user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   private animationService = inject(AnimationService);
-
   private authService = inject(AuthService);
   private designerService = inject(DesignerService);
   private interval: NodeJS.Timeout;
@@ -242,11 +241,14 @@ export class AppComponent implements OnInit {
   };
   signin = () => {
     this.isSigningIn = true;
-    this.authService.signin(this.formSignin.value.email!, this.formSignin.value.password!).then((valid: boolean) => {
-      if (!valid) this.formSignin.setErrors({ invalid: true });
-      else this.isSigninShown = false;
-      this.isSigningIn = false;
-    });
+    this.authService
+      .signin(this.formSignin.value.email!, this.formSignin.value.password!)
+      .then((valid: boolean) => {
+        if (!valid) this.formSignin.setErrors({ invalid: true });
+        else this.isSigninShown = false;
+        this.isSigningIn = false;
+      })
+      .catch(err => console.error(err));
   };
   signout = () => this.authService.signout().then(() => this.router.navigate([""]));
   signup = () => {

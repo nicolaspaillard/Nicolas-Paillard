@@ -1,9 +1,9 @@
-export const handleError = (error, override?) => {
-  console.error(error);
-  if (error.code) console.error(error.code);
-  if (error.message) console.error(error.message);
-  return override ?? false;
-};
+// export const handleError = (error, override?) => {
+//   console.error(error);
+//   if (error.code) console.error(error.code);
+//   if (error.message) console.error(error.message);
+//   return override ?? false;
+// };
 export namespace sha1 {
   const POW_2_24 = Math.pow(2, 24);
 

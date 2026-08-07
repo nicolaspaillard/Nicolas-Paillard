@@ -115,8 +115,10 @@ export class ProjectsComponent extends CrudComponent<Project> {
       title: string;
     }[] = [];
     project.skills.forEach(skillId => {
-      const newSkill = this.skills.find(skill => skill.id === skillId)!;
+      const newSkill = this.skills.find(skill => skill.id === skillId);
+      if (!newSkill) return;
       const newCategory = this.categories.find(category => category.id === newSkill.category)!;
+      if (!newCategory) return;
       const category = categories.find(category => category.id === newCategory.id)!;
       if (category) {
         category.items.push(newSkill);
@@ -174,8 +176,8 @@ export class ProjectsComponent extends CrudComponent<Project> {
           method: "POST",
           body: formdata,
         })
-          .then(async response => {
-            const data = JSON.parse(await response.text());
+          .then(response => response.json())
+          .then(data => {
             if (["ok", "not found"].includes(data.result)) return true;
             console.error(data);
             return false;
@@ -215,12 +217,18 @@ export class ProjectsComponent extends CrudComponent<Project> {
           method: "POST",
           body: formData,
         })
-          .then(async response => {
-            const data = JSON.parse(await response.text());
+          .then(response => response.json())
+          .then(data => {
             if (data.public_id) return data.public_id.split("/")[1];
             console.error(data);
             return false;
           })
+          // .then(async response => {
+          //   const data = JSON.parse(await response.text());
+          //   if (data.public_id) return data.public_id.split("/")[1];
+          //   console.error(data);
+          //   return false;
+          // })
           .catch(error => {
             console.error(error);
             return false;

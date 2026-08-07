@@ -104,8 +104,10 @@ export class CareerComponent extends CrudComponent<Experience> {
       title: string;
     }[] = [];
     experience.skills.forEach(skillId => {
-      const newSkill = this.skills.find(skill => skill.id === skillId)!;
-      const newCategory = this.categories.find(category => category.id === newSkill.category)!;
+      const newSkill = this.skills.find(skill => skill.id === skillId);
+      if (!newSkill) return;
+      const newCategory = this.categories.find(category => category.id === newSkill.category);
+      if (!newCategory) return;
       const category = categories.find(category => category.id === newCategory.id)!;
       if (category) {
         category.items.push(newSkill);

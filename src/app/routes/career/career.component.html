@@ -8,100 +8,104 @@
       </div>
     }
     <!-- TODO highlight if url#id matches with id  -->
-    @for (experience of items(); track experience; let index = $index) {
-      <app-experience class="nth-[n+3]:mt-5 lg:nth-[n+3]:-mt-10 block" [experience]="experience" [skills]="getSkills(experience)" [projects]="getProjects(experience)" [right]="index % 2 !== 0" (remove)="delete(experience, 'title')" (edit)="open(experience)"></app-experience>
+    @if (skills.length && projects.length) {
+      @for (experience of items(); track experience; let index = $index) {
+        <app-experience class="nth-[n+3]:mt-5 lg:nth-[n+3]:-mt-10 block" [experience]="experience" [skills]="getSkills(experience)" [projects]="getProjects(experience)" [right]="index % 2 !== 0" (remove)="delete(experience, 'title')" (edit)="open(experience)"></app-experience>
+      }
     }
   </div>
 </div>
-<p-dialog [(visible)]="isShown" [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une expérience'" [dismissableMask]="true">
-  <form class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col" [formGroup]="form">
-    <input type="hidden" formControlName="id" />
-    <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
-      <label for="type">
-        Type
-        <p-select id="type" [options]="['Expérience', 'Formation', 'Évènement']" placeholder="Type" formControlName="type"></p-select>
-      </label>
-      <label for="start">
-        Début
-        <p-datepicker class="w-full" id="start" formControlName="start" dateFormat="dd/mm/yy" />
-      </label>
-      <label for="end">
-        Fin
-        <p-datepicker class="w-full" id="end" formControlName="end" dateFormat="dd/mm/yy" />
-      </label>
-    </div>
-
-    <label>
-      Titre
-      <input pInputText type="text" formControlName="title" />
-    </label>
-    <label>
-      Société
-      <input pInputText formControlName="company" />
-    </label>
-    <label class="md:col-span-2">
-      <div class="flex items-center gap-1">
-        Description
-        <app-prompt-button (onClick)="promptedField = 'text'; isPrompting = true"></app-prompt-button>
+@if (user()?.admin) {
+  <p-dialog [(visible)]="isShown" [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une expérience'" [dismissableMask]="true">
+    <form class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col" [formGroup]="form">
+      <input type="hidden" formControlName="id" />
+      <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
+        <label for="type">
+          Type
+          <p-select id="type" [options]="['Expérience', 'Formation', 'Évènement']" placeholder="Type" formControlName="type"></p-select>
+        </label>
+        <label for="start">
+          Début
+          <p-datepicker class="w-full" id="start" formControlName="start" dateFormat="dd/mm/yy" />
+        </label>
+        <label for="end">
+          Fin
+          <p-datepicker class="w-full" id="end" formControlName="end" dateFormat="dd/mm/yy" />
+        </label>
       </div>
-      <textarea pTextarea formControlName="description"></textarea>
-    </label>
-    <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
+
       <label>
-        Adresse
-        <input pInputText formControlName="address" />
+        Titre
+        <input pInputText type="text" formControlName="title" />
       </label>
       <label>
-        Code postal
-        <input pInputText formControlName="postcode" />
+        Société
+        <input pInputText formControlName="company" />
       </label>
-      <label>
-        Ville
-        <input pInputText formControlName="city" />
-      </label>
-    </div>
-    <label class="md:col-span-2">
-      Activités
-      @for (activity of activities; track activity) {
-        <div class="relative flex items-center justify-between">
-          <span class="p-button-sm p-button-text p-button-contrast max-w-75 cursor-pointer truncate rounded-md" (keydown.enter)="act.value = activity" (keydown.space)="act.value = activity" (click)="act.value = activity" tabindex="0">•&nbsp;&nbsp;{{ activity }}</span>
-          <div class="flex">
-            <p-button [disabled]="activities[0] === activity" [text]="true" (onClick)="move(activity, true)" icon="pi pi-angle-up" styleClass="w-auto" size="small" severity="secondary" />
-            <p-button [disabled]="activities[activities.length - 1] === activity" [text]="true" (onClick)="move(activity)" icon="pi pi-angle-down" styleClass="w-auto" size="small" severity="secondary" />
-            <p-button [text]="true" (onClick)="remove(activity)" icon="pi pi-trash" styleClass="w-auto" size="small" severity="danger" />
-          </div>
+      <label class="md:col-span-2">
+        <div class="flex items-center gap-1">
+          Description
+          <app-prompt-button (onClick)="promptedField = 'text'; isPrompting = true"></app-prompt-button>
         </div>
-      }
-      <p-inputGroup>
-        <input #act pInputText placeholder="Activité" />
-        <p-button [disabled]="!act.value" (onClick)="add(act.value)" icon="pi pi-plus" />
-      </p-inputGroup>
-    </label>
-    <div class="grid gap-2 md:col-span-2 md:grid-cols-2">
-      <label for="projects">
-        Projets
-        <p-multiSelect id="projects" [options]="projects" [showClear]="true" formControlName="projects" optionLabel="title" optionValue="id" placeholder="Choisir les projets"></p-multiSelect>
+        <textarea pTextarea formControlName="description"></textarea>
       </label>
-      <label for="skills">
-        Compétences
-        <p-multiSelect id="skills" [options]="skillsGroups()" [group]="true" [showClear]="true" optionLabel="label" optionValue="value" optionGroupLabel="label" optionGroupChildren="items" formControlName="skills" placeholder="Choisir les compétences">
-          <ng-template let-skill pTemplate="item">
-            <div class="flex items-center gap-2">
-              @if (skill.icon) {
-                <img alt="skill icon" width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
-              } @else {
-                <span class="font-extrabold mx-1">{{ skill.label[0].toUpperCase() }}</span>
-              }
-              <span class="w-full truncate">{{ skill.label }}</span>
+      <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
+        <label>
+          Adresse
+          <input pInputText formControlName="address" />
+        </label>
+        <label>
+          Code postal
+          <input pInputText formControlName="postcode" />
+        </label>
+        <label>
+          Ville
+          <input pInputText formControlName="city" />
+        </label>
+      </div>
+      <label class="md:col-span-2">
+        Activités
+        @for (activity of activities; track activity) {
+          <div class="relative flex items-center justify-between">
+            <span class="p-button-sm p-button-text p-button-contrast max-w-75 cursor-pointer truncate rounded-md" (keydown.enter)="act.value = activity" (keydown.space)="act.value = activity" (click)="act.value = activity" tabindex="0">•&nbsp;&nbsp;{{ activity }}</span>
+            <div class="flex">
+              <p-button [disabled]="activities[0] === activity" [text]="true" (onClick)="move(activity, true)" icon="pi pi-angle-up" styleClass="w-auto" size="small" severity="secondary" />
+              <p-button [disabled]="activities[activities.length - 1] === activity" [text]="true" (onClick)="move(activity)" icon="pi pi-angle-down" styleClass="w-auto" size="small" severity="secondary" />
+              <p-button [text]="true" (onClick)="remove(activity)" icon="pi pi-trash" styleClass="w-auto" size="small" severity="danger" />
             </div>
-          </ng-template>
-        </p-multiSelect>
+          </div>
+        }
+        <p-inputGroup>
+          <input #act pInputText placeholder="Activité" />
+          <p-button [disabled]="!act.value" (onClick)="add(act.value)" icon="pi pi-plus" />
+        </p-inputGroup>
       </label>
-    </div>
-    <div class="flex justify-end gap-2 md:col-span-2">
-      <p-button [text]="true" (onClick)="isShown = false">Annuler</p-button>
-      <p-button [disabled]="!form.valid" (onClick)="isEditing ? update() : create(); isShown = false">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
-    </div>
-  </form>
-</p-dialog>
-<app-prompt [(isPrompting)]="isPrompting" [(form)]="form" [field]="promptedField"></app-prompt>
+      <div class="grid gap-2 md:col-span-2 md:grid-cols-2">
+        <label for="projects">
+          Projets
+          <p-multiSelect id="projects" [options]="projects" [showClear]="true" formControlName="projects" optionLabel="title" optionValue="id" placeholder="Choisir les projets"></p-multiSelect>
+        </label>
+        <label for="skills">
+          Compétences
+          <p-multiSelect id="skills" [options]="skillsGroups()" [group]="true" [showClear]="true" optionLabel="label" optionValue="value" optionGroupLabel="label" optionGroupChildren="items" formControlName="skills" placeholder="Choisir les compétences">
+            <ng-template let-skill pTemplate="item">
+              <div class="flex items-center gap-2">
+                @if (skill.icon) {
+                  <img alt="skill icon" width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
+                } @else {
+                  <span class="font-extrabold mx-1">{{ skill.label[0].toUpperCase() }}</span>
+                }
+                <span class="w-full truncate">{{ skill.label }}</span>
+              </div>
+            </ng-template>
+          </p-multiSelect>
+        </label>
+      </div>
+      <div class="flex justify-end gap-2 md:col-span-2">
+        <p-button [text]="true" (onClick)="isShown = false">Annuler</p-button>
+        <p-button [disabled]="!form.valid" (onClick)="isEditing ? update() : create(); isShown = false">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
+      </div>
+    </form>
+  </p-dialog>
+  <app-prompt [(isPrompting)]="isPrompting" [(form)]="form" [field]="promptedField"></app-prompt>
+}

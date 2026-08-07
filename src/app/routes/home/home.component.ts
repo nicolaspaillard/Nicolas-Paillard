@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from "@angular/common";
-import { Component, inject } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { Profile } from "@classes/profile";
 import { formSection, Section } from "@classes/section";
@@ -32,7 +32,7 @@ const SERVICE_VARIABLE: ServiceConfig<Section> = {
   providers: [CrudService<Section>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class HomeComponent extends CrudComponent<Section> {
-  profile?: Profile;
+  profile = signal<Profile | undefined>(undefined);
   strings: string[] = ["Web", "Backend", "Frontend", "FullStack", "SQL", "TypeScript", ".NET", "Angular", "Java", "Python"];
   constructor() {
     const crudService = inject<CrudService<Section>>(CrudService);
@@ -40,7 +40,10 @@ export class HomeComponent extends CrudComponent<Section> {
     const confirmService = inject(ConfirmService);
 
     super(crudService, authService, confirmService);
-    crudService.getData(Profile, "profile", ["lastName"]).then(profile => (this.profile = profile[0]));
+    crudService
+      .getData(Profile, "profile", ["lastName"])
+      .then(profile => this.profile.set({ ...profile[0] }))
+      .catch(err => console.error(err));
   }
 
   // testGPT = async () => {

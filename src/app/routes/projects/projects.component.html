@@ -1,7 +1,9 @@
 <div class="flex min-h-full flex-col justify-center p-5 lg:p-10">
   <div class="grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-    @for (project of items(); track project) {
-      <app-project [project]="project" [skills]="getSkills(project)" [experience]="getExperience(project)" (onProjectEdit)="open(project)" (onProjectRemoved)="delete(project, 'title')"></app-project>
+    @if (skills.length && experiences.length) {
+      @for (project of items(); track project) {
+        <app-project [project]="project" [skills]="getSkills(project)" [experience]="getExperience(project)" (onProjectEdit)="open(project)" (onProjectRemoved)="delete(project, 'title')"></app-project>
+      }
     }
     @if (user()?.admin) {
       <div class="card flex items-center justify-center p-5 lg:p-10">
@@ -10,108 +12,110 @@
     }
   </div>
 </div>
-<p-dialog [(visible)]="isShown" [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' un projet'" [dismissableMask]="true">
-  <form class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col" [formGroup]="form">
-    <input type="hidden" formControlName="id" />
-    <label>
-      Début
-      <p-datepicker styleClass="w-full" formControlName="start" dateFormat="dd/mm/yy" />
-    </label>
-    <label>
-      Fin
-      <p-datepicker styleClass="w-full" formControlName="end" dateFormat="dd/mm/yy" />
-    </label>
-    <label>
-      Titre
-      <input pInputText type="text" formControlName="title" />
-    </label>
-    <label>
-      URL
-      <input pInputText type="text" formControlName="url" />
-    </label>
-    <label class="md:col-span-2">
-      <div class="flex items-center gap-1">
-        Description
-        <app-prompt-button (onClick)="promptedField = 'text'; isPrompting = true"></app-prompt-button>
-      </div>
-      <textarea pTextarea formControlName="description"></textarea>
-    </label>
-    <label>
-      Société
-      <input pInputText formControlName="company" />
-    </label>
-    <label>
-      Adresse
-      <input pInputText formControlName="address" />
-    </label>
-    <label>
-      Code postal
-      <input pInputText formControlName="postcode" />
-    </label>
-    <label>
-      Ville
-      <input pInputText formControlName="city" />
-    </label>
-    <label class="md:col-span-2">
-      Activités
-      @for (activity of activities; track activity) {
-        <div class="relative flex items-center justify-between">
-          <span class="p-button-sm p-button-text p-button-contrast max-w-75 cursor-pointer truncate rounded-md" (click)="act.value = activity">•&nbsp;&nbsp;{{ activity }}</span>
-          <div class="flex">
-            <p-button [disabled]="activities[0] == activity" [text]="true" (onClick)="move(activity, true)" icon="pi pi-angle-up" styleClass="w-auto" size="small" severity="secondary" />
-            <p-button [disabled]="activities[activities.length - 1] == activity" [text]="true" (onClick)="move(activity)" icon="pi pi-angle-down" styleClass="w-auto" size="small" severity="secondary" />
-            <p-button [text]="true" (onClick)="remove(activity)" icon="pi pi-trash" styleClass="w-auto" size="small" severity="danger" />
-          </div>
+@if (user()?.admin) {
+  <p-dialog [(visible)]="isShown" [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' un projet'" [dismissableMask]="true">
+    <form class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col" [formGroup]="form">
+      <input type="hidden" formControlName="id" />
+      <label for="start">
+        Début
+        <p-datepicker id="start" styleClass="w-full" formControlName="start" dateFormat="dd/mm/yy" />
+      </label>
+      <label for="end">
+        Fin
+        <p-datepicker id="end" styleClass="w-full" formControlName="end" dateFormat="dd/mm/yy" />
+      </label>
+      <label>
+        Titre
+        <input pInputText type="text" formControlName="title" />
+      </label>
+      <label>
+        URL
+        <input pInputText type="text" formControlName="url" />
+      </label>
+      <label class="md:col-span-2">
+        <div class="flex items-center gap-1">
+          Description
+          <app-prompt-button (onClick)="promptedField = 'text'; isPrompting = true"></app-prompt-button>
         </div>
-      }
-      <p-inputGroup>
-        <input #act pInputText placeholder="Activité" />
-        <button [disabled]="!act.value" (click)="add(act.value)" type="button" pButton icon="pi pi-plus"></button>
-      </p-inputGroup>
-    </label>
-    <label class="md:col-span-2" for="images">
-      Images
-      @if (isEditing && !images._files.length) {
-        <span class="opacity-50">&nbsp;(Aucune modification)</span>
-      }
-      <p-fileUpload id="images" #images [multiple]="true" accept="image/*">
-        <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
-          <p-button [outlined]="true" (onClick)="chooseCallback()" icon="pi pi-images"></p-button>
-          <p-button [outlined]="true" [disabled]="!files || files.length === 0" (onClick)="clearCallback()" icon="pi pi-times" severity="danger" />
-        </ng-template>
-      </p-fileUpload>
-    </label>
-    <label for="skills">
-      Compétences
-      <div #skillwrapper>
-        <p-multiSelect class="w-full" id="skills" [options]="skillsGroups()" [group]="true" [panelStyle]="{ width: expwrapper.offsetWidth + 'px' }" [showClear]="true" optionLabel="label" optionValue="value" optionGroupLabel="label" optionGroupChildren="items" formControlName="skills" placeholder="Choisir les compétences">
-          <ng-template let-skill pTemplate="item">
-            <div class="flex items-center gap-2">
-              @if (skill.icon) {
-                <img width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
-              } @else {
-                <span class="font-extrabold mx-1">{{ skill.label[0].toUpperCase() }}</span>
-              }
-              <span class="w-full truncate">{{ skill.label }}</span>
+        <textarea pTextarea formControlName="description"></textarea>
+      </label>
+      <label>
+        Société
+        <input pInputText formControlName="company" />
+      </label>
+      <label>
+        Adresse
+        <input pInputText formControlName="address" />
+      </label>
+      <label>
+        Code postal
+        <input pInputText formControlName="postcode" />
+      </label>
+      <label>
+        Ville
+        <input pInputText formControlName="city" />
+      </label>
+      <label class="md:col-span-2">
+        Activités
+        @for (activity of activities; track activity) {
+          <div class="relative flex items-center justify-between">
+            <span class="p-button-sm p-button-text p-button-contrast max-w-75 cursor-pointer truncate rounded-md" (click)="act.value = activity" (keydown.enter)="act.value = activity" (keydown.space)="act.value = activity" tabindex="0">•&nbsp;&nbsp;{{ activity }}</span>
+            <div class="flex">
+              <p-button [disabled]="activities[0] === activity" [text]="true" (onClick)="move(activity, true)" icon="pi pi-angle-up" styleClass="w-auto" size="small" severity="secondary" />
+              <p-button [disabled]="activities[activities.length - 1] === activity" [text]="true" (onClick)="move(activity)" icon="pi pi-angle-down" styleClass="w-auto" size="small" severity="secondary" />
+              <p-button [text]="true" (onClick)="remove(activity)" icon="pi pi-trash" styleClass="w-auto" size="small" severity="danger" />
             </div>
+          </div>
+        }
+        <p-inputGroup>
+          <input #act pInputText placeholder="Activité" />
+          <p-button [disabled]="!act.value" (click)="add(act.value)" icon="pi pi-plus"></p-button>
+        </p-inputGroup>
+      </label>
+      <label class="md:col-span-2" for="images">
+        Images
+        @if (isEditing && !images._files.length) {
+          <span class="opacity-50">&nbsp;(Aucune modification)</span>
+        }
+        <p-fileUpload id="images" #images [multiple]="true" accept="image/*">
+          <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
+            <p-button [outlined]="true" (onClick)="chooseCallback()" icon="pi pi-images"></p-button>
+            <p-button [outlined]="true" [disabled]="!files || files.length === 0" (onClick)="clearCallback()" icon="pi pi-times" severity="danger" />
           </ng-template>
-        </p-multiSelect>
+        </p-fileUpload>
+      </label>
+      <label for="skills">
+        Compétences
+        <div #skillwrapper>
+          <p-multiSelect class="w-full" id="skills" [options]="skillsGroups()" [group]="true" [panelStyle]="{ width: expwrapper.offsetWidth + 'px' }" [showClear]="true" optionLabel="label" optionValue="value" optionGroupLabel="label" optionGroupChildren="items" formControlName="skills" placeholder="Choisir les compétences">
+            <ng-template let-skill pTemplate="item">
+              <div class="flex items-center gap-2">
+                @if (skill.icon) {
+                  <img [alt]="skill.label + ' icon'" width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
+                } @else {
+                  <span class="font-extrabold mx-1">{{ skill.label[0].toUpperCase() }}</span>
+                }
+                <span class="w-full truncate">{{ skill.label }}</span>
+              </div>
+            </ng-template>
+          </p-multiSelect>
+        </div>
+      </label>
+      <label for="experience">
+        Expérience
+        <div #expwrapper>
+          <p-select class="w-full" id="experience" [options]="experiencesOptions" [showClear]="true" [panelStyle]="{ width: expwrapper.offsetWidth + 'px' }" formControlName="experience" placeholder="Choisir l'expérience">
+            <ng-template let-experience pTemplate="item">
+              <span class="w-full truncate" [pTooltip]="experience.label">{{ experience.label }}</span>
+            </ng-template>
+          </p-select>
+        </div>
+      </label>
+      <div class="flex justify-end gap-2 md:col-span-2">
+        <p-button [text]="true" (onClick)="isShown = false">Annuler</p-button>
+        <p-button [disabled]="!form.valid" (onClick)="imagesFiles = images._files; isEditing ? update() : create(); isShown = false">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
       </div>
-    </label>
-    <label for="experience">
-      Expérience
-      <div #expwrapper>
-        <p-select class="w-full" id="experience" [options]="experiencesOptions" [panelStyle]="{ width: expwrapper.offsetWidth + 'px' }" formControlName="experience" placeholder="Choisir l'expérience">
-          <ng-template let-experience pTemplate="item">
-            <span class="w-full truncate" [pTooltip]="experience.label">{{ experience.label }}</span>
-          </ng-template>
-        </p-select>
-      </div>
-    </label>
-    <div class="flex justify-end gap-2 md:col-span-2">
-      <p-button [text]="true" (onClick)="isShown = false">Annuler</p-button>
-      <p-button [disabled]="!form.valid" (onClick)="imagesFiles = images._files; isEditing ? update() : create(); isShown = false">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
-    </div>
-  </form>
-</p-dialog>
-<app-prompt [(isPrompting)]="isPrompting" [(form)]="form" [field]="promptedField"></app-prompt>
+    </form>
+  </p-dialog>
+  <app-prompt [(isPrompting)]="isPrompting" [(form)]="form" [field]="promptedField"></app-prompt>
+}
