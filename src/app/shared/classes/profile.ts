@@ -21,7 +21,7 @@ export const formProfile: FormGroup = new FormGroup({
   lastName: new FormControl("", [control => Validators.required(control)]),
   address: new FormControl("", [control => Validators.required(control)]),
   phone: new FormControl("", [control => Validators.required(control)]),
-  email: new FormControl("", [control => Validators.required(control), Validators.email]),
+  email: new FormControl("", [control => Validators.required(control), control => Validators.email(control)]),
   linkedin: new FormControl("", [control => Validators.required(control)]),
   github: new FormControl("", [control => Validators.required(control)]),
   gitlab: new FormControl("", [control => Validators.required(control)]),

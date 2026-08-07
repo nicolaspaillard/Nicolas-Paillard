@@ -5,18 +5,11 @@ import { formProfile, Profile } from "@classes/profile";
 import { CrudComponent } from "@components/crud.component";
 import { sha1 } from "@helpers/helpers";
 import { ButtonModule } from "@openng/optimus-ui/button";
-import {
-  FileUpload,
-  FileUploadHandlerEvent,
-} from "@openng/optimus-ui/fileupload";
+import { FileUpload, FileUploadHandlerEvent } from "@openng/optimus-ui/fileupload";
 import { InputTextModule } from "@openng/optimus-ui/inputtext";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
-import {
-  CrudService,
-  SERVICE_CONFIG,
-  ServiceConfig,
-} from "@services/crud.service";
+import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
 import { ToastService } from "@services/toast.service";
 
 const SERVICE_VARIABLE: ServiceConfig<Profile> = {
@@ -28,24 +21,15 @@ const SERVICE_VARIABLE: ServiceConfig<Profile> = {
 
 @Component({
   selector: "app-profile",
-  imports: [
-    FileUpload,
-    ReactiveFormsModule,
-    ButtonModule,
-    NgOptimizedImage,
-    InputTextModule,
-  ],
+  imports: [FileUpload, ReactiveFormsModule, ButtonModule, NgOptimizedImage, InputTextModule],
   templateUrl: "./profile.component.html",
   styles: ``,
-  providers: [
-    CrudService<Profile>,
-    { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE },
-  ],
+  providers: [CrudService<Profile>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class ProfileComponent extends CrudComponent<Profile> {
+  isUpdating = false;
   private toastService = inject(ToastService);
 
-  isUpdating = false;
   constructor() {
     const crudService = inject<CrudService<Profile>>(CrudService);
     const authService = inject(AuthService);
@@ -71,23 +55,15 @@ export class ProfileComponent extends CrudComponent<Profile> {
         this.toastService.success("Succès", "Profil mis à jour avec succès");
       })
       .catch(() => {
-        this.toastService.error(
-          "Erreur",
-          "Erreur lors de la mise à jour du profil",
-        );
+        this.toastService.error("Erreur", "Erreur lors de la mise à jour du profil");
       })
       .finally(() => (this.isUpdating = false));
   }
   updatePhoto = async (event: FileUploadHandlerEvent) => {
-    const timestamp: string = Math.round(
-      new Date().getTime() / 1000,
-    ).toString();
+    const timestamp: string = Math.round(new Date().getTime() / 1000).toString();
     const cloudinary = (await this.getCloudinary())!;
     const formData: FormData = new FormData();
-    const photo = new File(
-      [(await event.files[0].arrayBuffer())],
-      "profile",
-    );
+    const photo = new File([await event.files[0].arrayBuffer()], "profile");
     formData.append("public_id", "profile");
     formData.append("file", photo);
     formData.append("invalidate", "true");
@@ -111,13 +87,13 @@ export class ProfileComponent extends CrudComponent<Profile> {
       method: "POST",
       body: formData,
     })
-      .then(async (response) => {
+      .then(async response => {
         const data = JSON.parse(await response.text());
         if (data.public_id) return data.public_id.split("/")[1];
         console.error(data);
         return false;
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         return false;
       });

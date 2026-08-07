@@ -46,7 +46,13 @@ export class ProjectsComponent extends CrudComponent<Project> {
   images: string;
   imagesFiles: File[] = [];
   skills: Skill[] = [];
-  skillsGroups = signal<{ items: { icon: string; label: string; value: string }[]; label: string; value: string }[]>([]);
+  skillsGroups = signal<
+    {
+      items: { icon: string; label: string; value: string }[];
+      label: string;
+      value: string;
+    }[]
+  >([]);
   constructor() {
     const crudService = inject<CrudService<Project>>(CrudService);
     const authService = inject(AuthService);
@@ -55,17 +61,30 @@ export class ProjectsComponent extends CrudComponent<Project> {
     Promise.all([crudService.getData(Experience, "experiences", ["start", "desc"]), crudService.getData(Skill, "skills", ["title"]), crudService.getData(Category, "categories", ["title"])])
       .then(([experiences, skills, categories]) => {
         this.experiences = experiences;
-        this.experiencesOptions = experiences.map(experience => ({ value: experience.id, label: experience.company + " - " + experience.title }));
+        this.experiencesOptions = experiences.map(experience => ({
+          value: experience.id,
+          label: experience.company + " - " + experience.title,
+        }));
         this.skills = skills;
         this.categories = categories;
         skills.map(skill => {
           const skillGroup = this.skillsGroups().find(sg => sg.value === skill.category);
           if (skillGroup) {
-            const updatedGroup = { ...skillGroup, items: [...skillGroup.items, { label: skill.title, value: skill.id, icon: skill.icon }] };
+            const updatedGroup = {
+              ...skillGroup,
+              items: [...skillGroup.items, { label: skill.title, value: skill.id, icon: skill.icon }],
+            };
             this.skillsGroups.update(groups => groups.map(group => (group === skillGroup ? updatedGroup : group)));
           } else {
             const newcat = categories.find(category => category.id === skill.category);
-            this.skillsGroups.update(groups => [...groups, { label: newcat!.title, value: newcat!.id, items: [{ label: skill.title, value: skill.id, icon: skill.icon }] }]);
+            this.skillsGroups.update(groups => [
+              ...groups,
+              {
+                label: newcat!.title,
+                value: newcat!.id,
+                items: [{ label: skill.title, value: skill.id, icon: skill.icon }],
+              },
+            ]);
           }
         });
       })
@@ -83,11 +102,18 @@ export class ProjectsComponent extends CrudComponent<Project> {
   }
   getExperience = (project: Project) => {
     if (!project.experience || !project.experience.length) return;
-    return { id: project.experience, title: this.experiences.find(experience => experience.id === project.experience)!.title };
+    return {
+      id: project.experience,
+      title: this.experiences.find(experience => experience.id === project.experience)!.title,
+    };
   };
   getSkills = (project: Project) => {
     if (!project.skills || !project.skills.length) return [];
-    const categories: { id: string; items: { icon: string; id: string; title: string }[]; title: string }[] = [];
+    const categories: {
+      id: string;
+      items: { icon: string; id: string; title: string }[];
+      title: string;
+    }[] = [];
     project.skills.forEach(skillId => {
       const newSkill = this.skills.find(skill => skill.id === skillId)!;
       const newCategory = this.categories.find(category => category.id === newSkill.category)!;

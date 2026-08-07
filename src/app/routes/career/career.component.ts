@@ -40,7 +40,13 @@ export class CareerComponent extends CrudComponent<Experience> {
   categories: Category[] = [];
   projects: Project[] = [];
   skills: Skill[] = [];
-  skillsGroups = signal<{ items: { icon: string; label: string; value: string }[]; label: string; value: string }[]>([]);
+  skillsGroups = signal<
+    {
+      items: { icon: string; label: string; value: string }[];
+      label: string;
+      value: string;
+    }[]
+  >([]);
   constructor() {
     const crudService = inject<CrudService<Experience>>(CrudService);
     const authService = inject(AuthService);
@@ -55,11 +61,21 @@ export class CareerComponent extends CrudComponent<Experience> {
         skills.map(skill => {
           const skillGroup = this.skillsGroups().find(sg => sg.value === skill.category);
           if (skillGroup) {
-            const updatedGroup = { ...skillGroup, items: [...skillGroup.items, { label: skill.title, value: skill.id, icon: skill.icon }] };
+            const updatedGroup = {
+              ...skillGroup,
+              items: [...skillGroup.items, { label: skill.title, value: skill.id, icon: skill.icon }],
+            };
             this.skillsGroups.update(groups => groups.map(group => (group === skillGroup ? updatedGroup : group)));
           } else {
             const newcat = categories.find(category => category.id === skill.category);
-            this.skillsGroups.update(groups => [...groups, { label: newcat!.title, value: newcat!.id, items: [{ label: skill.title, value: skill.id, icon: skill.icon }] }]);
+            this.skillsGroups.update(groups => [
+              ...groups,
+              {
+                label: newcat!.title,
+                value: newcat!.id,
+                items: [{ label: skill.title, value: skill.id, icon: skill.icon }],
+              },
+            ]);
           }
         });
       })
@@ -75,11 +91,18 @@ export class CareerComponent extends CrudComponent<Experience> {
   }
   getProjects = (experience: Experience) => {
     if (!experience.projects || !experience.projects.length) return [];
-    return experience.projects.map(projectId => ({ id: projectId, title: this.projects.find(project => project.id === projectId)!.title }));
+    return experience.projects.map(projectId => ({
+      id: projectId,
+      title: this.projects.find(project => project.id === projectId)!.title,
+    }));
   };
   getSkills = (experience: Experience) => {
     if (!experience.skills || !experience.skills.length) return [];
-    const categories: { id: string; items: { icon: string; id: string; title: string }[]; title: string }[] = [];
+    const categories: {
+      id: string;
+      items: { icon: string; id: string; title: string }[];
+      title: string;
+    }[] = [];
     experience.skills.forEach(skillId => {
       const newSkill = this.skills.find(skill => skill.id === skillId)!;
       const newCategory = this.categories.find(category => category.id === newSkill.category)!;

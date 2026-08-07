@@ -96,12 +96,12 @@ export class AppComponent implements OnInit {
     { validators: CustomValidators.matchFields("password", "passwordrepeat") },
   );
   formSignin = new FormGroup({
-    email: new FormControl("", [control => Validators.required(control), Validators.email]),
+    email: new FormControl("", [control => Validators.required(control), control => Validators.email(control)]),
     password: new FormControl("", [control => Validators.required(control)]),
   });
   formSignup = new FormGroup(
     {
-      email: new FormControl("", [control => Validators.required(control), Validators.email]),
+      email: new FormControl("", [control => Validators.required(control), control => Validators.email(control)]),
       password: new FormControl("", [control => Validators.required(control), Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]),
       passwordrepeat: new FormControl("", [control => Validators.required(control)]),
     },

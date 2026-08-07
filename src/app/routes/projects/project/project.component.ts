@@ -23,7 +23,13 @@ export class ProjectComponent {
   cld: Cloudinary = new Cloudinary({ cloud: { cloudName: "dsuvd32up" } });
   experience = input.required<{ id: string; title: string } | undefined>();
   project = input.required<Project>();
-  skills = input.required<{ id: string; items: { icon: string; id: string; title: string }[]; title: string }[]>();
+  skills = input.required<
+    {
+      id: string;
+      items: { icon: string; id: string; title: string }[];
+      title: string;
+    }[]
+  >();
   user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   constructor() {
     const authService = inject(AuthService);

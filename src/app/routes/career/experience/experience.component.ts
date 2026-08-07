@@ -21,7 +21,13 @@ export class ExperienceComponent {
   experience = input.required<Experience>();
   projects = input.required<{ id: string; title: string }[]>();
   right = input.required<boolean>();
-  skills = input.required<{ id: string; items: { icon: string; id: string; title: string }[]; title: string }[]>();
+  skills = input.required<
+    {
+      id: string;
+      items: { icon: string; id: string; title: string }[];
+      title: string;
+    }[]
+  >();
   user = signal<{ admin: boolean; user: User } | undefined>(undefined);
 
   constructor() {
