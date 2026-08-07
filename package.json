@@ -17,7 +17,6 @@
     },
     "@openng/optimus-ui": {
       "@angular/common": "$@angular/common",
-      "@angular/cdk": "$@angular/cdk",
       "@angular/core": "$@angular/core",
       "@angular/platform-browser": "$@angular/platform-browser",
       "@angular/forms": "$@angular/forms",
