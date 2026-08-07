@@ -6,7 +6,7 @@ import { initializeAppCheck, provideAppCheck, ReCaptchaEnterpriseProvider } from
 import { getAuth, provideAuth } from "@angular/fire/auth";
 import { getFirestore, provideFirestore } from "@angular/fire/firestore";
 import { bootstrapApplication } from "@angular/platform-browser";
-import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from "@angular/router";
+import { PreloadAllModules, provideRouter, withComponentInputBinding, withInMemoryScrolling, withPreloading } from "@angular/router";
 import { ConfirmationService, MessageService } from "@openng/optimus-ui/api";
 import { provideOptimus } from "@openng/optimus-ui/config";
 import { AppComponent, routes } from "./app/app.component";
@@ -16,7 +16,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(
       routes,
-      // withPreloading(PreloadAllModules),
+      withPreloading(PreloadAllModules),
       withComponentInputBinding(),
       // withViewTransitions(),
       withInMemoryScrolling({
