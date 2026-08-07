@@ -8,5 +8,5 @@ export class Base {
 
 // export const formBase = new FormGroup({
 //   id: new FormControl(""),
-//   title: new FormControl("", [control => Validators.required(control)]),
+//   title: new FormControl("", [Validators.required]),
 // });

@@ -11,6 +11,6 @@ export class Section extends Base {
 
 export const formSection = new FormGroup({
   id: new FormControl(""),
-  rank: new FormControl(0, [control => Validators.required(control)]),
-  text: new FormControl("", [control => Validators.required(control)]),
+  rank: new FormControl(0, [Validators.required]),
+  text: new FormControl("", [Validators.required]),
 });

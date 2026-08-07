@@ -1,7 +1,6 @@
-@import "https://fonts.googleapis.com/css2?family=Aldrich&display=swap";
-@import "@openng/icons/openng-icons.css";
 @import "tailwindcss";
-@plugin "@openng/optimus-ui-tailwindcss";
+@plugin "tailwindcss-primeui";
+@import "https://fonts.googleapis.com/css2?family=Aldrich&display=swap";
 
 @layer components {
   .card {
@@ -52,7 +51,7 @@ body {
   height: 100%;
   font-family: Aldrich;
   line-height: 1.2;
-  font-size: 14px;
+  font-size: 16px;
   background-color: var(--p-form-field-background);
 }
 

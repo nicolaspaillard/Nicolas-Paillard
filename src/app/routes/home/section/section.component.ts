@@ -1,26 +1,28 @@
-import { Component, EventEmitter, inject, Input, Output, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { CommonModule } from "@angular/common";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { User } from "@angular/fire/auth";
 import { AuthService } from "@app/shared/services/auth.service";
 import { Section } from "@classes/section";
-import { ButtonModule } from "@openng/optimus-ui/button";
+import { ButtonModule } from "primeng/button";
 
 @Component({
   selector: "app-section",
-  imports: [ButtonModule],
+  imports: [CommonModule, ButtonModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: "./section.component.html",
 })
 export class SectionComponent {
   @Output() onEdit = new EventEmitter<Section>();
   @Output() onRemove = new EventEmitter<Section>();
   @Input() section: Section;
-  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
-  private authService = inject(AuthService);
-
-  constructor() {
-    this.authService
-      .user()
-      .pipe(takeUntilDestroyed())
-      .subscribe(user => this.user.set(user ? { ...user } : undefined));
+  user: { admin: boolean; user: User } | undefined;
+  constructor(private authService: AuthService) {
+    this.authService.user().subscribe((user) => (this.user = user));
   }
 }

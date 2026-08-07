@@ -1,16 +1,23 @@
-import { Component, EventEmitter, inject, Input, Output, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { CommonModule } from "@angular/common";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { User } from "@angular/fire/auth";
 import { ReactiveFormsModule } from "@angular/forms";
 import { AuthService } from "@app/shared/services/auth.service";
 import { Category } from "@classes/category";
 import { Skill } from "@classes/skill";
-import { ButtonModule } from "@openng/optimus-ui/button";
+import { ButtonModule } from "primeng/button";
 import { SkillComponent } from "./skill/skill.component";
 
 @Component({
   selector: "app-category",
-  imports: [ReactiveFormsModule, SkillComponent, ButtonModule],
+  imports: [CommonModule, ReactiveFormsModule, SkillComponent, ButtonModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: "./category.component.html",
 })
 export class CategoryComponent {
@@ -21,18 +28,13 @@ export class CategoryComponent {
   @Output() onSkillEdit = new EventEmitter<Skill>();
   @Output() onSkillRemove = new EventEmitter<Skill>();
   @Input() skills: Skill[] = [];
-  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
-  private authService = inject(AuthService);
-
-  constructor() {
-    this.authService
-      .user()
-      .pipe(takeUntilDestroyed())
-      .subscribe(user => this.user.set(user ? { ...user } : undefined));
+  user: { admin: boolean; user: User } | undefined;
+  constructor(private authService: AuthService) {
+    this.authService.user().subscribe((user) => (this.user = user));
   }
   // ngOnInit() {
   //   getDocs(query(collection(this.db, "data", "skills", "skills"), orderBy("title"), where("category", "==", this.category.id))).then((items) => {
-  //     items().docs.forEach((doc) => this.skills.push(new Skill({ ...doc.data(), id: doc.id } as Skill)));
+  //     items.docs.forEach((doc) => this.skills.push(new Skill({ ...doc.data(), id: doc.id } as Skill)));
   //   });
   // }
 }

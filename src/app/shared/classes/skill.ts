@@ -16,10 +16,10 @@ export class Skill extends Base {
 }
 export const formSkill: FormGroup = new FormGroup({
   id: new FormControl(""),
-  title: new FormControl("", [control => Validators.required(control)]),
-  category: new FormControl("", [control => Validators.required(control)]),
+  title: new FormControl("", [Validators.required]),
+  category: new FormControl("", [Validators.required]),
   icon: new FormControl(""),
   projects: new FormControl([]),
   experiences: new FormControl([]),
-  // rank: new FormControl(0, [control => Validators.required(control)]),
+  // rank: new FormControl(0, [Validators.required]),
 });

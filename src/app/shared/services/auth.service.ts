@@ -46,7 +46,7 @@ export class AuthService {
   signup = async (email: string, password: string): Promise<boolean | [string, any]> => {
     return validatePassword(this.auth, password).then(status => {
       if (!status.isValid) {
-        const ret: { maxlength: boolean; minlength: boolean; pattern: boolean } = { maxlength: false, minlength: false, pattern: false };
+        let ret: { maxlength: boolean; minlength: boolean; pattern: boolean } = { maxlength: false, minlength: false, pattern: false };
         if (!status.containsLowercaseLetter) ret.pattern = true;
         else if (!status.containsUppercaseLetter) ret.pattern = true;
         else if (!status.containsNonAlphanumericCharacter) ret.pattern = true;

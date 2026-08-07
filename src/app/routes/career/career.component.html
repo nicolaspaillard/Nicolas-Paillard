@@ -2,32 +2,27 @@
   <div class="border-b-primary mx-auto w-fit border-b-15 border-l-[7px] border-r-[7px] border-t-0 border-solid border-transparent"></div>
   <div class="relative w-full grow py-5">
     <div class="bg-primary absolute left-1/2 top-0 h-full w-0.5 -translate-x-[calc(100%-1px)] rounded-b-sm"></div>
-    @if (user()?.admin) {
-      <div class="card lg:before:bg-primary flex w-full justify-center p-5 lg:ml-auto lg:w-[calc(50%-(--spacing(10)))] lg:p-10 lg:before:absolute lg:before:-left-[calc(--spacing(10)+1px)] lg:before:top-1/2 lg:before:h-0.5 lg:before:w-10 lg:before:-translate-y-full lg:before:content-['']">
-        <p-button class="block text-center" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
-      </div>
-    }
-    <!-- TODO highlight if url#id matches with id  -->
-    @for (experience of items(); track experience; let index = $index) {
-      <app-experience class="nth-[n+3]:mt-5 lg:nth-[n+3]:-mt-10 block" [experience]="experience" [skills]="getSkills(experience)" [projects]="getProjects(experience)" [right]="index % 2 !== 0" (remove)="delete(experience, 'title')" (edit)="open(experience)"></app-experience>
-    }
+    <div class="card lg:before:bg-primary flex w-full justify-center p-5 lg:ml-auto lg:w-[calc(50%-(--spacing(10)))] lg:p-10 lg:before:absolute lg:before:-left-[calc(--spacing(10)+1px)] lg:before:top-1/2 lg:before:h-[2px] lg:before:w-10 lg:before:-translate-y-full lg:before:content-['']" *ngIf="user?.admin">
+      <p-button class="block text-center" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
+    </div>
+    <app-experience class="nth-[n+3]:mt-5 lg:nth-[n+3]:-mt-10 block" *ngFor="let experience of items; let index = index" [experience]="experience" [right]="index % 2 != 0" (onExperienceRemoved)="delete(experience, 'title')" (onExperienceEdit)="open(experience)"></app-experience>
   </div>
 </div>
 <p-dialog [(visible)]="isShown" [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une expérience'" [dismissableMask]="true">
   <form class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col" [formGroup]="form">
     <input type="hidden" formControlName="id" />
     <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
-      <label for="type">
+      <label>
         Type
-        <p-select id="type" [options]="['Expérience', 'Formation', 'Évènement']" placeholder="Type" formControlName="type"></p-select>
+        <p-select [options]="['Expérience', 'Formation', 'Évènement']" placeholder="Type" formControlName="type"></p-select>
       </label>
-      <label for="start">
+      <label>
         Début
-        <p-datepicker class="w-full" id="start" formControlName="start" dateFormat="dd/mm/yy" />
+        <p-datepicker class="w-full" formControlName="start" dateFormat="dd/mm/yy" />
       </label>
-      <label for="end">
+      <label>
         Fin
-        <p-datepicker class="w-full" id="end" formControlName="end" dateFormat="dd/mm/yy" />
+        <p-datepicker class="w-full" formControlName="end" dateFormat="dd/mm/yy" />
       </label>
     </div>
 
@@ -41,10 +36,10 @@
     </label>
     <label class="md:col-span-2">
       <div class="flex items-center gap-1">
-        Description
+        Texte
         <app-prompt-button (onClick)="promptedField = 'text'; isPrompting = true"></app-prompt-button>
       </div>
-      <textarea pTextarea formControlName="description"></textarea>
+      <textarea pTextarea formControlName="text"></textarea>
     </label>
     <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
       <label>
@@ -62,40 +57,27 @@
     </div>
     <label class="md:col-span-2">
       Activités
-      @for (activity of activities; track activity) {
-        <div class="relative flex items-center justify-between">
-          <span class="p-button-sm p-button-text p-button-contrast max-w-75 cursor-pointer truncate rounded-md" (keydown.enter)="act.value = activity" (keydown.space)="act.value = activity" (click)="act.value = activity" tabindex="0">•&nbsp;&nbsp;{{ activity }}</span>
-          <div class="flex">
-            <p-button [disabled]="activities[0] === activity" [text]="true" (onClick)="move(activity, true)" icon="pi pi-angle-up" styleClass="w-auto" size="small" severity="secondary" />
-            <p-button [disabled]="activities[activities.length - 1] === activity" [text]="true" (onClick)="move(activity)" icon="pi pi-angle-down" styleClass="w-auto" size="small" severity="secondary" />
-            <p-button [text]="true" (onClick)="remove(activity)" icon="pi pi-trash" styleClass="w-auto" size="small" severity="danger" />
-          </div>
+      <div class="relative flex items-center justify-between" *ngFor="let activity of activities">
+        <span class="p-button-sm p-button-text p-button-contrast max-w-75 cursor-pointer truncate rounded-md" (click)="act.value = activity">•&nbsp;&nbsp;{{ activity }}</span>
+        <div class="flex">
+          <p-button [disabled]="activities[0] == activity" [text]="true" (onClick)="move(activity, true)" icon="pi pi-angle-up" styleClass="w-auto" size="small" severity="secondary" />
+          <p-button [disabled]="activities[activities.length - 1] == activity" [text]="true" (onClick)="move(activity)" icon="pi pi-angle-down" styleClass="w-auto" size="small" severity="secondary" />
+          <p-button [text]="true" (onClick)="remove(activity)" icon="pi pi-trash" styleClass="w-auto" size="small" severity="danger" />
         </div>
-      }
-      <p-inputGroup>
+      </div>
+      <p-inputgroup>
         <input #act pInputText placeholder="Activité" />
         <p-button [disabled]="!act.value" (onClick)="add(act.value)" icon="pi pi-plus" />
       </p-inputgroup>
     </label>
     <div class="grid gap-2 md:col-span-2 md:grid-cols-2">
-      <label for="projects">
+      <label>
         Projets
-        <p-multiSelect id="projects" [options]="projects" [showClear]="true" formControlName="projects" optionLabel="title" optionValue="id" placeholder="Choisir les projets"></p-multiSelect>
+        <p-select [multiple]="true" [options]="projects" [showClear]="true" formControlName="skills" optionLabel="title" optionValue="id" placeholder="Choisir les projets"></p-select>
       </label>
-      <label for="skills">
+      <label>
         Compétences
-        <p-multiSelect id="skills" [options]="skillsGroups()" [group]="true" [showClear]="true" optionLabel="label" optionValue="value" optionGroupLabel="label" optionGroupChildren="items" formControlName="skills" placeholder="Choisir les compétences">
-          <ng-template let-skill pTemplate="item">
-            <div class="flex items-center gap-2">
-              @if (skill.icon) {
-                <img alt="skill icon" width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
-              } @else {
-                <span class="font-extrabold mx-1">{{ skill.label[0].toUpperCase() }}</span>
-              }
-              <span class="w-full truncate">{{ skill.label }}</span>
-            </div>
-          </ng-template>
-        </p-multiSelect>
+        <p-select [multiple]="true" [options]="skills" [showClear]="true" formControlName="skills" optionLabel="title" optionValue="id" placeholder="Choisir les compétences"></p-select>
       </label>
     </div>
     <div class="flex justify-end gap-2 md:col-span-2">

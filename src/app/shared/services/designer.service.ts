@@ -1,4 +1,4 @@
-import { inject, Injectable, isDevMode } from "@angular/core";
+import { Injectable, isDevMode } from "@angular/core";
 import { doc, Firestore, getDoc, setDoc } from "@angular/fire/firestore";
 import { Category } from "@classes/category";
 import { Experience } from "@classes/experience";
@@ -19,16 +19,14 @@ import { CrudService } from "./crud.service";
 import { ToastService } from "./toast.service";
 @Injectable({ providedIn: "root" })
 export class DesignerService {
-  blank: Template = {
-    basePdf: { width: 210, height: 297, padding: [10, 10, 10, 10] },
-    schemas: [[]],
-  };
+  blank: Template = { basePdf: { width: 210, height: 297, padding: [10, 10, 10, 10] }, schemas: [[]] };
   designer: Designer;
-  private crudService = inject<CrudService<any>>(CrudService);
-  private db = inject(Firestore);
-
   private timer: NodeJS.Timeout;
-  private toastService = inject(ToastService);
+  constructor(
+    private toastService: ToastService,
+    private crudService: CrudService<any>,
+    private db: Firestore,
+  ) {}
   clear = () => this.designer.updateTemplate(this.blank);
   destroy = () => this.designer.destroy();
   export = async ({ editing }: { editing: boolean }): Promise<{ steps: Step[]; url: string }> => {
@@ -36,22 +34,10 @@ export class DesignerService {
     let steps: Step[] = [];
     if (true || !isDevMode())
       steps = [
-        {
-          route: "home",
-          lines: ["Accueil", ...sections.map(section => `nicolaspaillard.fr/about# ` + section.text)],
-        },
-        {
-          route: "career",
-          lines: ["Expériences", ...experiences.filter(experience => experience.type === "Expérience").map(experience => `nicolaspaillard.fr/career# ` + experience.title)],
-        },
-        {
-          route: "career",
-          lines: ["Formations", ...experiences.filter(experience => experience.type === "Formation").map(formation => `nicolaspaillard.fr/career# ` + formation.title)],
-        },
-        {
-          route: "skills",
-          lines: ["Compétences", ...categories.map(category => `nicolaspaillard.fr/skills# ` + category.title)],
-        },
+        { route: "home", lines: ["Accueil", ...sections.map(section => `nicolaspaillard.fr/about# ` + section.text)] },
+        { route: "career", lines: ["Expériences", ...experiences.filter(experience => experience.type === "Expérience").map(experience => `nicolaspaillard.fr/career# ` + experience.title)] },
+        { route: "career", lines: ["Formations", ...experiences.filter(experience => experience.type === "Formation").map(formation => `nicolaspaillard.fr/career# ` + formation.title)] },
+        { route: "skills", lines: ["Compétences", ...categories.map(category => `nicolaspaillard.fr/skills# ` + category.title)] },
       ];
     return generate({
       template: editing ? this.designer.getTemplate() : await this.getTemplate(),
@@ -63,7 +49,7 @@ export class DesignerService {
             response =>
               new Promise(async (resolve, reject) => {
                 const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
+                reader.onloadend = () => resolve(reader.result as string);
                 reader.readAsDataURL(await response.blob());
               }),
           ),
@@ -73,14 +59,12 @@ export class DesignerService {
           experiences: JSON.stringify(
             experiences
               .filter(exp => exp.type === "Expérience")
-              .map((exp, id, arr) => [
-                `${exp.title}\n${exp.company} : ${exp.start.toLocaleDateString("fr-FR", { month: "short", year: "numeric" })} - ${exp.end.toLocaleDateString("fr-FR", { month: "short", year: "numeric" })}` + (exp.description.length ? `\n\t${exp.description}` : "") + (exp.activities ? `\n${"\t- " + exp.activities.split(";").join("\n\t- ")}` : "") + (id < arr.length - 1 ? "\n" : ""),
-              ]),
+              .map((exp, id, arr) => [`${exp.title}\n${exp.company} : ${exp.start.toLocaleDateString("fr-FR", { month: "short", year: "numeric" })} - ${exp.end.toLocaleDateString("fr-FR", { month: "short", year: "numeric" })}` + (exp.text.length ? `\n\t${exp.text}` : "") + (exp.activities ? `\n${"\t- " + exp.activities.split(";").join("\n\t- ")}` : "") + (id < arr.length - 1 ? "\n" : "")]),
           ),
           formations: JSON.stringify(
             experiences
               .filter(frm => frm.type === "Formation")
-              .map((frm, id, arr) => [`${frm.start.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} - ${frm.end.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} : ${frm.title}` + (frm.description.length ? `\n\t${frm.description}` : "") + (frm.activities ? `\n${"\t- " + frm.activities.split(";").join("\n\t- ")}` : "") + (id < arr.length - 1 ? "\n" : "")]),
+              .map((frm, id, arr) => [`${frm.start.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} - ${frm.end.toLocaleDateString("fr-FR", { month: "numeric", year: "numeric" })} : ${frm.title}` + (frm.text.length ? `\n\t${frm.text}` : "") + (frm.activities ? `\n${"\t- " + frm.activities.split(";").join("\n\t- ")}` : "") + (id < arr.length - 1 ? "\n" : "")]),
           ),
           address: profile[0].address,
           phone: JSON.stringify([[profile[0].phone, "tel:" + profile[0].phone.replace(/\s/g, "")]]),
@@ -99,11 +83,7 @@ export class DesignerService {
     }));
   };
   exportTemplate = () => {
-    const url = URL.createObjectURL(
-      new Blob([JSON.stringify(this.designer.getTemplate())], {
-        type: "application/json",
-      }),
-    );
+    const url = URL.createObjectURL(new Blob([JSON.stringify(this.designer.getTemplate())], { type: "application/json" }));
     const link = document.createElement("a");
     link.href = url;
     link.download = `template.json`;
@@ -113,12 +93,7 @@ export class DesignerService {
   import = (file: File) => {
     const fileReader = new FileReader();
     fileReader.readAsDataURL(file);
-    fileReader.onloadend = (readerEvent: ProgressEvent<FileReader>) =>
-      this.designer.updateTemplate(
-        Object.assign(cloneDeep(this.designer.getTemplate()), {
-          basePdf: readerEvent.target!.result!,
-        }),
-      );
+    fileReader.onloadend = (readerEvent: ProgressEvent<FileReader>) => this.designer.updateTemplate(Object.assign(cloneDeep(this.designer.getTemplate()), { basePdf: readerEvent.target!.result! }));
   };
   importTemplate = (file: File) => {
     const fileReader = new FileReader();
@@ -126,31 +101,24 @@ export class DesignerService {
     fileReader.onloadend = (readerEvent: ProgressEvent<FileReader>) => this.designer.updateTemplate(JSON.parse(readerEvent.target!.result!.toString()));
   };
   init = async (containerId: string) => {
-    this.designer = new Designer({
-      domContainer: document.getElementById(containerId)!,
-      template: await this.getTemplate(),
-      plugins: plugins,
-      options: { font: fonts },
-    });
+    this.designer = new Designer({ domContainer: document.getElementById(containerId)!, template: await this.getTemplate(), plugins: plugins, options: { font: fonts } });
     this.designer.onChangeTemplate(() => {
       clearTimeout(this.timer);
       this.timer = setTimeout(() => this.save(true), 10000);
     });
   };
-  save = async (auto = false) => {
-    const template = this.designer.getTemplate();
+  save = async (auto: boolean = false) => {
+    let template = this.designer.getTemplate();
     template.basePdf = this.blank.basePdf;
     try {
-      await setDoc(doc(this.db, "data", "template"), {
-        template: JSON.stringify(template),
-      });
+      await setDoc(doc(this.db, "data", "template"), { template: JSON.stringify(template) });
       this.toastService.success("Succès", `Sauvegarde${auto ? " automatique" : ""} effectuée`);
     } catch (error) {
       this.toastService.error("Erreur", `Sauvegarde${auto ? " automatique" : ""} échouée`);
       console.error(error);
     }
   };
-  private getTemplate = async (): Promise<Template> => await getDoc(doc(this.db, "data", "template")).then(document => (document.exists() ? JSON.parse(document.data()["template"]) : this.blank) as Template);
+  private getTemplate = async (): Promise<Template> => await getDoc(doc(this.db, "data", "template")).then(document => (document.exists() ? JSON.parse(document.data()!["template"]) : this.blank) as Template);
 }
 const convertForPdfLayoutProps = ({ schema, pageHeight, applyRotateTranslate = true }: { applyRotateTranslate?: boolean; pageHeight: number; schema: Schema }) => {
   const { width: mmWidth, height: mmHeight, position, rotate, opacity } = schema;
@@ -166,21 +134,12 @@ const convertForPdfLayoutProps = ({ schema, pageHeight, applyRotateTranslate = t
     // The UI performs rotation around the objects center point (the pivot point below),
     // pdflib rotates around the bottom left corner of the object.
     // We must therefore adjust the X and Y by rotating the bottom left corner by this pivot point.
-    const pivotPoint = {
-      x: x + width / 2,
-      y: pageHeight - mm2pt(mmY) - height / 2,
-    };
+    const pivotPoint = { x: x + width / 2, y: pageHeight - mm2pt(mmY) - height / 2 };
     const rotatedPoint = rotatePoint({ x, y }, pivotPoint, rotateDegrees);
     x = rotatedPoint.x;
     y = rotatedPoint.y;
   }
-  return {
-    position: { x, y },
-    height: height,
-    width: width,
-    rotate: degrees(rotateDegrees),
-    opacity,
-  };
+  return { position: { x, y }, height: height, width: width, rotate: degrees(rotateDegrees), opacity };
 };
 const rotatePoint = (point: { x: number; y: number }, pivot: { x: number; y: number }, angleDegrees: number): { x: number; y: number } => {
   const angleRadians = degreesToRadians(angleDegrees);
@@ -212,11 +171,7 @@ const link: Plugin<LinkSchema> = {
       width,
       height,
       position: { x, y },
-    } = convertForPdfLayoutProps({
-      schema,
-      pageHeight,
-      applyRotateTranslate: false,
-    });
+    } = convertForPdfLayoutProps({ schema, pageHeight, applyRotateTranslate: false });
     const values: string[][] = JSON.parse(value);
     page.node.addAnnot(
       pdfDoc.context.register(
@@ -228,68 +183,23 @@ const link: Plugin<LinkSchema> = {
           // border color
           // C: [0, 0, 1],
           // URI action
-          A: {
-            Type: "Action",
-            S: "URI",
-            URI: PDFString.of(values[0][1]),
-            target: "_blank",
-          },
+          A: { Type: "Action", S: "URI", URI: PDFString.of(values[0][1]), target: "_blank" },
         }),
       ),
     );
-    const renderArgs = {
-      value: values[0][0],
-      pdfDoc: pdfDoc,
-      schema,
-      page: page,
-      ...rest,
-    };
+    const renderArgs = { value: values[0][0], pdfDoc: pdfDoc, schema, page: page, ...rest };
 
     await text.pdf(renderArgs);
   },
-  propPanel: {
-    schema: text.propPanel.schema,
-    defaultSchema: {
-      ...text.propPanel.defaultSchema,
-      rotate: undefined,
-      type: "link",
-      url: "",
-    },
-  },
+  propPanel: { schema: text.propPanel.schema, defaultSchema: { ...text.propPanel.defaultSchema, rotate: undefined, type: "link", url: "" } },
   icon: createSvgStr(Link),
 };
-const plugins = {
-  Text: text,
-  Link: link,
-  Paragraph: multiVariableText,
-  Table: table,
-  Line: line,
-  Rectangle: rectangle,
-  Ellipse: ellipse,
-  Image: image,
-  SVG: svg,
-  DateTime: dateTime,
-  Date: date,
-  Time: time,
-};
+const plugins = { Text: text, Link: link, Paragraph: multiVariableText, Table: table, Line: line, Rectangle: rectangle, Ellipse: ellipse, Image: image, SVG: svg, DateTime: dateTime, Date: date, Time: time };
 const fonts: Font = {
-  Roboto: {
-    data: "https://fonts.cdnfonts.com/s/12165/Roboto-Regular.woff",
-    fallback: true,
-  },
-  "Roboto thin": {
-    data: "https://fonts.cdnfonts.com/s/12165/Roboto-Thin.woff",
-  },
-  "Roboto light": {
-    data: "https://fonts.cdnfonts.com/s/12165/Roboto-Light.woff",
-  },
-  "Roboto medium": {
-    data: "https://fonts.cdnfonts.com/s/12165/Roboto-Medium.woff",
-  },
-  "Roboto bold": {
-    data: "https://fonts.cdnfonts.com/s/12165/Roboto-Bold.woff",
-  },
-  "Roboto black": {
-    data: "https://fonts.cdnfonts.com/s/12165/Roboto-Black.woff",
-  },
+  Roboto: { data: "https://fonts.cdnfonts.com/s/12165/Roboto-Regular.woff", fallback: true },
+  "Roboto thin": { data: "https://fonts.cdnfonts.com/s/12165/Roboto-Thin.woff" },
+  "Roboto light": { data: "https://fonts.cdnfonts.com/s/12165/Roboto-Light.woff" },
+  "Roboto medium": { data: "https://fonts.cdnfonts.com/s/12165/Roboto-Medium.woff" },
+  "Roboto bold": { data: "https://fonts.cdnfonts.com/s/12165/Roboto-Bold.woff" },
+  "Roboto black": { data: "https://fonts.cdnfonts.com/s/12165/Roboto-Black.woff" },
 };

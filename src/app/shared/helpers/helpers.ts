@@ -5,14 +5,14 @@ export const handleError = (error, override?) => {
   return override ?? false;
 };
 export namespace sha1 {
-  const POW_2_24 = Math.pow(2, 24);
+  var POW_2_24 = Math.pow(2, 24);
 
-  const POW_2_32 = Math.pow(2, 32);
+  var POW_2_32 = Math.pow(2, 32);
 
   function hex(n: number): string {
-    let s = "",
+    var s = "",
       v: number;
-    for (let i = 7; i >= 0; --i) {
+    for (var i = 7; i >= 0; --i) {
       v = (n >>> (i << 2)) & 0xf;
       s += v.toString(16);
     }
@@ -33,7 +33,7 @@ export namespace sha1 {
       return this.bytes[index] * POW_2_24 + ((this.bytes[index + 1] << 16) | (this.bytes[index + 2] << 8) | this.bytes[index + 3]);
     }
     set(index: number, value: number) {
-      const high = Math.floor(value / POW_2_24),
+      var high = Math.floor(value / POW_2_24),
         rest = value - high * POW_2_24;
       index <<= 2;
       this.bytes[index] = high;
@@ -45,30 +45,30 @@ export namespace sha1 {
 
   function string2ArrayBuffer(s: string): ArrayBuffer {
     s = s.replace(/[\u0080-\u07ff]/g, function (c: string) {
-      const code = c.charCodeAt(0);
+      var code = c.charCodeAt(0);
       return String.fromCharCode(0xc0 | (code >> 6), 0x80 | (code & 0x3f));
     });
     s = s.replace(/[\u0080-\uffff]/g, function (c: string) {
-      const code = c.charCodeAt(0);
+      var code = c.charCodeAt(0);
       return String.fromCharCode(0xe0 | (code >> 12), 0x80 | ((code >> 6) & 0x3f), 0x80 | (code & 0x3f));
     });
-    const n = s.length,
+    var n = s.length,
       array = new Uint8Array(n);
-    for (let i = 0; i < n; ++i) {
+    for (var i = 0; i < n; ++i) {
       array[i] = s.charCodeAt(i);
     }
     return array.buffer;
   }
 
   export function hash(bufferOrString: any): string {
-    let source: ArrayBuffer;
+    var source: ArrayBuffer;
     if (bufferOrString instanceof ArrayBuffer) {
-      source = bufferOrString;
+      source = <ArrayBuffer>bufferOrString;
     } else {
       source = string2ArrayBuffer(String(bufferOrString));
     }
 
-    let h0 = 0x67452301,
+    var h0 = 0x67452301,
       h1 = 0xefcdab89,
       h2 = 0x98badcfe,
       h3 = 0x10325476,

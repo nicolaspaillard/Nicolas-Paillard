@@ -1,16 +1,22 @@
-import { Component, inject, OnDestroy, OnInit, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { CommonModule } from "@angular/common";
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { User } from "@angular/fire/auth";
-import { MenuItem } from "@openng/optimus-ui/api";
-import { ButtonModule } from "@openng/optimus-ui/button";
-import { FileUploadHandlerEvent, FileUploadModule } from "@openng/optimus-ui/fileupload";
-import { SplitButton } from "@openng/optimus-ui/splitbutton";
 import { AuthService } from "@services/auth.service";
 import { DesignerService } from "@services/designer.service";
+import { MenuItem } from "primeng/api";
+import { ButtonModule } from "primeng/button";
+import { FileUploadHandlerEvent, FileUploadModule } from "primeng/fileupload";
+import { SplitButton } from "primeng/splitbutton";
 
 @Component({
   selector: "app-designer",
-  imports: [ButtonModule, FileUploadModule, SplitButton],
+  imports: [ButtonModule, FileUploadModule, SplitButton, CommonModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: "./designer.component.html",
 })
 export class DesignerComponent implements OnInit, OnDestroy {
@@ -28,12 +34,18 @@ export class DesignerComponent implements OnInit, OnDestroy {
     {
       label: "Importer modèle",
       icon: "pi pi-upload",
-      command: () => document.querySelector<HTMLElement>("#upload-model button")!.click(),
+      command: () =>
+        (
+          document.querySelector("#upload-model button")! as HTMLElement
+        ).click(),
     },
     {
       label: "Importer template",
       icon: "pi pi-upload",
-      command: () => document.querySelector<HTMLElement>("#upload-template button")!.click(),
+      command: () =>
+        (
+          document.querySelector("#upload-template button")! as HTMLElement
+        ).click(),
     },
     {
       label: "Télécharger",
@@ -46,21 +58,20 @@ export class DesignerComponent implements OnInit, OnDestroy {
       command: () => this.export(),
     },
   ];
-  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
-  private authService = inject(AuthService);
-  private designerService = inject(DesignerService);
-
-  constructor() {
-    this.authService
-      .user()
-      .pipe(takeUntilDestroyed())
-      .subscribe(user => this.user.set(user ? { ...user } : undefined));
+  user: { admin: boolean; user: User } | undefined;
+  constructor(
+    private authService: AuthService,
+    private designerService: DesignerService,
+  ) {
+    this.authService.user().subscribe((user) => (this.user = user));
   }
   clear = () => this.designerService.clear();
   export = () => this.designerService.export({ editing: true });
   exportTemplate = () => this.designerService.exportTemplate();
-  import = (event: FileUploadHandlerEvent) => this.designerService.import(event.files[0]);
-  importTemplate = (event: FileUploadHandlerEvent) => this.designerService.importTemplate(event.files[0]);
+  import = (event: FileUploadHandlerEvent) =>
+    this.designerService.import(event.files[0]);
+  importTemplate = (event: FileUploadHandlerEvent) =>
+    this.designerService.importTemplate(event.files[0]);
   load = () => this.designerService.init("container");
   ngOnDestroy() {
     this.designerService.destroy();
