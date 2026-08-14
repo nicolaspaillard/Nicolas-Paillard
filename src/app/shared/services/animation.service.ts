@@ -7,7 +7,7 @@ export interface Step {
   route?: string;
 }
 export interface Animation {
-  callback?: Function;
+  callback?: () => void;
   steps: Step[];
 }
 

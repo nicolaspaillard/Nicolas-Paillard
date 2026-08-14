@@ -1,7 +1,7 @@
 <p-dialog [(visible)]="isPrompting" [modal]="true" [dismissableMask]="true" header="Générer un paragraphe">
   <div class="flex flex-col gap-2 h-full">
     <div class="p-textarea grow overflow-scroll flex flex-col *:not-first:pt-3" id="conversation">
-      @for (message of chat; track $index) {
+      @for (message of chat(); track $index) {
         <div class="flex flex-col">
           @if (message.ai) {
             <div class="flex gap-2 items-center">
@@ -16,13 +16,13 @@
       }
       @if (isThinking) {
         <div class="px-4 py-2.5 rounded-[22px] w-fit" #response [class]="'bg-[#323232d9] whitespace-pre-line'">
-          <img class="h-4" src="/assets/images/typing.gif" />
+          <img class="h-4" alt="typing animation" src="/assets/images/typing.gif" />
         </div>
       }
     </div>
     <p-inputGroup>
       <input #prompt pInputText placeholder="Prompt" />
-      <button [disabled]="!prompt.value || isThinking" [loading]="isThinking" (click)="this.prompt(prompt.value); prompt.value = ''" pButton label="Discuter"></button>
+      <p-button [disabled]="!prompt.value || isThinking" [loading]="isThinking" (onClick)="this.prompt(prompt.value); prompt.value = ''">Discuter</p-button>
     </p-inputGroup>
   </div>
 </p-dialog>

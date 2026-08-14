@@ -1,6 +1,7 @@
-import { Component, inject, input, model } from "@angular/core";
+import { Component, inject, input, model, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormGroup, ɵInternalFormsSharedModule } from "@angular/forms";
+import { ApiError } from "@google/genai";
 import { ButtonModule } from "@openng/optimus-ui/button";
 import { DialogModule } from "@openng/optimus-ui/dialog";
 import { InputGroupModule } from "@openng/optimus-ui/inputgroup";
@@ -16,7 +17,7 @@ import { PromptService } from "@services/prompt.service";
   styles: ``,
 })
 export class PromptComponent {
-  chat: { ai: boolean; message: string; model?: string }[] = [];
+  chat = signal<{ ai: boolean; message: string; model?: string }[]>([]);
   field = input<string>("");
   form = model<FormGroup>();
   isPrompting = model<boolean>(false);
@@ -45,25 +46,19 @@ export class PromptComponent {
     });
     this.isPrompting.update(() => false);
   };
-  prompt = async (prompt: string, model?: string) => {
+  prompt = async (prompt: string) => {
     const conversation = document.getElementById("conversation")!;
     const scroll = () =>
       setTimeout(() => {
         conversation.scrollTop = conversation.scrollHeight;
       }, 100);
-    this.chat.push({ ai: false, message: prompt });
+    this.chat.set([...this.chat(), { ai: false, message: prompt }]);
     this.isThinking = true;
     scroll();
     await this.promptService
       .prompt(prompt)
-      .then(response =>
-        this.chat.push({
-          ai: true,
-          message: response.text,
-          model: response.model,
-        }),
-      )
-      .catch(error => this.chat.push({ ai: true, message: error.message }))
+      .then(response => this.chat.set([...this.chat(), { ai: true, message: response.text, model: response.model }]))
+      .catch(error => this.chat.set([...this.chat(), { ai: true, message: (error as ApiError).message }]))
       .finally(() => {
         this.isThinking = false;
         scroll();

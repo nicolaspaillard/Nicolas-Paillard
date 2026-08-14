@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnDestroy, inject } from "@angular/core";
+import { Component, OnDestroy, inject, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { SafeHtmlPipe } from "@helpers/safehtml.pipe";
 import { ButtonModule } from "@openng/optimus-ui/button";
@@ -13,20 +13,20 @@ import { Subscription } from "rxjs";
 })
 export class AnimationComponent implements OnDestroy {
   animationSubscription: Subscription;
-  callback?: Function;
+  callback?: () => void;
   interval: NodeJS.Timeout;
-  isAnimationShown = false;
-  text: string[] = [];
-  private animationService = inject(AnimationService);
+  isAnimationShown = signal<boolean>(false);
+  text = signal<string[]>([]);
   private router = inject(Router);
 
   constructor() {
-    this.animationSubscription = this.animationService.animations().subscribe(animation => this.animate(animation));
+    const animationService = inject(AnimationService);
+    this.animationSubscription = animationService.animations().subscribe(animation => this.animate(animation));
   }
   animate = (animation: Animation) => {
     this.callback = animation.callback;
-    this.isAnimationShown = true;
-    this.text = [];
+    this.isAnimationShown.set(true);
+    this.text.set([]);
     let step = 0,
       line = 0;
     this.interval = setInterval(
@@ -38,9 +38,9 @@ export class AnimationComponent implements OnDestroy {
           step++;
           line = 0;
         } else {
-          if (animation.steps[step].route && line === 0 && this.router.url != "/designer") this.router.navigate([animation.steps[step].route]);
-          if (line === 0 && step > 0) this.text.push("<br>");
-          this.text.push(animation.steps[step].lines[line]);
+          if (animation.steps[step].route && line === 0 && this.router.url != "/designer") this.router.navigate([animation.steps[step].route]).catch(err => console.error(err));
+          if (line === 0 && step > 0) this.text.set([...this.text(), "<br>"]);
+          this.text.set([...this.text(), animation.steps[step].lines[line]]);
           document.getElementById("animation-main")!.scrollTop = 99999999;
           line++;
         }
@@ -50,7 +50,7 @@ export class AnimationComponent implements OnDestroy {
   };
   finish = () => {
     clearInterval(this.interval);
-    this.isAnimationShown = false;
+    this.isAnimationShown.set(false);
     if (this.callback) this.callback();
   };
   ngOnDestroy() {

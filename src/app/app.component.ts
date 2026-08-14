@@ -27,7 +27,7 @@ import { Matrix } from "@themes/matrix.preset";
 import { forkJoin, map, mergeMap, Observable, of, pipe } from "rxjs";
 
 const combined: AuthPipe = pipe(
-  mergeMap(user => (user ? forkJoin([loggedIn(of(user)) as Observable<boolean>, customClaims(of(user))]) : of([false, {}] as [boolean, { admin?: boolean }]))),
+  mergeMap(user => (user ? forkJoin([loggedIn(of(user)) as Observable<boolean>, customClaims(of(user)) as Observable<{ admin?: boolean }>]) : of([false, {}] as [boolean, { admin?: boolean }]))),
   map(([isLoggedIn, claims]: [boolean, { admin?: boolean }]) => (isLoggedIn && claims.admin ? true : false)),
 );
 
@@ -80,6 +80,8 @@ export const routes: Routes = [
   { path: "**", redirectTo: "" },
 ];
 
+// TODO update content with experiences on projects
+
 @Component({
   selector: "app-root",
   // animations: [trigger("routeAnimations", [transition(":increment", slideTo("right")), transition(":decrement", slideTo("left"))])],
@@ -87,7 +89,7 @@ export const routes: Routes = [
   templateUrl: "./app.component.html",
 })
 export class AppComponent implements OnInit {
-  enableMatrix = false;
+  enableMatrix = signal<boolean>(false);
   formReset = new FormGroup(
     {
       password: new FormControl("", [control => Validators.required(control), Validators.minLength(8), Validators.maxLength(4096), Validators.pattern(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$ %^&*-])/)]),
@@ -107,15 +109,15 @@ export class AppComponent implements OnInit {
     },
     { validators: CustomValidators.matchFields("password", "passwordrepeat") },
   );
-  isResetShown = false;
-  isResetting = false;
-  isResumeShown = false;
-  isSending = false;
-  isSigninShown = false;
-  isSigningIn = false;
-  isSigningUp = false;
-  isSignupShown = false;
-  isTransitioning = false;
+  isResetShown = signal<boolean>(false);
+  isResetting = signal<boolean>(false);
+  isResumeShown = signal<boolean>(false);
+  isSending = signal<boolean>(false);
+  isSigninShown = signal<boolean>(false);
+  isSigningIn = signal<boolean>(false);
+  isSigningUp = signal<boolean>(false);
+  isSignupShown = signal<boolean>(false);
+  isTransitioning = signal<boolean>(false);
   params: Params = {};
   resume: SafeUrl;
   routes: Route[] = routes.filter(route => route.path && route.data);
@@ -136,10 +138,10 @@ export class AppComponent implements OnInit {
         this.downloadCV();
         break;
       case "login":
-        this.isSigninShown = true;
+        this.isSigninShown.set(true);
         break;
       case "reset":
-        this.isResetShown = true;
+        this.isResetShown.set(true);
         break;
     }
     this.authService
@@ -148,8 +150,9 @@ export class AppComponent implements OnInit {
       .subscribe(user => this.user.set(user ? { ...user } : undefined));
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
+        // TODO animations
         // this.isTransitioning = true;
-        document.getElementById("router-container")!.scrollTop = 0;
+        // document.getElementById("router-container")!.scrollTop = 0;
         // setTimeout(() => (this.isTransitioning = false), 600);
       }
       // if (event instanceof NavigationEnd) {
@@ -158,7 +161,7 @@ export class AppComponent implements OnInit {
   }
   animate = () => {
     clearInterval(this.interval);
-    if (this.enableMatrix) {
+    if (this.enableMatrix()) {
       const canvas: HTMLCanvasElement = document.querySelector("canvas")!;
       const context: CanvasRenderingContext2D = canvas.getContext("2d")!;
       context.reset();
@@ -197,71 +200,82 @@ export class AppComponent implements OnInit {
     }
   };
   applyPreset = () => {
-    usePreset(this.enableMatrix ? Matrix : Amber);
+    usePreset(this.enableMatrix() ? Matrix : Amber);
     this.animate();
   };
   downloadCV = () => {
-    this.designerService.export({ editing: false }).then(res => {
-      this.resume = this.sanitizer.bypassSecurityTrustResourceUrl(res.url);
-      if (res.steps.length)
-        this.animationService.animate({
-          steps: res.steps,
-          callback: () => (this.isResumeShown = true),
-        });
-    });
+    this.designerService
+      .export({ editing: false })
+      .then(res => {
+        this.resume = this.sanitizer.bypassSecurityTrustResourceUrl(res.url);
+        if (res.steps.length)
+          this.animationService.animate({
+            steps: res.steps,
+            callback: () => this.isResumeShown.set(true),
+          });
+      })
+      .catch(err => console.error(err));
   };
   ngOnInit() {
     this.animate();
   }
-  prepareRoute = (outlet: RouterOutlet) => outlet && outlet.activatedRouteData && outlet.activatedRouteData["animation"];
   reset = () => {
-    this.isResetting = true;
-    this.authService.reset(this.params["oobCode"], this.formReset.controls.password.value!).then(result => {
-      this.isResetting = false;
-      if (result) {
-        this.toastService.success("Réinitialisation réussie", "Votre mot de passe à bien été réinitialisé, vous pouvez à présent vous connecter");
-        this.formSignin.controls.password.setValue(this.formReset.controls.password.value);
-        this.isResetShown = false;
-        this.isSigninShown = true;
-      } else this.toastService.error("Échec de la réinitialisation", "Une erreur est survenue lors de la réinitialisation du mot de passe");
-    });
+    this.isResetting.set(true);
+    this.authService
+      .reset(this.params["oobCode"] as string, this.formReset.controls.password.value!)
+      .then(result => {
+        this.isResetting.set(false);
+        if (result) {
+          this.toastService.success("Réinitialisation réussie", "Votre mot de passe à bien été réinitialisé, vous pouvez à présent vous connecter");
+          this.formSignin.controls.password.setValue(this.formReset.controls.password.value);
+          this.isResetShown.set(false);
+          this.isSigninShown.set(true);
+        } else this.toastService.error("Échec de la réinitialisation", "Une erreur est survenue lors de la réinitialisation du mot de passe");
+      })
+      .catch(err => console.error(err));
   };
   send = () => {
     if (!this.formSignin.controls.email.invalid) {
-      this.isSending = true;
-      this.authService.send(this.formSignin.controls.email.value!).then(result => {
-        this.isSending = false;
-        if (result) this.toastService.success("Envoi effectué", `Le lien de réinitialisation de votre mot de passe vient de vous être envoyé`);
-        else this.toastService.error("Échec de l'envoi", `Une erreur est survenue lors de l'envoi`);
-      });
+      this.isSending.set(true);
+      this.authService
+        .send(this.formSignin.controls.email.value!)
+        .then(result => {
+          this.isSending.set(false);
+          if (result) this.toastService.success("Envoi effectué", `Le lien de réinitialisation de votre mot de passe vient de vous être envoyé`);
+          else this.toastService.error("Échec de l'envoi", `Une erreur est survenue lors de l'envoi`);
+        })
+        .catch(err => console.error(err));
     } else {
       this.formSignin.controls.email.markAsTouched();
       this.formSignin.controls.email.setErrors({ required: true });
     }
   };
   signin = () => {
-    this.isSigningIn = true;
+    this.isSigningIn.set(true);
     this.authService
       .signin(this.formSignin.value.email!, this.formSignin.value.password!)
       .then((valid: boolean) => {
         if (!valid) this.formSignin.setErrors({ invalid: true });
-        else this.isSigninShown = false;
-        this.isSigningIn = false;
+        else this.isSigninShown.set(false);
+        this.isSigningIn.set(false);
       })
       .catch(err => console.error(err));
   };
   signout = () => this.authService.signout().then(() => this.router.navigate([""]));
   signup = () => {
-    this.isSigningUp = true;
-    this.authService.signup(this.formSignup.value.email!, this.formSignup.value.password!).then(result => {
-      if (result === true) this.isSignupShown = false;
-      else {
-        this.formSignup.controls[result[0]].markAsTouched();
-        this.formSignup.controls[result[0]].markAsDirty();
-        this.formSignup.controls[result[0]].setErrors(result[1]);
-      }
-      this.isSigningUp = false;
-    });
+    this.isSigningUp.set(true);
+    this.authService
+      .signup(this.formSignup.value.email!, this.formSignup.value.password!)
+      .then(result => {
+        if (typeof result === "boolean") this.isSignupShown.set(false);
+        else {
+          this.formSignup.controls[result[0]].markAsTouched();
+          this.formSignup.controls[result[0]].markAsDirty();
+          this.formSignup.controls[result[0]].setErrors(result[1]);
+        }
+        this.isSigningUp.set(false);
+      })
+      .catch(err => console.error(err));
   };
 }
 

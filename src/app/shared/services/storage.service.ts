@@ -4,7 +4,6 @@ import { Injectable } from "@angular/core";
   providedIn: "root",
 })
 export class StorageService {
-  constructor() {}
-  setMatrix = (enabled: boolean) => localStorage.setItem("matrix", enabled.toString());
   getMatrix = () => localStorage.getItem("matrix") === "true";
+  setMatrix = (enabled: boolean) => localStorage.setItem("matrix", enabled.toString());
 }

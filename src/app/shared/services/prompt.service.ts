@@ -7,7 +7,7 @@ import { ApiError, GoogleGenAI, Model } from "@google/genai";
 })
 export class PromptService {
   private db: Firestore = inject(Firestore);
-  getAi = async () => new GoogleGenAI({ apiKey: (await getDoc(doc(this.db, "keys", "gemini"))).get("api_key") });
+  getAi = async () => new GoogleGenAI({ apiKey: (await getDoc(doc(this.db, "keys", "gemini"))).get("api_key") as string });
   getModels = async (): Promise<string[]> => {
     const ai = await this.getAi();
     // const models = (await ai.models.list({ config: { pageSize: 1000 } })).page.filter(model => {});
@@ -36,21 +36,20 @@ export class PromptService {
     let lastError: ApiError | undefined;
     for (const model of await this.getModels()) {
       try {
-        const response = ai.models.generateContent({
+        const response = await ai.models.generateContent({
           model: model,
           contents: prompt,
-          config: {
-            systemInstruction: "Tu parles exclusivement en français",
-          },
+          config: { systemInstruction: "Tu parles exclusivement en français" },
         });
-        return { model: model, text: (await response).text! };
-      } catch (err: any) {
-        const error: ApiError = JSON.parse(err.message)["error"];
-        console.log(err.status);
-        if (![429, 500, 502, 503, 504].includes(err.status)) throw error;
-        lastError = error;
+        return { model: model, text: response.text! };
+      } catch (err: unknown) {
+        if (!(err instanceof Error)) throw err;
+        const parsed = JSON.parse(err.message) as { error: ApiError };
+        const status = (err as { status?: number }).status;
+        if (!status || ![429, 500, 502, 503, 504].includes(status)) throw parsed.error;
+        lastError = parsed.error;
       }
     }
-    throw lastError;
+    throw lastError as ApiError;
   };
 }

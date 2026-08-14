@@ -18,6 +18,7 @@ bootstrapApplication(AppComponent, {
       routes,
       withPreloading(PreloadAllModules),
       withComponentInputBinding(),
+      // TODO view transitions
       // withViewTransitions(),
       withInMemoryScrolling({
         scrollPositionRestoration: "enabled",

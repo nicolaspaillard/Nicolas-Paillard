@@ -1,23 +1,10 @@
-<div
-  class="absolute top-0 right-0 bottom-0 left-0 z-20 flex items-center justify-center bg-black/50 p-5 opacity-0 transition-opacity"
-  [ngClass]="
-    isAnimationShown ? 'pointer-events-auto opacity-100' : 'pointer-events-none'
-  "
->
+<div class="absolute top-0 right-0 bottom-0 left-0 z-20 flex items-center justify-center bg-black/50 p-5 opacity-0 transition-opacity" [ngClass]="isAnimationShown() ? 'pointer-events-auto opacity-100' : 'pointer-events-none'">
   <div class="flex max-h-full max-w-full flex-col items-end gap-2">
-    <div
-      class="card flex h-[480px] max-h-full w-[720px] max-w-full bg-black p-5"
-    >
-      <div
-        class="h-full w-full overflow-x-hidden overflow-y-auto"
-        id="animation-main"
-      >
+    <div class="card flex h-120 max-h-full w-180 max-w-full bg-black p-5">
+      <div class="h-full w-full overflow-x-hidden overflow-y-auto" id="animation-main">
         <div class="flex h-auto w-full flex-col font-mono">
-          @for (line of text; track line) {
-            <span
-              class="w-full leading-none text-nowrap"
-              [innerHTML]="line | safeHtml"
-            ></span>
+          @for (line of text(); track line) {
+            <span class="w-full leading-none text-nowrap" [innerHTML]="line | safeHtml"></span>
           }
         </div>
       </div>

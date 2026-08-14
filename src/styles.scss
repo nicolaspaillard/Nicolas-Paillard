@@ -75,3 +75,8 @@ body {
     }
   }
 }
+
+/* TODO fix cleanup */
+.p-inputgroup > p-button > .p-button {
+  border-radius: 0;
+}
