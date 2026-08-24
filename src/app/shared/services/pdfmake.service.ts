@@ -105,7 +105,6 @@ export class PdfmakeService {
       pageSize: "A4",
       pageOrientation: "portrait",
       pageMargins: 0,
-      defaultStyle: { font: "Roboto" },
       content: [
         {
           columns: [
