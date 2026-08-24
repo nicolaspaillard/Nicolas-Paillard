@@ -10,7 +10,10 @@ import { Cloudinary } from "@cloudinary/url-gen/index";
 import { Step } from "@services/animation.service";
 import { CrudService } from "@services/crud.service";
 import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
 import { CanvasElement, Content, TDocumentDefinitions } from "pdfmake/interfaces";
+
+pdfMake.addVirtualFileSystem(pdfFonts);
 
 @Service()
 export class PdfmakeService {
