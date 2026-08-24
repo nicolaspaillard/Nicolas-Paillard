@@ -67,14 +67,14 @@ export class PdfmakeService {
     const colwidth = 30;
     const iconSize = 10;
     const iconCache = new Map<string, string>();
-    const getDeviconSvg = async (skl: Skill) => {
-      const folder = skl.icon.includes("dot-net") ? "dot-net" : skl.icon.split("-")[0];
-      const url = `https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${folder}/${skl.icon}.svg`;
+    const getDeviconSvg = async (skill: Skill) => {
+      const folder = skill.icon.includes("dot-net") ? "dot-net" : skill.icon.split("-")[0];
+      const url = `https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${folder}/${skill.icon}.svg`;
       const res = await fetch(url);
       return res.text();
     };
     await Promise.all(skills.filter(skill => skill.icon).map(async skill => iconCache.set(skill.icon, await getDeviconSvg(skill))));
-    function generateDotsCanvas(value: number, color = "black", bgColor = "white"): CanvasElement[] {
+    const generateDotsCanvas = (value: number, color = "black", bgColor = "white"): CanvasElement[] => {
       const clamped = Math.max(0.5, Math.min(5, Math.round(value * 2) / 2));
       const radius = 3;
       const gap = 1.5;
@@ -103,7 +103,7 @@ export class PdfmakeService {
       }
 
       return shapes;
-    }
+    };
     const doc: TDocumentDefinitions = {
       pageSize: "A4",
       pageOrientation: "portrait",
