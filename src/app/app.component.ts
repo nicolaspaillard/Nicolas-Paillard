@@ -135,17 +135,17 @@ export class AppComponent implements OnInit {
   private toastService = inject(ToastService);
   constructor() {
     this.route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => (this.params = params));
-    switch (location.pathname.split("/").pop()) {
-      case "cv":
-        this.downloadCV();
-        break;
-      case "login":
-        this.isSigninShown.set(true);
-        break;
-      case "reset":
-        this.isResetShown.set(true);
-        break;
-    }
+    // switch (location.pathname.split("/").pop()) {
+    //   case "cv":
+    //     this.downloadCV();
+    //     break;
+    //   case "login":
+    //     this.isSigninShown.set(true);
+    //     break;
+    //   case "reset":
+    //     this.isResetShown.set(true);
+    //     break;
+    // }
     this.authService
       .user()
       .pipe(takeUntilDestroyed())
