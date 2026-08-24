@@ -12,7 +12,7 @@
         {{ experience().start | date: "MM/yyyy" }} -
         {{ experience().end | date: "MM/yyyy" }}
       } @else {
-        {{ experience().start | date: "dd/MM/yyyy" }}
+        Depuis {{ experience().start | date: "MM/yyyy" }}
       }
     </i>
     @if (experience().company) {

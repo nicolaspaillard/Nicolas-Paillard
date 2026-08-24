@@ -1,11 +1,11 @@
 // import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
-import { Component, inject, OnInit, signal } from "@angular/core";
+import { Component, inject, isDevMode, OnInit, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { AuthGuard, AuthPipe, customClaims, loggedIn } from "@angular/fire/auth-guard";
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
-import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
+import { SafeUrl } from "@angular/platform-browser";
 import { ActivatedRoute, NavigationStart, Params, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
 import { AnimationComponent } from "@components/animation/animation.component";
 import { usePreset } from "@openng/optimus-ui-themes";
@@ -20,7 +20,7 @@ import { ToggleSwitchModule } from "@openng/optimus-ui/toggleswitch";
 import { TooltipModule } from "@openng/optimus-ui/tooltip";
 import { AnimationService } from "@services/animation.service";
 import { AuthService } from "@services/auth.service";
-import { DesignerService } from "@services/designer.service";
+import { PdfmakeService } from "@services/pdfmake.service";
 import { ToastService } from "@services/toast.service";
 import { Amber } from "@themes/amber.preset";
 import { Matrix } from "@themes/matrix.preset";
@@ -56,12 +56,15 @@ export const routes: Routes = [
     loadComponent: () => import("@routes/projects/projects.component").then(m => m.ProjectsComponent),
     data: { animation: 3 },
   },
-  {
-    path: "designer",
-    title: "Designer",
-    loadComponent: () => import("@routes/designer/designer.component").then(m => m.DesignerComponent),
-    data: { animation: 4 },
-  },
+  isDevMode()
+    ? {
+        path: "pdfmake",
+        title: "PdfMake",
+        loadComponent: () => import("@routes/pdfmake/pdfmake.component").then(m => m.PdfmakeComponent),
+        canActivate: [AuthGuard],
+        data: { animation: 4, authGuardPipe: () => combined },
+      }
+    : {},
   {
     path: "applications",
     title: "Candidatures",
@@ -109,6 +112,7 @@ export class AppComponent implements OnInit {
     },
     { validators: CustomValidators.matchFields("password", "passwordrepeat") },
   );
+  isGeneratingCV = signal<boolean>(false);
   isResetShown = signal<boolean>(false);
   isResetting = signal<boolean>(false);
   isResumeShown = signal<boolean>(false);
@@ -119,19 +123,17 @@ export class AppComponent implements OnInit {
   isSignupShown = signal<boolean>(false);
   isTransitioning = signal<boolean>(false);
   params: Params = {};
-  resume: SafeUrl;
+  resume = signal<SafeUrl>("");
   routes: Route[] = routes.filter(route => route.path && route.data);
   user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   private animationService = inject(AnimationService);
   private authService = inject(AuthService);
-  private designerService = inject(DesignerService);
   private interval: NodeJS.Timeout;
+  private pdfmakeService = inject(PdfmakeService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private sanitizer = inject(DomSanitizer);
   private toastService = inject(ToastService);
   constructor() {
-    this.resume = this.sanitizer.bypassSecurityTrustResourceUrl("");
     this.route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => (this.params = params));
     switch (location.pathname.split("/").pop()) {
       case "cv":
@@ -204,15 +206,18 @@ export class AppComponent implements OnInit {
     this.animate();
   };
   downloadCV = () => {
-    this.designerService
-      .export({ editing: false })
+    this.isGeneratingCV.set(true);
+    this.pdfmakeService
+      .generate()
       .then(res => {
-        this.resume = this.sanitizer.bypassSecurityTrustResourceUrl(res.url);
-        if (res.steps.length)
-          this.animationService.animate({
-            steps: res.steps,
-            callback: () => this.isResumeShown.set(true),
-          });
+        this.resume.set(res.url);
+        this.animationService.animate({
+          steps: res.steps,
+          callback: () => {
+            this.isResumeShown.set(true);
+            this.isGeneratingCV.set(false);
+          },
+        });
       })
       .catch(err => console.error(err));
   };

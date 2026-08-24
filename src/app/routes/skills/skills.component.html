@@ -53,10 +53,16 @@
       }
       <div class="md:col-span-2 flex gap-2">
         <div class="flex flex-col gap-2">
-          <label>
-            Titre
-            <input pInputText type="text" formControlName="title" />
-          </label>
+          <div class="flex gap-2">
+            <label for="title">
+              Titre
+              <input id="title" pInputText type="text" formControlName="title" />
+            </label>
+            <label for="level">
+              Niveau
+              <p-inputnumber id="level" [min]="1" [max]="5" [step]="0.5" [showButtons]="true" inputStyleClass="w-13" buttonLayout="horizontal" formControlName="level" />
+            </label>
+          </div>
           <label for="category">
             Catégorie
             <p-select id="category" [options]="items()" [editable]="true" formControlName="category" placeholder="Catégorie" optionLabel="title" optionValue="id" />

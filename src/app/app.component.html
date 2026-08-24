@@ -6,7 +6,7 @@
       <div class="flex gap-2">
         <p-button class="lg:hidden" [text]="true" [ngClass]="{ '[&>button]:border-primary!': menuShown.checked }" (onClick)="menuShown.checked = !menuShown.checked" icon="pi pi-bars"></p-button>
         <p-button [ngClass]="{ '[&>button]:border-none!': menuShown.checked }" [routerLinkActiveOptions]="{ exact: true }" [text]="true" routerLink="/" size="large" routerLinkActive="[&>button]:border-primary!" icon="pi pi-home"></p-button>
-        <p-button (onClick)="downloadCV()" size="large">CV</p-button>
+        <p-button [loading]="isGeneratingCV()" (onClick)="downloadCV()" size="large">CV</p-button>
         <input class="peer hidden" #menuShown type="checkbox" />
         <div class="hidden gap-2 overflow-hidden lg:flex">
           @for (route of routes; track route) {
@@ -229,5 +229,5 @@
   </form>
 </p-dialog>
 <p-dialog [(visible)]="isResumeShown" [modal]="true" [dismissableMask]="true" [resizable]="false" contentStyleClass="w-full! h-full!" styleClass="w-[calc(100%-(--spacing(10)))] h-[calc(100%-(--spacing(10)))] max-h-full!" header="C.V.">
-  <iframe class="w-full h-full" [src]="resume"></iframe>
+  <iframe class="w-full h-full" [src]="resume()"></iframe>
 </p-dialog>

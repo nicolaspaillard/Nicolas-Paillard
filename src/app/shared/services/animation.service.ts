@@ -16,8 +16,6 @@ export interface Animation {
 })
 export class AnimationService {
   private _animations = new Subject<Animation>();
-  animate = (animation: Animation) => {
-    this._animations.next(animation);
-  };
+  animate = (animation: Animation) => this._animations.next(animation);
   animations = (): Observable<Animation> => this._animations.pipe(takeUntilDestroyed());
 }

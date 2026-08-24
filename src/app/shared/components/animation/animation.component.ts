@@ -45,7 +45,7 @@ export class AnimationComponent implements OnDestroy {
           line++;
         }
       },
-      Math.random() * (150 - 100) + 100,
+      Math.random() * (200 - 100) + 100,
     );
   };
   finish = () => {
