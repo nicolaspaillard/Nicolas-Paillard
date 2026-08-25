@@ -1,3 +1,4 @@
+import { Timestamp } from "@angular/fire/firestore";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { Base } from "./base";
 export class Application extends Base {
@@ -13,11 +14,11 @@ export class Application extends Base {
   relaunchDate: Date;
   sector: string;
   type: "Annonce" | "Spontané";
-  constructor(application: Application) {
-    if (application.contactDate && !(application.contactDate instanceof Date)) application.contactDate = (application.contactDate as any).toDate();
-    if (application.relaunchDate && !(application.relaunchDate instanceof Date)) application.relaunchDate = (application.relaunchDate as any).toDate();
-    if (application.answerDate && !(application.answerDate instanceof Date)) application.answerDate = (application.answerDate as any).toDate();
-    if (!application.type) application.type = "Annonce";
+  constructor(application: Record<string, unknown>) {
+    if (application["contactDate"] && !(application["contactDate"] instanceof Date)) application["contactDate"] = (application["contactDate"] as Timestamp).toDate();
+    if (application["relaunchDate"] && !(application["relaunchDate"] instanceof Date)) application["relaunchDate"] = (application["relaunchDate"] as Timestamp).toDate();
+    if (application["answerDate"] && !(application["answerDate"] instanceof Date)) application["answerDate"] = (application["answerDate"] as Timestamp).toDate();
+    if (!application["type"]) application["type"] = "Annonce";
     super(application);
   }
 }

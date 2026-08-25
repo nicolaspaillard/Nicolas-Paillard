@@ -10,7 +10,7 @@ export class Profile extends Base {
   lastName: string;
   linkedin: string;
   phone: string;
-  constructor(profile: Profile) {
+  constructor(profile: Record<string, unknown>) {
     super(profile);
   }
 }

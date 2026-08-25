@@ -15,12 +15,12 @@ export class Project extends Base {
   skills: string[];
   start: Date;
   url: string;
-  constructor(project: Project) {
-    if (typeof project.activities === "string") project.activities = (project.activities as unknown as string).split(";");
-    if (!project.experience) project.experience = "";
-    if (!project.skills) project.skills = [];
-    if (project.start && !(project.start instanceof Date)) project.start = (project.start as Timestamp).toDate();
-    if (project.end && !(project.end instanceof Date)) project.end = (project.end as Timestamp).toDate();
+  constructor(project: Record<string, unknown>) {
+    if (typeof project["activities"] === "string") project["activities"] = project["activities"].split(";");
+    if (!project["experience"]) project["experience"] = "";
+    if (!project["skills"]) project["skills"] = [];
+    if (project["start"] && !(project["start"] instanceof Date)) project["start"] = (project["start"] as Timestamp).toDate();
+    if (project["end"] && !(project["end"] instanceof Date)) project["end"] = (project["end"] as Timestamp).toDate();
     super(project);
   }
 }

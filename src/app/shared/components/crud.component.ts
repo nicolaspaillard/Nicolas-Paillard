@@ -41,7 +41,7 @@ export class CrudComponent<T extends Base> {
   }
   open(item?: T) {
     this.isEditing.set(item ? true : false);
-    if (item) this.form.setValue(new this.crudService.type(item));
+    if (item) this.form.setValue(new this.crudService.type(item as Record<string, unknown>));
     else this.form.reset();
     this.isShown.set(true);
   }

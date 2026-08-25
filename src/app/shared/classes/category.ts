@@ -3,7 +3,7 @@ import { Base } from "./base";
 
 export class Category extends Base {
   rank: number;
-  constructor(category: Category) {
+  constructor(category: Record<string, unknown>) {
     super(category);
   }
 }

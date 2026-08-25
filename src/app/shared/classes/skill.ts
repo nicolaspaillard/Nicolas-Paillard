@@ -8,11 +8,11 @@ export class Skill extends Base {
   level: number;
   projects: string[];
   // rank: number;
-  constructor(skill: Skill) {
+  constructor(skill: Record<string, unknown>) {
     // if (!skill.rank) skill.rank = 0;
-    if (!skill.level) skill.level = 0;
-    if (!skill.experiences) skill.experiences = [];
-    if (!skill.projects) skill.projects = [];
+    if (!skill["level"]) skill["level"] = 0;
+    if (!skill["experiences"]) skill["experiences"] = [];
+    if (!skill["projects"]) skill["projects"] = [];
     super(skill);
   }
 }

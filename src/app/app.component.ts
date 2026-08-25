@@ -129,6 +129,7 @@ export class AppComponent implements OnInit {
   private authService = inject(AuthService);
   private interval: NodeJS.Timeout;
   private pdfmakeService = inject(PdfmakeService);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private toastService = inject(ToastService);
   constructor() {
@@ -223,22 +224,20 @@ export class AppComponent implements OnInit {
   }
   reset = () => {
     this.isResetting.set(true);
-    inject(ActivatedRoute)
-      .queryParams.pipe(takeUntilDestroyed())
-      .subscribe(params => {
-        this.authService
-          .reset(params["oobCode"] as string, this.formReset.controls.password.value!)
-          .then(result => {
-            this.isResetting.set(false);
-            if (result) {
-              this.toastService.success("Réinitialisation réussie", "Votre mot de passe à bien été réinitialisé, vous pouvez à présent vous connecter");
-              this.formSignin.controls.password.setValue(this.formReset.controls.password.value);
-              this.isResetShown.set(false);
-              this.isSigninShown.set(true);
-            } else this.toastService.error("Échec de la réinitialisation", "Une erreur est survenue lors de la réinitialisation du mot de passe");
-          })
-          .catch(err => console.error(err));
-      });
+    this.route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => {
+      this.authService
+        .reset(params["oobCode"] as string, this.formReset.controls.password.value!)
+        .then(result => {
+          this.isResetting.set(false);
+          if (result) {
+            this.toastService.success("Réinitialisation réussie", "Votre mot de passe à bien été réinitialisé, vous pouvez à présent vous connecter");
+            this.formSignin.controls.password.setValue(this.formReset.controls.password.value);
+            this.isResetShown.set(false);
+            this.isSigninShown.set(true);
+          } else this.toastService.error("Échec de la réinitialisation", "Une erreur est survenue lors de la réinitialisation du mot de passe");
+        })
+        .catch(err => console.error(err));
+    });
   };
   send = () => {
     if (!this.formSignin.controls.email.invalid) {

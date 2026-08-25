@@ -17,27 +17,52 @@ pdfMake.addVirtualFileSystem(pdfFonts);
 
 @Service()
 export class PdfmakeService {
-  private crudService = inject<CrudService<Skill>>(CrudService);
+  categories: Category[] = [];
+  experiences: Experience[] = [];
+  profiles: Profile[] = [];
+  sections: Section[] = [];
+  skills: Skill[] = [];
   private sanitizer = inject(DomSanitizer);
-
+  constructor() {
+    const crudService = inject<CrudService<Skill>>(CrudService);
+    crudService
+      .getData(Section, "sections", ["rank"])
+      .then(sections => (this.sections = sections))
+      .catch(err => console.error(err));
+    crudService
+      .getData(Experience, "experiences", ["start", "desc"])
+      .then(experiences => (this.experiences = experiences))
+      .catch(err => console.error(err));
+    crudService
+      .getData(Category, "categories", ["rank"])
+      .then(categories => (this.categories = categories))
+      .catch(err => console.error(err));
+    crudService
+      .getData(Skill, "skills", ["title"])
+      .then(skills => (this.skills = skills))
+      .catch(err => console.error(err));
+    crudService
+      .getData(Profile, "profile", ["lastName"])
+      .then(profiles => (this.profiles = profiles))
+      .catch(err => console.error(err));
+  }
   generate = async () => {
-    const [sections, experiences, categories, skills, profile] = [await this.crudService.getData(Section, "sections", ["rank"]), await this.crudService.getData(Experience, "experiences", ["start", "desc"]), await this.crudService.getData(Category, "categories", ["rank"]), await this.crudService.getData(Skill, "skills", ["title"]), await this.crudService.getData(Profile, "profile", ["lastName"])];
     const steps: Step[] = [
       {
         route: "home",
-        lines: ["Accueil", ...sections.map(section => `nicolaspaillard.fr/about# ` + section.text)],
+        lines: ["Accueil", ...this.sections.map(section => `nicolaspaillard.fr/about# ` + section.text)],
       },
       {
         route: "career",
-        lines: ["Expériences", ...experiences.filter(experience => experience.type === "Expérience").map(experience => `nicolaspaillard.fr/career# ` + experience.title)],
+        lines: ["Expériences", ...this.experiences.filter(experience => experience.type === "Expérience").map(experience => `nicolaspaillard.fr/career# ` + experience.title)],
       },
       {
         route: "career",
-        lines: ["Formations", ...experiences.filter(experience => experience.type === "Formation").map(formation => `nicolaspaillard.fr/career# ` + formation.title)],
+        lines: ["Formations", ...this.experiences.filter(experience => experience.type === "Formation").map(formation => `nicolaspaillard.fr/career# ` + formation.title)],
       },
       {
         route: "skills",
-        lines: ["Compétences", ...categories.map(category => `nicolaspaillard.fr/skills# ` + category.title)],
+        lines: ["Compétences", ...this.categories.map(category => `nicolaspaillard.fr/skills# ` + category.title)],
       },
     ];
     const profilePicture = await fetch(
@@ -73,7 +98,7 @@ export class PdfmakeService {
       const res = await fetch(url);
       return res.text();
     };
-    await Promise.all(skills.filter(skill => skill.icon).map(async skill => iconCache.set(skill.icon, await getDeviconSvg(skill))));
+    await Promise.all(this.skills.filter(skill => skill.icon).map(async skill => iconCache.set(skill.icon, await getDeviconSvg(skill))));
     const generateDotsCanvas = (value: number, color = "black", bgColor = "white"): CanvasElement[] => {
       const clamped = Math.max(0.5, Math.min(5, Math.round(value * 2) / 2));
       const radius = 3;
@@ -133,19 +158,19 @@ export class PdfmakeService {
                           width: pageWidth * (colwidth / 100) - margin - padding * 2,
                         },
                         { text: "Coordonnées", style: ["title2", "text3"] },
-                        { text: profile[0].address, style: "text4" },
-                        { text: profile[0].phone, link: "tel:" + profile[0].phone.replace(/\s/gm, ""), style: ["link", "text4"] },
-                        { text: profile[0].email, link: "mailto:" + profile[0].email, style: ["link", "text4"] },
-                        { text: profile[0].github, link: "https://" + profile[0].github, style: ["link", "text4"] },
-                        { text: profile[0].gitlab, link: "https://" + profile[0].gitlab, style: ["link", "text4"] },
-                        { text: profile[0].linkedin, link: "https://" + profile[0].linkedin, style: ["link", "text4"] },
+                        { text: this.profiles[0].address, style: "text4" },
+                        { text: this.profiles[0].phone, link: "tel:" + this.profiles[0].phone.replace(/\s/gm, ""), style: ["link", "text4"] },
+                        { text: this.profiles[0].email, link: "mailto:" + this.profiles[0].email, style: ["link", "text4"] },
+                        { text: this.profiles[0].github, link: "https://" + this.profiles[0].github, style: ["link", "text4"] },
+                        { text: this.profiles[0].gitlab, link: "https://" + this.profiles[0].gitlab, style: ["link", "text4"] },
+                        { text: this.profiles[0].linkedin, link: "https://" + this.profiles[0].linkedin, style: ["link", "text4"] },
                         { text: "CV généré via mon site", style: ["title2", "text3"] },
                         { text: "nicolaspaillard.fr", link: "https://nicolaspaillard.fr/cv", style: ["link", "text4"] },
                         { text: "Compétences", style: ["title2", "text3"] },
-                        ...categories.map((category, index) => ({
+                        ...this.categories.map((category, index) => ({
                           stack: [
                             { text: category.title, style: [index === 0 ? "" : "title3", "text4"], bold: true },
-                            ...skills
+                            ...this.skills
                               .filter(skill => skill.category == category.id)
                               .map((skill): Content => ({
                                 layout: {
@@ -173,11 +198,11 @@ export class PdfmakeService {
               width: 100 - colwidth + "%",
               margin: [padding, margin + padding, margin + padding, margin + padding],
               stack: [
-                { text: profile[0].firstName + " " + profile[0].lastName, style: ["title1", "text1"] },
-                { text: profile[0].title, alignment: "center", italics: true, style: ["text3"] },
-                { text: sections.map(section => section.text).join(" "), alignment: "justify", style: ["title3", "text4"] },
+                { text: this.profiles[0].firstName + " " + this.profiles[0].lastName, style: ["title1", "text1"] },
+                { text: this.profiles[0].title, alignment: "center", italics: true, style: ["text3"] },
+                { text: this.sections.map(section => section.text).join(" "), alignment: "justify", style: ["title3", "text4"] },
                 { text: "Expérience", style: ["title3", "text2", "header"] },
-                ...experiences
+                ...this.experiences
                   .filter(experience => experience.type === "Expérience")
                   .map((experience, index) => ({
                     stack: [
@@ -188,7 +213,7 @@ export class PdfmakeService {
                     ].filter(Boolean),
                   })),
                 { text: "Formation", style: ["title3", "text2", "header"] },
-                ...experiences
+                ...this.experiences
                   .filter(experience => experience.type === "Formation")
                   .map((experience, index) => ({
                     stack: [

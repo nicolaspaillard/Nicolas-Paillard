@@ -1,7 +1,7 @@
 export class Base {
   id: string;
   title: string;
-  constructor(item: any) {
+  constructor(item: Record<string, unknown>) {
     Object.assign(this, item);
   }
 }

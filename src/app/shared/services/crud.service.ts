@@ -1,6 +1,6 @@
 import { inject, Injectable, InjectionToken } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { addDoc, collection, deleteDoc, doc, FieldPath, Firestore, getDoc, getDocs, orderBy, OrderByDirection, query, setDoc, WhereFilterOp } from "@angular/fire/firestore";
+import { addDoc, collection, deleteDoc, doc, Firestore, getDoc, getDocs, orderBy, OrderByDirection, query, setDoc } from "@angular/fire/firestore";
 import { FormGroup } from "@angular/forms";
 import { ReplaySubject, Subject } from "rxjs";
 import { Base } from "../classes/base";
@@ -10,19 +10,19 @@ export interface ServiceConfig<T> {
   compareFn?: (a: T, b: T) => number;
   form: FormGroup;
   order: [string, OrderByDirection?];
-  type: new (...args: any[]) => T;
-  where?: [string | FieldPath, WhereFilterOp, any];
+  type: new (data: Record<string, unknown>) => T;
+  // where?: [string | FieldPath, WhereFilterOp];
 }
 
-export const SERVICE_CONFIG = new InjectionToken<ServiceConfig<any>>("sets parameters for crud service constructor", {
+export const SERVICE_CONFIG = new InjectionToken<ServiceConfig<unknown>>("sets parameters for crud service constructor", {
   providedIn: "root",
-  factory: () => ({}) as any,
+  factory: () => ({}) as ServiceConfig<unknown>,
 });
 
 @Injectable({ providedIn: "root" })
 export class CrudService<T extends Base> {
   form: FormGroup;
-  type: new (...args: any[]) => T;
+  type: new (data: Record<string, unknown>) => T;
   private __items: T[] = [];
   private _items: Subject<T[]> = new ReplaySubject(1);
   private collection: string;
