@@ -56,7 +56,7 @@ export class PdfmakeService {
     await this.ready;
     const steps: Step[] = [
       {
-        route: "home",
+        route: "/",
         lines: ["Accueil", ...this.sections.map(section => `nicolaspaillard.fr/about# ` + section.text)],
       },
       {
