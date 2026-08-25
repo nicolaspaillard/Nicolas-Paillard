@@ -16,7 +16,7 @@
   </div>
 </div>
 @if (user()?.admin) {
-  <p-dialog [(visible)]="isShown" [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une expérience'" [dismissableMask]="true">
+  <p-dialog [(visible)]="isShown" [modal]="true" [header]="(isEditing() ? 'Modifier' : 'Ajouter') + ' une expérience'" [dismissableMask]="true">
     <form class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col" [formGroup]="form">
       <input type="hidden" formControlName="id" />
       <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
@@ -45,7 +45,7 @@
       <label class="md:col-span-2">
         <div class="flex items-center gap-1">
           Description
-          <app-prompt-button (onClick)="promptedField = 'text'; isPrompting = true"></app-prompt-button>
+          <app-prompt-button (onClick)="promptedField.set('text'); isPrompting.set(true)"></app-prompt-button>
         </div>
         <textarea pTextarea formControlName="description"></textarea>
       </label>
@@ -65,12 +65,12 @@
       </div>
       <label class="md:col-span-2">
         Activités
-        @for (activity of activities; track activity) {
+        @for (activity of activities; track activity; let index = $index) {
           <div class="relative flex items-center justify-between">
             <span class="p-button-sm p-button-text p-button-contrast max-w-75 cursor-pointer truncate rounded-md" (keydown.enter)="act.value = activity" (keydown.space)="act.value = activity" (click)="act.value = activity" tabindex="0">•&nbsp;&nbsp;{{ activity }}</span>
             <div class="flex">
-              <p-button [disabled]="activities[0] === activity" [text]="true" (onClick)="move(activity, true)" icon="pi pi-angle-up" styleClass="w-auto" size="small" severity="secondary" />
-              <p-button [disabled]="activities[activities.length - 1] === activity" [text]="true" (onClick)="move(activity)" icon="pi pi-angle-down" styleClass="w-auto" size="small" severity="secondary" />
+              <p-button [disabled]="index === 0" [text]="true" (onClick)="move(index, true)" icon="pi pi-angle-up" styleClass="w-auto" size="small" severity="secondary" />
+              <p-button [disabled]="index === activities.length - 1" [text]="true" (onClick)="move(index)" icon="pi pi-angle-down" styleClass="w-auto" size="small" severity="secondary" />
               <p-button [text]="true" (onClick)="remove(activity)" icon="pi pi-trash" styleClass="w-auto" size="small" severity="danger" />
             </div>
           </div>
@@ -102,10 +102,10 @@
         </label>
       </div>
       <div class="flex justify-end gap-2 md:col-span-2">
-        <p-button [text]="true" (onClick)="isShown = false">Annuler</p-button>
-        <p-button [disabled]="!form.valid" (onClick)="isEditing ? update() : create(); isShown = false">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
+        <p-button [text]="true" (onClick)="isShown.set(false)">Annuler</p-button>
+        <p-button [disabled]="!form.valid" (onClick)="isEditing() ? update() : create(); isShown.set(false)">{{ isEditing() ? "Modifier" : "Ajouter" }}</p-button>
       </div>
     </form>
   </p-dialog>
-  <app-prompt [(isPrompting)]="isPrompting" [(form)]="form" [field]="promptedField"></app-prompt>
+  <app-prompt [(isPrompting)]="isPrompting" [(form)]="form" [field]="promptedField()"></app-prompt>
 }

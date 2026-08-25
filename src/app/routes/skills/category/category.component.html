@@ -1,17 +1,17 @@
 <div class="card group relative p-5 lg:p-10">
   @if (user()?.admin) {
     <div class="absolute right-0 top-0 z-10 transition-opacity group-hover:opacity-100 lg:opacity-0">
-      <p-button [text]="true" (onClick)="onEdit.emit(category)" icon="pi pi-pencil" size="small" />
-      <p-button [text]="true" (onClick)="onRemove.emit(category)" icon="pi pi-trash" size="small" severity="danger" />
+      <p-button [text]="true" (onClick)="edit.emit(category)" icon="pi pi-pencil" size="small" />
+      <p-button [text]="true" (onClick)="remove.emit(category)" icon="pi pi-trash" size="small" severity="danger" />
     </div>
   }
   <h3 class="mb-1 text-lg font-bold">{{ category.title }}</h3>
   <div class="grid grid-cols-2 md:grid-cols-1 2xl:grid-cols-2 gap-1">
     @for (skill of skills; track skill) {
-      <app-skill [skill]="skill" (onEdit)="onSkillEdit.emit($event)" (onRemove)="onSkillRemove.emit($event)"></app-skill>
+      <app-skill [skill]="skill" (edit)="editSkill.emit($event)" (remove)="removeSkill.emit($event)"></app-skill>
     }
     @if (user()?.admin) {
-      <p-button [outlined]="true" (onClick)="onSkillAdd.emit(category)" styleClass="w-full!  " size="small" icon="pi pi-plus"></p-button>
+      <p-button [outlined]="true" (onClick)="addSkill.emit(category)" styleClass="w-full!  " size="small" icon="pi pi-plus"></p-button>
     }
   </div>
 </div>

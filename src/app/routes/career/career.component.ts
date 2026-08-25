@@ -117,21 +117,20 @@ export class CareerComponent extends CrudComponent<Experience> {
     });
     return categories;
   };
-  move = (activity: string, up = false) => {
-    const fromIndex = this.activities.indexOf(activity);
-    if ((fromIndex == 0 && up) || (fromIndex == this.activities.length - 1 && !up)) return;
-    const element = this.activities[fromIndex];
-    this.activities.splice(fromIndex, 1);
-    this.activities.splice(fromIndex + (up ? -1 : 1), 0, element);
-    this.form.patchValue({ activities: this.activities.join(";") });
+  move = (index: number, up = false) => {
+    if ((index === 0 && up) || (index === this.activities.length - 1 && !up)) return;
+    const element = this.activities[index];
+    this.activities.splice(index, 1);
+    this.activities.splice(index + (up ? -1 : 1), 0, element);
+    this.form.patchValue({ activities: this.activities });
   };
   override open(item?: Experience): void {
-    this.activities = item && item.activities ? item.activities.split(";") : [];
+    this.activities = item && item.activities ? item.activities : [];
     this.form.patchValue({ activities: this.activities.join(";") });
     super.open(item);
   }
   remove = (activity: string) => {
     this.activities = this.activities.filter(act => act != activity);
-    this.form.patchValue({ activities: this.activities.join(";") });
+    this.form.patchValue({ activities: this.activities });
   };
 }

@@ -7,9 +7,9 @@
         [skills]="skills().filter(filter(category))"
         (onEdit)="open(category)"
         (onRemove)="delete(category)"
-        (onSkillEdit)="formSkill.setValue($event); isEditingSkill = true; isShownSkill = true"
-        (onSkillRemove)="deleteSkill($event)"
-        (onSkillAdd)="formSkill.reset(); formSkill.get('category')?.setValue($event.id); isShownSkill = true"></app-category>
+        (editSkill)="formSkill.setValue($event); isEditingSkill.set(true); isShownSkill.set(true)"
+        (removeSkill)="deleteSkill($event)"
+        (addSkill)="formSkill.reset(); formSkill.get('category')?.setValue($event.id); isShownSkill.set(true)"></app-category>
     }
     @if (user()?.admin) {
       <div class="card flex-[0_0_100%] p-5 md:flex-[0_0_calc(50%-(--spacing(5)))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))] lg:p-10">
@@ -19,9 +19,9 @@
   </div>
 </div>
 @if (user()?.admin) {
-  <p-dialog [(visible)]="isShown" [modal]="true" [dismissableMask]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' une catégorie'">
+  <p-dialog [(visible)]="isShown" [modal]="true" [dismissableMask]="true" [header]="(isEditing() ? 'Modifier' : 'Ajouter') + ' une catégorie'">
     <form class="flex flex-col gap-2" [formGroup]="form">
-      @if (isEditing) {
+      @if (isEditing()) {
         <input type="hidden" formControlName="id" />
       }
       <label>
@@ -40,15 +40,15 @@
         </p-inputnumber>
       </label>
       <div class="flex justify-end gap-2">
-        <p-button [text]="true" (onClick)="isShown = false">Annuler</p-button>
-        <p-button [disabled]="!form.valid" [label]="isEditing ? 'Modifier' : 'Ajouter'" (onClick)="isEditing ? update() : create(); isShown = false"></p-button>
+        <p-button [text]="true" (onClick)="isShown.set(false)">Annuler</p-button>
+        <p-button [disabled]="!form.valid" [label]="isEditing() ? 'Modifier' : 'Ajouter'" (onClick)="isEditing() ? update() : create(); isShown.set(false)"></p-button>
       </div>
     </form>
   </p-dialog>
 
-  <p-dialog [(visible)]="isShownSkill" [modal]="true" [header]="(isEditingSkill ? 'Modifier' : 'Ajouter') + ' une compétence'" [dismissableMask]="true">
+  <p-dialog [(visible)]="isShownSkill" [modal]="true" [header]="(isEditingSkill() ? 'Modifier' : 'Ajouter') + ' une compétence'" [dismissableMask]="true">
     <form class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col" [formGroup]="formSkill">
-      @if (isEditingSkill) {
+      @if (isEditingSkill()) {
         <input type="hidden" formControlName="id" />
       }
       <div class="md:col-span-2 flex gap-2">
@@ -92,8 +92,8 @@
         </div>
       </label>
       <div class="flex justify-end gap-2 md:col-span-2">
-        <p-button [text]="true" (onClick)="isShownSkill = false">Annuler</p-button>
-        <p-button [disabled]="!formSkill.valid" (onClick)="isEditingSkill ? updateSkill() : createSkill(); isShownSkill = false">{{ isEditingSkill ? "Modifier" : "Ajouter" }}</p-button>
+        <p-button [text]="true" (onClick)="isShownSkill.set(false)">Annuler</p-button>
+        <p-button [disabled]="!formSkill.valid" (onClick)="isEditingSkill() ? updateSkill() : createSkill(); isShownSkill.set(false)">{{ isEditingSkill() ? "Modifier" : "Ajouter" }}</p-button>
       </div>
     </form>
   </p-dialog>

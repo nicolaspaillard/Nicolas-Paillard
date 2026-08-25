@@ -61,10 +61,12 @@ export class ProjectsComponent extends CrudComponent<Project> {
     Promise.all([crudService.getData(Experience, "experiences", ["start", "desc"]), crudService.getData(Skill, "skills", ["title"]), crudService.getData(Category, "categories", ["title"])])
       .then(([experiences, skills, categories]) => {
         this.experiences.set([...experiences]);
-        // this.experiencesOptions = experiences.map(experience => ({
-        //   value: experience.id,
-        //   label: experience.company + " - " + experience.title,
-        // }));
+        // this.experiencesOptions.set(
+        //   experiences.map(experience => ({
+        //     value: experience.id,
+        //     label: experience.company + " - " + experience.title,
+        //   })),
+        // );
         this.skills.set([...skills]);
         this.categories.set([...categories]);
         skills.map(skill => {
@@ -128,16 +130,15 @@ export class ProjectsComponent extends CrudComponent<Project> {
     });
     return categories;
   };
-  move = (activity: string, up = false) => {
-    const fromIndex = this.activities.indexOf(activity);
-    if ((fromIndex == 0 && up) || (fromIndex == this.activities.length - 1 && !up)) return;
-    const element = this.activities[fromIndex];
-    this.activities.splice(fromIndex, 1);
-    this.activities.splice(fromIndex + (up ? -1 : 1), 0, element);
-    this.form.patchValue({ activities: this.activities.join(";") });
+  move = (index: number, up = false) => {
+    if ((index === 0 && up) || (index === this.activities.length - 1 && !up)) return;
+    const element = this.activities[index];
+    this.activities.splice(index, 1);
+    this.activities.splice(index + (up ? -1 : 1), 0, element);
+    this.form.patchValue({ activities: this.activities });
   };
   override open(item?: Project) {
-    this.activities = item && item.activities ? item.activities.split(";") : [];
+    this.activities = item && item.activities ? item.activities : [];
     this.images = item ? item.images : "";
     super.open(item);
   }
@@ -178,7 +179,7 @@ export class ProjectsComponent extends CrudComponent<Project> {
         })
           .then(response => response.json())
           .then(data => {
-            if (["ok", "not found"].includes(data.result)) return true;
+            if (["ok", "not found"].includes((data as { result: string }).result)) return true;
             console.error(data);
             return false;
           })
@@ -218,17 +219,11 @@ export class ProjectsComponent extends CrudComponent<Project> {
           body: formData,
         })
           .then(response => response.json())
-          .then(data => {
+          .then((data: { public_id: string }) => {
             if (data.public_id) return data.public_id.split("/")[1];
             console.error(data);
             return false;
           })
-          // .then(async response => {
-          //   const data = JSON.parse(await response.text());
-          //   if (data.public_id) return data.public_id.split("/")[1];
-          //   console.error(data);
-          //   return false;
-          // })
           .catch(error => {
             console.error(error);
             return false;

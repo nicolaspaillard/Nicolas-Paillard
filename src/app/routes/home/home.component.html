@@ -37,7 +37,7 @@
   </div>
 </div>
 @if (user()?.admin) {
-  <p-dialog [(visible)]="isShown" [modal]="true" [header]="(isEditing ? 'Modifier' : 'Ajouter') + ' un paragraphe'" [dismissableMask]="true">
+  <p-dialog [(visible)]="isShown" [modal]="true" [header]="(isEditing() ? 'Modifier' : 'Ajouter') + ' un paragraphe'" [dismissableMask]="true">
     <form class="flex flex-col gap-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col" [formGroup]="form">
       <input type="hidden" formControlName="id" />
       <label for="rank">
@@ -47,15 +47,15 @@
       <label>
         <div class="flex items-center gap-1">
           Description
-          <app-prompt-button (onClick)="promptedField = 'text'; isPrompting = true"></app-prompt-button>
+          <app-prompt-button (onClick)="promptedField.set('text'); isPrompting.set(true)"></app-prompt-button>
         </div>
         <textarea class="min-h-40" pTextarea formControlName="text"></textarea>
       </label>
       <div class="flex justify-end gap-2">
-        <p-button [text]="true" (onClick)="isShown = false">Annuler</p-button>
-        <p-button [disabled]="!form.valid" (onClick)="isEditing ? update() : create()">{{ isEditing ? "Modifier" : "Ajouter" }}</p-button>
+        <p-button [text]="true" (onClick)="isShown.set(false)">Annuler</p-button>
+        <p-button [disabled]="!form.valid" (onClick)="isEditing() ? update() : create()">{{ isEditing() ? "Modifier" : "Ajouter" }}</p-button>
       </div>
     </form>
   </p-dialog>
-  <app-prompt [(isPrompting)]="isPrompting" [(form)]="form" [field]="promptedField"></app-prompt>
+  <app-prompt [(isPrompting)]="isPrompting" [(form)]="form" [field]="promptedField()"></app-prompt>
 }

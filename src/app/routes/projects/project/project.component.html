@@ -54,7 +54,7 @@
         <p-accordion-header>Activités</p-accordion-header>
         <p-accordion-content>
           <ul class="list-inside list-disc">
-            @for (activity of project().activities.split(";"); track activity) {
+            @for (activity of project().activities; track activity) {
               <li>{{ activity }}</li>
             }
           </ul>
@@ -73,7 +73,7 @@
                   @for (skill of category.items; track $index) {
                     <a class="inline-flex items-center" [fragment]="skill.id" routerLink="/skills">
                       @if (skill.icon) {
-                        <img width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
+                        <img [alt]="skill.title + ' icon'" width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
                       } @else {
                         <span class="font-extrabold w-6 h-6 inline-flex items-center justify-center">{{ skill.title[0].toUpperCase() }}</span>
                       }

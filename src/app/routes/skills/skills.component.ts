@@ -1913,8 +1913,8 @@ export class SkillsComponent extends CrudComponent<Category> {
     "aframe-plain",
   ];
   formSkill: FormGroup = formSkill;
-  isEditingSkill = false;
-  isShownSkill = false;
+  isEditingSkill = signal(false);
+  isShownSkill = signal(false);
   skills = signal<Skill[]>([]);
   private crudServiceSkills = inject<CrudService<Skill>>(CrudService);
 

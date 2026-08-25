@@ -3,20 +3,20 @@ import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { Base } from "./base";
 
 export class Project extends Base {
-  activities: string;
+  activities: string[];
   address: string;
   city: string;
   company: string;
   description: string;
   end: Date;
   experience: string;
-  // TODO migrate to array
   images: string;
   postcode: string;
   skills: string[];
   start: Date;
   url: string;
   constructor(project: Project) {
+    if (typeof project.activities === "string") project.activities = (project.activities as unknown as string).split(";");
     if (!project.experience) project.experience = "";
     if (!project.skills) project.skills = [];
     if (project.start && !(project.start instanceof Date)) project.start = (project.start as Timestamp).toDate();
@@ -35,7 +35,7 @@ export const formProject: FormGroup = new FormGroup({
   address: new FormControl(""),
   postcode: new FormControl(""),
   city: new FormControl(""),
-  activities: new FormControl(""),
+  activities: new FormControl([]),
   url: new FormControl(""),
   images: new FormControl(""),
   experience: new FormControl(""),

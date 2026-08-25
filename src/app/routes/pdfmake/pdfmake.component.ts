@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Component, inject, signal } from "@angular/core";
-import { SafeUrl } from "@angular/platform-browser";
+import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { ButtonModule } from "@openng/optimus-ui/button";
 import { PdfmakeService } from "@services/pdfmake.service";
 import pdfMake from "pdfmake/build/pdfmake";
@@ -16,7 +16,7 @@ pdfMake.addVirtualFileSystem(pdfFonts);
   styles: ``,
 })
 export class PdfmakeComponent {
-  resume = signal<SafeUrl>("");
+  resume = signal<SafeResourceUrl>(inject(DomSanitizer).bypassSecurityTrustResourceUrl(""));
   private pdfmakeService = inject<PdfmakeService>(PdfmakeService);
   constructor() {
     this.pdfmakeService

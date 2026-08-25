@@ -1,11 +1,11 @@
 <div class="group/skill relative flex justify-between items-center h-full" [id]="skill.id">
   @if (user()?.admin) {
     <div class="absolute z-10 flex w-full justify-end transition-opacity group-hover/skill:opacity-100 lg:opacity-0">
-      <p-button [text]="true" (onClick)="onEdit.emit(skill)" icon="pi pi-pencil" size="small" />
-      <p-button [text]="true" (onClick)="onRemove.emit(skill)" icon="pi pi-trash" size="small" severity="danger" />
+      <p-button [text]="true" (onClick)="edit.emit(skill)" icon="pi pi-pencil" size="small" />
+      <p-button [text]="true" (onClick)="remove.emit(skill)" icon="pi pi-trash" size="small" severity="danger" />
     </div>
   }
-  <div class="flex w-full items-center">
+  <div class="flex items-center">
     @if (skill.icon) {
       <img class="me-1" alt="skill icon" width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
     } @else {
@@ -15,5 +15,7 @@
       {{ skill.title }}
     </span>
   </div>
-  <div class="text-xs" style="font-family: &quot;Lucida Sans&quot;, &quot;Lucida Sans Regular&quot;, &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;, Geneva, Verdana, sans-serif">{{ getDotsString(skill.level) }}</div>
+  <div class="bg-gray-400 h-1.5 w-10 shrink-0">
+    <div class="h-full bg-primary" [style.width.%]="(skill.level * 100) / 5"></div>
+  </div>
 </div>

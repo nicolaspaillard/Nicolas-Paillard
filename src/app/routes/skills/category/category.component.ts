@@ -14,12 +14,12 @@ import { SkillComponent } from "./skill/skill.component";
   templateUrl: "./category.component.html",
 })
 export class CategoryComponent {
+  @Output() addSkill = new EventEmitter<Category>();
   @Input() category: Category;
-  @Output() onEdit = new EventEmitter<Category>();
-  @Output() onRemove = new EventEmitter<Category>();
-  @Output() onSkillAdd = new EventEmitter<Category>();
-  @Output() onSkillEdit = new EventEmitter<Skill>();
-  @Output() onSkillRemove = new EventEmitter<Skill>();
+  @Output() edit = new EventEmitter<Category>();
+  @Output() editSkill = new EventEmitter<Skill>();
+  @Output() remove = new EventEmitter<Category>();
+  @Output() removeSkill = new EventEmitter<Skill>();
   @Input() skills: Skill[] = [];
   user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   private authService = inject(AuthService);

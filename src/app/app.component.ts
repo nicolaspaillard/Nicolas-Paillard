@@ -5,8 +5,8 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { AuthGuard, AuthPipe, customClaims, loggedIn } from "@angular/fire/auth-guard";
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
-import { SafeUrl } from "@angular/platform-browser";
-import { ActivatedRoute, NavigationStart, Params, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
+import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { ActivatedRoute, NavigationStart, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
 import { AnimationComponent } from "@components/animation/animation.component";
 import { usePreset } from "@openng/optimus-ui-themes";
 import { ButtonModule } from "@openng/optimus-ui/button";
@@ -122,19 +122,16 @@ export class AppComponent implements OnInit {
   isSigningUp = signal<boolean>(false);
   isSignupShown = signal<boolean>(false);
   isTransitioning = signal<boolean>(false);
-  params: Params = {};
-  resume = signal<SafeUrl>("");
+  resume = signal<SafeResourceUrl>(inject(DomSanitizer).bypassSecurityTrustResourceUrl(""));
   routes: Route[] = routes.filter(route => route.path && route.data);
   user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   private animationService = inject(AnimationService);
   private authService = inject(AuthService);
   private interval: NodeJS.Timeout;
   private pdfmakeService = inject(PdfmakeService);
-  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private toastService = inject(ToastService);
   constructor() {
-    this.route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => (this.params = params));
     switch (location.pathname.split("/").pop()) {
       case "cv":
         this.downloadCV();
@@ -226,18 +223,22 @@ export class AppComponent implements OnInit {
   }
   reset = () => {
     this.isResetting.set(true);
-    this.authService
-      .reset(this.params["oobCode"] as string, this.formReset.controls.password.value!)
-      .then(result => {
-        this.isResetting.set(false);
-        if (result) {
-          this.toastService.success("Réinitialisation réussie", "Votre mot de passe à bien été réinitialisé, vous pouvez à présent vous connecter");
-          this.formSignin.controls.password.setValue(this.formReset.controls.password.value);
-          this.isResetShown.set(false);
-          this.isSigninShown.set(true);
-        } else this.toastService.error("Échec de la réinitialisation", "Une erreur est survenue lors de la réinitialisation du mot de passe");
-      })
-      .catch(err => console.error(err));
+    inject(ActivatedRoute)
+      .queryParams.pipe(takeUntilDestroyed())
+      .subscribe(params => {
+        this.authService
+          .reset(params["oobCode"] as string, this.formReset.controls.password.value!)
+          .then(result => {
+            this.isResetting.set(false);
+            if (result) {
+              this.toastService.success("Réinitialisation réussie", "Votre mot de passe à bien été réinitialisé, vous pouvez à présent vous connecter");
+              this.formSignin.controls.password.setValue(this.formReset.controls.password.value);
+              this.isResetShown.set(false);
+              this.isSigninShown.set(true);
+            } else this.toastService.error("Échec de la réinitialisation", "Une erreur est survenue lors de la réinitialisation du mot de passe");
+          })
+          .catch(err => console.error(err));
+      });
   };
   send = () => {
     if (!this.formSignin.controls.email.invalid) {

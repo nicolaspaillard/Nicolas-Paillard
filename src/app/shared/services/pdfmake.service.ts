@@ -101,7 +101,6 @@ export class PdfmakeService {
           shapes.push({ type: "polyline", closePath: true, color, points });
         }
       }
-
       return shapes;
     };
     const doc: TDocumentDefinitions = {
@@ -185,7 +184,7 @@ export class PdfmakeService {
                       { text: experience.title, style: [index === 0 ? "" : "title3", "text3"] },
                       { text: experience.company + " - " + (!experience.end ? "depuis " : "") + experience.start.toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) + (!experience.end ? "" : " à " + experience.end.toLocaleDateString("fr-FR", { month: "long", year: "numeric" })), style: ["date", "text4"] },
                       experience.description && experience.description.length ? { text: experience.description, style: "text4" } : "",
-                      experience.activities && experience.activities.length ? { ul: experience.activities.split(";"), style: "text4" } : "",
+                      experience.activities && experience.activities.length ? { ul: experience.activities, style: "text4" } : "",
                     ].filter(Boolean),
                   })),
                 { text: "Formation", style: ["title3", "text2", "header"] },
