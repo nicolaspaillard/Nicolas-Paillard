@@ -5,8 +5,11 @@ import { Experience } from "@classes/experience";
 import { Profile } from "@classes/profile";
 import { Section } from "@classes/section";
 import { Skill } from "@classes/skill";
+import { format } from "@cloudinary/url-gen/actions/delivery";
 import { fill } from "@cloudinary/url-gen/actions/resize";
+import { byRadius } from "@cloudinary/url-gen/actions/roundCorners";
 import { Cloudinary } from "@cloudinary/url-gen/index";
+import { png } from "@cloudinary/url-gen/qualifiers/format";
 import { Step } from "@services/animation.service";
 import { CrudService } from "@services/crud.service";
 import pdfMake from "pdfmake/build/pdfmake";
@@ -75,8 +78,8 @@ export class PdfmakeService {
       })
         .image("nicolasPaillard/profile")
         .resize(fill().width(300).aspectRatio("1.0"))
-        // .roundCorners(max())
-        // .delivery(format(png()))
+        .roundCorners(byRadius(12))
+        .delivery(format(png()))
         .toURL(),
     )
       .then(response => response.blob())
