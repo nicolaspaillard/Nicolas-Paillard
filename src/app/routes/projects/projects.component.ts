@@ -7,7 +7,7 @@ import { Skill } from "@classes/skill";
 import { CrudComponent } from "@components/crud.component";
 import { PromptButtonComponent } from "@components/prompt-button/prompt-button.component";
 import { PromptComponent } from "@components/prompt/prompt.component";
-import { sha1 } from "@helpers/helpers";
+import { sha1 } from "@helpers/sha1";
 import { ButtonModule } from "@openng/optimus-ui/button";
 import { DatePickerModule } from "@openng/optimus-ui/datepicker";
 import { DialogModule } from "@openng/optimus-ui/dialog";
@@ -104,18 +104,11 @@ export class ProjectsComponent extends CrudComponent<Project> {
   }
   getExperience = (project: Project) => {
     if (!project.experience || !project.experience.length) return;
-    return {
-      id: project.experience,
-      title: this.experiences().find(experience => experience.id === project.experience)!.title,
-    };
+    return { id: project.experience, title: this.experiences().find(experience => experience.id === project.experience)!.title };
   };
   getSkills = (project: Project) => {
     if (!project.skills || !project.skills.length) return [];
-    const categories: {
-      id: string;
-      items: { icon: string; id: string; title: string }[];
-      title: string;
-    }[] = [];
+    const categories: { id: string; items: { icon: string; id: string; title: string }[]; title: string }[] = [];
     project.skills.forEach(skillId => {
       const newSkill = this.skills().find(skill => skill.id === skillId);
       if (!newSkill) return;
@@ -159,24 +152,11 @@ export class ProjectsComponent extends CrudComponent<Project> {
     for (const image of images.split(";")) {
       const formdata = new FormData();
       formdata.append("public_id", "nicolasPaillard/" + image);
-      formdata.append(
-        "signature",
-        sha1.hash(
-          new URLSearchParams({
-            public_id: "nicolasPaillard/" + image,
-            timestamp: timestamp,
-          })
-            .toString()
-            .replace("%2F", "/") + cloudinary.api_secret,
-        ),
-      );
+      formdata.append("signature", sha1(new URLSearchParams({ public_id: "nicolasPaillard/" + image, timestamp: timestamp }).toString().replace("%2F", "/") + cloudinary.api_secret));
       formdata.append("api_key", cloudinary.api_key);
       formdata.append("timestamp", timestamp);
       promises.push(
-        fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/destroy`, {
-          method: "POST",
-          body: formdata,
-        })
+        fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/destroy`, { method: "POST", body: formdata })
           .then(response => response.json())
           .then(data => {
             if (["ok", "not found"].includes((data as { result: string }).result)) return true;
@@ -204,7 +184,7 @@ export class ProjectsComponent extends CrudComponent<Project> {
       formData.append("timestamp", timestamp);
       formData.append(
         "signature",
-        sha1.hash(
+        sha1(
           new URLSearchParams({
             folder: "nicolasPaillard",
             timestamp: timestamp,

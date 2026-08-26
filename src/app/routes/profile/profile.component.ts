@@ -3,7 +3,7 @@ import { Component, inject } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { formProfile, Profile } from "@classes/profile";
 import { CrudComponent } from "@components/crud.component";
-import { sha1 } from "@helpers/helpers";
+import { sha1 } from "@helpers/sha1";
 import { ButtonModule } from "@openng/optimus-ui/button";
 import { FileUpload, FileUploadHandlerEvent } from "@openng/optimus-ui/fileupload";
 import { InputTextModule } from "@openng/optimus-ui/inputtext";
@@ -44,20 +44,19 @@ export class ProfileComponent extends CrudComponent<Profile> {
     super(crudService, authService, confirmService);
     if (this.items().length) this.form.setValue(this.items()[0]);
   }
-  override async create() {}
-  override delete() {}
-  override open() {}
+  // override async create() {}
+  // override delete() {}
+  // override open() {}
   override async update() {
     this.isUpdating = true;
-    super
-      .update(this.form.value as Profile)
-      .then(() => {
-        this.toastService.success("Succès", "Profil mis à jour avec succès");
-      })
-      .catch(() => {
-        this.toastService.error("Erreur", "Erreur lors de la mise à jour du profil");
-      })
-      .finally(() => (this.isUpdating = false));
+    try {
+      await super.update(this.form.value as Profile);
+      this.toastService.success("Succès", "Profil mis à jour avec succès");
+    } catch {
+      this.toastService.error("Erreur", "Erreur lors de la mise à jour du profil");
+    } finally {
+      this.isUpdating = false;
+    }
   }
   updatePhoto = async (event: FileUploadHandlerEvent) => {
     const timestamp: string = Math.round(new Date().getTime() / 1000).toString();
@@ -70,23 +69,9 @@ export class ProfileComponent extends CrudComponent<Profile> {
     formData.append("api_key", cloudinary.api_key);
     formData.append("upload_preset", "ml_default");
     formData.append("timestamp", timestamp);
-    formData.append(
-      "signature",
-      sha1.hash(
-        new URLSearchParams({
-          folder: "nicolasPaillard",
-          invalidate: "true",
-          public_id: "profile",
-          timestamp: timestamp,
-          upload_preset: "ml_default",
-        }).toString() + cloudinary.api_secret,
-      ),
-    );
+    formData.append("signature", sha1(new URLSearchParams({ folder: "nicolasPaillard", invalidate: "true", public_id: "profile", timestamp: timestamp, upload_preset: "ml_default" }).toString() + cloudinary.api_secret));
     formData.append("folder", "nicolasPaillard");
-    fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/upload`, {
-      method: "POST",
-      body: formData,
-    })
+    fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/upload`, { method: "POST", body: formData })
       .then(async response => {
         const data = JSON.parse(await response.text());
         if (data.public_id) return data.public_id.split("/")[1];
