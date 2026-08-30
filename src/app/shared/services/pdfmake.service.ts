@@ -199,24 +199,162 @@ export class PdfmakeService {
         link: { noWrap: true },
       },
     };
-    return { steps: this.getSteps(), url: this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(await pdfMake.createPdf(doc).getBlob())) };
+    return { steps: this.getSteps(this.sections, this.experiences, this.categories), url: this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(await pdfMake.createPdf(doc).getBlob())) };
   };
-  getSteps = (): Step[] => [
+  generateCustom = async (sections: Section[], experiences: Experience[], categories: Category[], skills: Skill[]) => {
+    await this.ready;
+    const pageHeight = 841.89;
+    const pageWidth = 595.28;
+    const margin = 10;
+    const padding = 10;
+    const colwidth = 27;
+    const iconSize = 9;
+    const doc: TDocumentDefinitions = {
+      pageSize: "A4",
+      pageOrientation: "portrait",
+      pageMargins: 0,
+      content: [
+        {
+          columns: [
+            {
+              width: colwidth + "%",
+              layout: getTableLayout(margin + padding, margin + padding, padding, margin + padding),
+              table: {
+                widths: "*",
+                heights: pageHeight - (margin + padding) * 2,
+                body: [
+                  [
+                    {
+                      fillColor: "#fbbf24",
+                      stack: [
+                        ...(this.profilePicture ? [{ image: this.profilePicture, width: pageWidth * (colwidth / 100) - margin - padding * 2, alignment: "center" as const, marginBottom: 3 }] : []),
+                        { text: "Coordonnées", style: ["text3"], lineHeight: 1, bold: true },
+                        { text: this.profiles[0].phone, link: "tel:" + this.profiles[0].phone.replace(/\s/gm, ""), style: ["link", "text5"] },
+                        { text: this.profiles[0].email, link: "mailto:" + this.profiles[0].email, style: ["link", "text5"] },
+                        { text: this.profiles[0].address + " - Mobile", style: "text5" },
+                        { text: "Permis B - Véhiculé", style: "text5" },
+                        { text: this.profiles[0].github, link: "https://" + this.profiles[0].github, style: ["link", "text5"] },
+                        { text: this.profiles[0].gitlab, link: "https://" + this.profiles[0].gitlab, style: ["link", "text5"] },
+                        { text: this.profiles[0].linkedin, link: "https://" + this.profiles[0].linkedin, style: ["link", "text5"] },
+                        { text: "Compétences", style: ["title3", "text3"], bold: true },
+                        ...categories.map((category, index) => ({
+                          stack: [
+                            { text: category.title, style: [index === 0 ? "" : "title4", "text4"] },
+                            ...skills
+                              .filter(skill => skill.category == category.id)
+                              .map((skill): Content => ({
+                                layout: getTableLayout(),
+                                table: {
+                                  widths: ["auto", "*", "auto"],
+                                  body: [[skill.icon ? { svg: this.iconCache.get(skill.icon)!, width: iconSize } : { text: skill.title[0].toUpperCase(), fontSize: iconSize, bold: true }, { text: skill.title, style: "text5", marginLeft: 2, verticalAlignment: "middle" }, { canvas: generateDotsCanvas(skill.level, "#525252"), verticalAlignment: "middle" }]],
+                                },
+                              })),
+                          ],
+                        })),
+                        { text: "Langues", style: ["title3", "text3"], bold: true },
+                        {
+                          layout: getTableLayout(),
+                          table: {
+                            widths: ["auto", "*", "auto"],
+                            body: [
+                              [
+                                { svg: flags.english, width: iconSize, verticalAlignment: "middle" },
+                                { text: "Anglais", style: "text5", marginLeft: 2, verticalAlignment: "middle" },
+                                { canvas: generateDotsCanvas(3.5, "#525252"), verticalAlignment: "middle" },
+                              ],
+                              [
+                                { svg: flags.spanish, width: iconSize, verticalAlignment: "middle" },
+                                { text: "Espagnol", style: "text5", marginLeft: 2, verticalAlignment: "middle" },
+                                { canvas: generateDotsCanvas(2.5, "#525252"), verticalAlignment: "middle" },
+                              ],
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              width: 100 - colwidth + "%",
+              margin: [padding, margin + padding, margin + padding, margin + padding],
+              stack: [
+                { text: this.profiles[0].firstName + " " + this.profiles[0].lastName, style: ["title1", "text1"] },
+                { text: this.profiles[0].title, italics: true, style: ["title1", "text3"] },
+                { text: this.sections.map(section => section.text).join(" "), alignment: "justify", style: ["title2", "text5"] },
+                { text: "Expérience", style: ["title2", "text2", "header"] },
+                ...experiences
+                  .filter(experience => experience.type === "Expérience")
+                  .map((experience, index) => ({
+                    stack: [
+                      { text: experience.title, style: [index === 0 ? "" : "title3", "text3"] },
+                      { text: experience.company + " - " + (!experience.end ? "depuis " : "") + experience.start.toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) + (!experience.end ? "" : " à " + experience.end.toLocaleDateString("fr-FR", { month: "long", year: "numeric" })), style: ["date", "text4"] },
+                      ...(experience.description && experience.description.length ? [{ text: experience.description, style: "text5" }] : []),
+                      ...(experience.activities && experience.activities.length ? [{ ul: experience.activities, style: "text5" }] : []),
+                    ],
+                  })),
+                { text: "Formation", style: ["title2", "text2", "header"] },
+                ...experiences
+                  .filter(experience => experience.type === "Formation")
+                  .map((experience, index) => ({
+                    stack: [
+                      { text: experience.title, style: [index === 0 ? "" : "title3", "text3"] },
+                      { text: experience.company + " - " + (!experience.end ? "depuis " : "") + experience.start.toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) + (!experience.end ? "" : " à " + experience.end.toLocaleDateString("fr-FR", { month: "long", year: "numeric" })), style: ["date", "text4"] },
+                      ...(experience.description && experience.description.length ? [{ text: experience.description, style: "text5" }] : []),
+                    ],
+                  })),
+                { text: "Centres d'intérêt", style: ["title2", "text2", "header"] },
+              ],
+            },
+          ],
+        },
+        {
+          columns: [
+            {
+              width: pageWidth * (colwidth / 100) - margin - padding * 2,
+              stack: [
+                { text: "CV généré depuis", style: ["text3"], italics: true, alignment: "center" },
+                { text: "nicolaspaillard.fr", link: "https://nicolaspaillard.fr/cv", style: ["link", "text5"], alignment: "center" },
+              ],
+            },
+          ],
+          absolutePosition: { x: margin + padding, y: pageHeight - margin - padding - 22 },
+        },
+      ],
+      styles: {
+        text1: { fontSize: 17 },
+        text2: { fontSize: 15 },
+        text3: { fontSize: 13 },
+        text4: { fontSize: 11 },
+        text5: { fontSize: 9 },
+        title1: { alignment: "center", lineHeight: 0.8 },
+        title2: { marginTop: 5, lineHeight: 1 },
+        title3: { marginTop: 3, lineHeight: 1 },
+        title4: { marginTop: 1, lineHeight: 1 },
+        header: { bold: true, color: "#fbbf24" },
+        date: { italics: true },
+        link: { noWrap: true },
+      },
+    };
+    return { steps: this.getSteps(sections, experiences, categories), url: this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(await pdfMake.createPdf(doc).getBlob())) };
+  };
+  getSteps = (sections: Section[], experiences: Experience[], categories: Category[]): Step[] => [
     {
       route: "/",
-      lines: ["Accueil", ...this.sections.map(section => `nicolaspaillard.fr/about# ` + section.text)],
+      lines: ["Accueil", ...sections.map(section => `nicolaspaillard.fr/about# ` + section.text)],
     },
     {
       route: "career",
-      lines: ["Expériences", ...this.experiences.filter(experience => experience.type === "Expérience").map(experience => `nicolaspaillard.fr/career# ` + experience.title)],
+      lines: ["Expériences", ...experiences.filter(experience => experience.type === "Expérience").map(experience => `nicolaspaillard.fr/career# ` + experience.title)],
     },
     {
       route: "career",
-      lines: ["Formations", ...this.experiences.filter(experience => experience.type === "Formation").map(formation => `nicolaspaillard.fr/career# ` + formation.title)],
+      lines: ["Formations", ...experiences.filter(experience => experience.type === "Formation").map(formation => `nicolaspaillard.fr/career# ` + formation.title)],
     },
     {
       route: "skills",
-      lines: ["Compétences", ...this.categories.map(category => `nicolaspaillard.fr/skills# ` + category.title)],
+      lines: ["Compétences", ...categories.map(category => `nicolaspaillard.fr/skills# ` + category.title)],
     },
   ];
 }

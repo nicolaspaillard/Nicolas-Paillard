@@ -1,0 +1,41 @@
+<p-dialog [(visible)]="visible" [dismissableMask]="true" [modal]="true" header="Génération d'un CV">
+  <label for="skills">
+    Compétences
+    <div #skillsWrapper>
+      <p-multiselect class="w-full" id="skills" #skills [(ngModel)]="selectedSkills" [options]="skillsGroups()" [group]="true" [panelStyle]="{ width: skillsWrapper.offsetWidth + 'px' }" [showClear]="true" optionLabel="label" optionValue="value" optionGroupLabel="label" optionGroupChildren="items" placeholder="Choisir les compétences">
+        <ng-template class="p-multiselect-option" #group let-group>
+          <div class="flex items-center gap-2 cursor-pointer" (click)="toggleGroup(group)" (keydown.enter)="$event.preventDefault(); toggleGroup(group)" (keydown.space)="$event.preventDefault(); toggleGroup(group)" role="button" tabindex="0">
+            <p-checkbox [binary]="true" [ngModel]="isGroupFullySelected(group)" [indeterminate]="isGroupPartiallySelected(group)" (click)="$event.stopPropagation()" (onChange)="toggleGroup(group)" />
+            <span class="font-bold">{{ group.label }}</span>
+          </div>
+        </ng-template>
+        <ng-template #item let-skill>
+          <div class="flex items-center gap-2">
+            @if (skill.icon) {
+              <img [alt]="skill.label + ' icon'" width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
+            } @else {
+              <span class="font-extrabold mx-1">{{ skill.label[0].toUpperCase() }}</span>
+            }
+            <span class="w-full truncate">{{ skill.label }}</span>
+          </div>
+        </ng-template>
+      </p-multiselect>
+    </div>
+  </label>
+  <label for="experience">
+    Expérience
+    <div #experiencesWrapper>
+      <p-multiselect class="w-full" id="experience" [(ngModel)]="selectedExperiences" [options]="experiences()" [showClear]="true" [panelStyle]="{ width: experiencesWrapper.offsetWidth + 'px' }" optionLabel="title" optionValue="id" placeholder="Choisir l'expérience">
+        <ng-template #item let-experience>
+          <span class="w-full truncate" [pTooltip]="experience.title + ' - ' + experience.company">{{ experience.title + " - " + experience.company }}</span>
+        </ng-template>
+      </p-multiselect>
+    </div>
+  </label>
+  <div class="flex justify-end">
+    <button [loading]="isGeneratingCV()" (click)="downloadCV()" pButton>Générer</button>
+  </div>
+</p-dialog>
+<p-dialog [(visible)]="isResumeShown" [modal]="true" [dismissableMask]="true" [resizable]="false" contentStyleClass="w-full! h-full!" styleClass="w-[calc(100%-(--spacing(10)))] h-[calc(100%-(--spacing(10)))] max-h-full!" header="C.V.">
+  <iframe class="w-full h-full" [src]="resume()"></iframe>
+</p-dialog>

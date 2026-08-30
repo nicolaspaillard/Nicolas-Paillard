@@ -107,7 +107,7 @@
         <div #expwrapper>
           <p-select class="w-full" id="experience" [options]="experiences()" [showClear]="true" [panelStyle]="{ width: expwrapper.offsetWidth + 'px' }" optionLabel="title" optionValue="id" formControlName="experience" placeholder="Choisir l'expérience">
             <ng-template let-experience pTemplate="item">
-              <span class="w-full truncate" [pTooltip]="experience.label">{{ experience.label }}</span>
+              <span class="w-full truncate" [pTooltip]="experience.title + ' - ' + experience.company">{{ experience.title + " - " + experience.company }}</span>
             </ng-template>
           </p-select>
         </div>

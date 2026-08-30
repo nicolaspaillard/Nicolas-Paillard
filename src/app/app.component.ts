@@ -8,6 +8,7 @@ import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validatio
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute, NavigationStart, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
 import { AnimationComponent } from "@components/animation/animation.component";
+import { ResumeComponent } from "@components/resume/resume.component";
 import { usePreset } from "@openng/optimus-ui-themes";
 import { ButtonModule } from "@openng/optimus-ui/button";
 import { ConfirmDialogModule } from "@openng/optimus-ui/confirmdialog";
@@ -88,7 +89,7 @@ export const routes: Routes = [
 @Component({
   selector: "app-root",
   // animations: [trigger("routeAnimations", [transition(":increment", slideTo("right")), transition(":decrement", slideTo("left"))])],
-  imports: [CommonModule, RouterModule, RouterOutlet, TooltipModule, ReactiveFormsModule, ButtonModule, DialogModule, ToastModule, ConfirmDialogModule, ToggleSwitchModule, InputTextModule, PasswordModule, AnimationComponent, ProgressSpinnerModule],
+  imports: [CommonModule, RouterModule, RouterOutlet, TooltipModule, ReactiveFormsModule, ButtonModule, DialogModule, ToastModule, ConfirmDialogModule, ToggleSwitchModule, InputTextModule, PasswordModule, AnimationComponent, ProgressSpinnerModule, ResumeComponent],
   templateUrl: "./app.component.html",
 })
 export class AppComponent implements OnInit {
@@ -115,6 +116,7 @@ export class AppComponent implements OnInit {
   isGeneratingCV = signal<boolean>(false);
   isResetShown = signal<boolean>(false);
   isResetting = signal<boolean>(false);
+  isResumeGeneratorShown = signal<boolean>(false);
   isResumeShown = signal<boolean>(false);
   isSending = signal<boolean>(false);
   isSigninShown = signal<boolean>(false);

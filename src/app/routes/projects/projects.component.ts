@@ -46,13 +46,7 @@ export class ProjectsComponent extends CrudComponent<Project> {
   images: string;
   imagesFiles: File[] = [];
   skills = signal<Skill[]>([]);
-  skillsGroups = signal<
-    {
-      items: { icon: string; label: string; value: string }[];
-      label: string;
-      value: string;
-    }[]
-  >([]);
+  skillsGroups = signal<{ items: { icon: string; label: string; value: string }[]; label: string; value: string }[]>([]);
   constructor() {
     const crudService = inject<CrudService<Project>>(CrudService);
     const authService = inject(AuthService);
