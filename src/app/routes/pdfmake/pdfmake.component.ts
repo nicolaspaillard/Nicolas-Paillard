@@ -17,9 +17,8 @@ pdfMake.addVirtualFileSystem(pdfFonts);
 })
 export class PdfmakeComponent {
   resume = signal<SafeResourceUrl>(inject(DomSanitizer).bypassSecurityTrustResourceUrl(""));
-  private pdfmakeService = inject<PdfmakeService>(PdfmakeService);
   constructor() {
-    this.pdfmakeService
+    inject<PdfmakeService>(PdfmakeService)
       .generate()
       .then(result => this.resume.set(result.url))
       .catch(err => console.error(err));

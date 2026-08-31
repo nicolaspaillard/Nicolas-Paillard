@@ -77,7 +77,7 @@ export class ResumeComponent {
     this.isGeneratingCV.set(true);
     this.visible.set(false);
     this.pdfmakeService
-      .generateCustom(this.sections(), selectedExperiences, selectedCategories, selectedSkills)
+      .generate(this.sections(), selectedExperiences, selectedCategories, selectedSkills, this.profiles()[0])
       .then(res => {
         this.resume.set(res.url);
         this.animationService.animate({

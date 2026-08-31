@@ -6,10 +6,7 @@
       <div class="flex gap-2">
         <p-button class="lg:hidden" [text]="true" [ngClass]="{ '[&>button]:border-primary!': menuShown.checked }" (onClick)="menuShown.checked = !menuShown.checked" icon="pi pi-bars"></p-button>
         <p-button [ngClass]="{ '[&>button]:border-none!': menuShown.checked }" [routerLinkActiveOptions]="{ exact: true }" [text]="true" routerLink="/" size="large" routerLinkActive="[&>button]:border-primary!" icon="pi pi-home"></p-button>
-        <p-button [loading]="isGeneratingCV()" (onClick)="downloadCV()" size="large">CV</p-button>
-        @if (user()?.admin) {
-          <p-button (onClick)="isResumeGeneratorShown.set(true)" size="large">CV</p-button>
-        }
+        <p-splitbutton class="[&>button:first-of-type]:px-5! [&>button:last-of-type]:px-1! [&>button:first-of-type_.p-button-icon:not(.pi)]:hidden!" [model]="cvButtonItems" [icon]="isGeneratingCV() ? 'pi pi-spinner animate-spin' : undefined" (onClick)="downloadCV()" iconPos="right" label="CV" size="large"></p-splitbutton>
         <input class="peer hidden" #menuShown type="checkbox" />
         <div class="hidden gap-2 overflow-hidden lg:flex">
           @for (route of routes; track route) {

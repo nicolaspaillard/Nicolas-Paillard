@@ -16,6 +16,7 @@ import { DialogModule } from "@openng/optimus-ui/dialog";
 import { InputTextModule } from "@openng/optimus-ui/inputtext";
 import { PasswordModule } from "@openng/optimus-ui/password";
 import { ProgressSpinnerModule } from "@openng/optimus-ui/progressspinner";
+import { SplitButtonModule } from "@openng/optimus-ui/splitbutton";
 import { ToastModule } from "@openng/optimus-ui/toast";
 import { ToggleSwitchModule } from "@openng/optimus-ui/toggleswitch";
 import { TooltipModule } from "@openng/optimus-ui/tooltip";
@@ -89,10 +90,11 @@ export const routes: Routes = [
 @Component({
   selector: "app-root",
   // animations: [trigger("routeAnimations", [transition(":increment", slideTo("right")), transition(":decrement", slideTo("left"))])],
-  imports: [CommonModule, RouterModule, RouterOutlet, TooltipModule, ReactiveFormsModule, ButtonModule, DialogModule, ToastModule, ConfirmDialogModule, ToggleSwitchModule, InputTextModule, PasswordModule, AnimationComponent, ProgressSpinnerModule, ResumeComponent],
+  imports: [CommonModule, RouterModule, RouterOutlet, SplitButtonModule, TooltipModule, ReactiveFormsModule, ButtonModule, DialogModule, ToastModule, ConfirmDialogModule, ToggleSwitchModule, InputTextModule, PasswordModule, AnimationComponent, ProgressSpinnerModule, ResumeComponent],
   templateUrl: "./app.component.html",
 })
 export class AppComponent implements OnInit {
+  cvButtonItems = [{ label: "Customiser", icon: "pi pi-pen-to-square", command: () => this.isResumeGeneratorShown.set(true) }];
   enableMatrix = signal<boolean>(false);
   formReset = new FormGroup(
     {
