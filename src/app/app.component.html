@@ -38,9 +38,7 @@
     <router-outlet #outlet="outlet"></router-outlet>
   </div>
 </div>
-@if (user()?.admin) {
-  <app-resume [(visible)]="isResumeGeneratorShown"></app-resume>
-}
+<app-resume [(visible)]="isResumeGeneratorShown"></app-resume>
 <app-animation></app-animation>
 <p-toast [life]="5000" position="bottom-right"></p-toast>
 <p-confirmDialog [dismissableMask]="true"></p-confirmDialog>
