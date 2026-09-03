@@ -96,8 +96,10 @@ export class PdfmakeService {
                                 (skillsByCategory.get(category.id) ?? []).map(async (skill): Promise<Content> => ({
                                   layout: getTableLayout(),
                                   table: {
-                                    widths: ["auto", "*", "auto"],
-                                    body: [[skill.icon ? { svg: await getDeviconSvg(skill.icon), width: iconSize } : { text: skill.title[0].toUpperCase(), fontSize: iconSize, bold: true }, { text: skill.title, style: "text5", marginLeft: 2, verticalAlignment: "middle" }, { canvas: generateDotsCanvas(skill.level, "#525252"), verticalAlignment: "middle" }]],
+                                    // widths: ["auto", "*", "auto"],
+                                    widths: ["auto", "*"],
+                                    // body: [[skill.icon ? { svg: await getDeviconSvg(skill.icon), width: iconSize } : { text: skill.title[0].toUpperCase(), fontSize: iconSize, bold: true }, { text: skill.title, style: "text5", marginLeft: 2, verticalAlignment: "middle" }, { canvas: generateDotsCanvas(skill.level, "#525252"), verticalAlignment: "middle" }]],
+                                    body: [[skill.icon ? { svg: await getDeviconSvg(skill.icon), width: iconSize } : { text: skill.title[0].toUpperCase(), fontSize: iconSize, bold: true }, { text: skill.title, style: "text5", marginLeft: 2, verticalAlignment: "middle" }]],
                                   },
                                 })),
                               )),
