@@ -1,15 +1,17 @@
 import { provideCloudinaryLoader } from "@angular/common";
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from "@angular/common/http";
+import { getAnalytics, provideAnalytics, ScreenTrackingService, UserTrackingService } from "@angular/fire/analytics";
 import { getApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
+import { initializeAppCheck, provideAppCheck, ReCaptchaEnterpriseProvider } from "@angular/fire/app-check";
 import { getAuth, provideAuth } from "@angular/fire/auth";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, provideFirestore } from "@angular/fire/firestore";
 import { bootstrapApplication } from "@angular/platform-browser";
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling, withPreloading, withViewTransitions } from "@angular/router";
+import { AppComponent } from "@app/app.component";
 import { routes } from "@app/app.routes";
 import { ConfirmationService, MessageService } from "@openng/optimus-ui/api";
 import { provideOptimus } from "@openng/optimus-ui/config";
 import { PreloadWithDataStrategy } from "@services/preload.strategy";
-import { AppComponent } from "./app/app.component";
 import { Amber } from "./themes/amber.preset";
 
 bootstrapApplication(AppComponent, {
@@ -58,6 +60,15 @@ bootstrapApplication(AppComponent, {
       }),
     ),
     provideAuth(() => getAuth()),
+    provideAnalytics(() => getAnalytics()),
+    ScreenTrackingService,
+    UserTrackingService,
+    provideAppCheck(() =>
+      initializeAppCheck(getApp(), {
+        provider: new ReCaptchaEnterpriseProvider("6Lcwe_kqAAAAAA9b5kizgsjvlZNp1_stQSEc5iSs"),
+        isTokenAutoRefreshEnabled: true,
+      }),
+    ),
     provideFirestore(() =>
       initializeFirestore(getApp(), {
         localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
