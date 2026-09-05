@@ -1,7 +1,7 @@
 import { NgOptimizedImage } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
-import { formProfile, Profile } from "@classes/profile";
+import { Profile } from "@classes/profile";
 import { CrudComponent } from "@components/crud.component";
 import { sha1 } from "@helpers/sha1";
 import { ButtonModule } from "@openng/optimus-ui/button";
@@ -9,22 +9,14 @@ import { FileUpload, FileUploadHandlerEvent } from "@openng/optimus-ui/fileuploa
 import { InputTextModule } from "@openng/optimus-ui/inputtext";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
-import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
+import { CrudService } from "@services/crud.service";
 import { ToastService } from "@services/toast.service";
-
-const SERVICE_VARIABLE: ServiceConfig<Profile> = {
-  type: Profile,
-  form: formProfile,
-  collection: "profile",
-  order: ["lastName"],
-};
 
 @Component({
   selector: "app-profile",
   imports: [FileUpload, ReactiveFormsModule, ButtonModule, NgOptimizedImage, InputTextModule],
   templateUrl: "./profile.component.html",
   styles: ``,
-  providers: [CrudService<Profile>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class ProfileComponent extends CrudComponent<Profile> {
   isUpdating = false;

@@ -1,17 +1,15 @@
-import { inject, Injectable, InjectionToken } from "@angular/core";
+import { inject, Injectable, InjectionToken, Injector } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { addDoc, collection, deleteDoc, doc, Firestore, getDoc, getDocs, orderBy, OrderByDirection, query, setDoc } from "@angular/fire/firestore";
+import { addDoc, collection, deleteDoc, doc, Firestore, getDoc, onSnapshot, orderBy, OrderByDirection, query, setDoc } from "@angular/fire/firestore";
 import { FormGroup } from "@angular/forms";
+import { Base } from "@classes/base";
 import { ReplaySubject, Subject } from "rxjs";
-import { Base } from "../classes/base";
 
 export interface ServiceConfig<T> {
   collection: string;
-  compareFn?: (a: T, b: T) => number;
   form: FormGroup;
   order: [string, OrderByDirection?];
   type: new (data: Record<string, unknown>) => T;
-  // where?: [string | FieldPath, WhereFilterOp];
 }
 
 export const SERVICE_CONFIG = new InjectionToken<ServiceConfig<unknown>>("sets parameters for crud service constructor", {
@@ -21,12 +19,11 @@ export const SERVICE_CONFIG = new InjectionToken<ServiceConfig<unknown>>("sets p
 
 @Injectable({ providedIn: "root" })
 export class CrudService<T extends Base> {
+  private static cache = new Map<string, Subject<Base[]>>();
   form: FormGroup;
   type: new (data: Record<string, unknown>) => T;
-  private __items: T[] = [];
   private _items: Subject<T[]> = new ReplaySubject(1);
   private collection: string;
-  private compareFn?: (a: T, b: T) => number;
   private db: Firestore = inject(Firestore);
   constructor() {
     const config = inject<ServiceConfig<T>>(SERVICE_CONFIG);
@@ -34,35 +31,32 @@ export class CrudService<T extends Base> {
     this.type = config.type;
     this.form = config.form;
     this.collection = config.collection;
-    if (config.compareFn) this.compareFn = config.compareFn;
-    getDocs(query(collection(this.db, "data", config.collection, config.collection), orderBy(...config.order)))
-      .then(items => {
-        items.docs.forEach(doc => this.__items.push(new config.type({ ...doc.data(), id: doc.id })));
-        this._items.next(this.__items);
-      })
-      .catch(error => console.error(error));
+
+    const cached = CrudService.cache.get(this.collection);
+    if (cached) {
+      this._items = cached as unknown as Subject<T[]>;
+      return;
+    }
+
+    this._items = new ReplaySubject(1);
+    CrudService.cache.set(this.collection, this._items as unknown as Subject<Base[]>);
+    onSnapshot(
+      query(collection(this.db, "data", config.collection, config.collection), orderBy(...config.order)),
+      snapshot => this._items.next(snapshot.docs.map(doc => new config.type({ ...doc.data(), id: doc.id }))),
+      error => console.error(error),
+    );
+  }
+  static forCollection<T extends Base>(parent: Injector, config: ServiceConfig<T>): CrudService<T> {
+    return Injector.create({ providers: [CrudService, { provide: SERVICE_CONFIG, useValue: config }], parent }).get(CrudService<T>);
   }
   create = async (item: T) => {
     try {
       item.id = (await addDoc(collection(this.db, "data", this.collection, this.collection), Object.assign({}, item))).id;
-      this.__items.push(item);
-      if (this.compareFn) this.__items.sort(this.compareFn);
-      this._items.next(this.__items);
     } catch (error) {
       console.error(error);
     }
   };
-  delete = async (item: T) => {
-    return deleteDoc(doc(this.db, "data", this.collection, this.collection, item.id))
-      .then(() => {
-        this.__items.splice(
-          this.__items.findIndex(tmp => tmp.id === item.id),
-          1,
-        );
-        this._items.next(this.__items);
-      })
-      .catch(err => console.error(err));
-  };
+  delete = async (item: T) => deleteDoc(doc(this.db, "data", this.collection, this.collection, item.id)).catch(err => console.error(err));
   getCloudinary = async (): Promise<{ api_key: string; api_secret: string } | undefined> => {
     try {
       return (await getDoc(doc(this.db, "keys", "cloudinary"))).data() as { api_key: string; api_secret: string } | undefined;
@@ -71,20 +65,6 @@ export class CrudService<T extends Base> {
       return;
     }
   };
-  getData = async <T>(type: new (...args) => T, name: string, order: [string, OrderByDirection?]): Promise<T[]> => getDocs(query(collection(this.db, "data", name, name), orderBy(...order))).then(result => result.docs.map(doc => new type({ ...doc.data(), id: doc.id })));
   items = () => this._items.pipe(takeUntilDestroyed());
-  update = async (item: T) => {
-    return setDoc(doc(this.db, "data", this.collection, this.collection, item.id), Object.assign({}, item))
-      .then(() => {
-        this.__items[this.__items.findIndex(tmp => tmp.id === item.id)] = item;
-        if (this.compareFn) this.__items.sort(this.compareFn);
-        this._items.next(this.__items);
-      })
-      .catch(err => console.error(err));
-  };
-  // private removeId = (item: T): T => {
-  //   const noid: any = new this.type(item);
-  //   delete noid.id;
-  //   return noid;
-  // };
+  update = async (item: T) => setDoc(doc(this.db, "data", this.collection, this.collection, item.id), Object.assign({}, item)).catch(err => console.error(err));
 }

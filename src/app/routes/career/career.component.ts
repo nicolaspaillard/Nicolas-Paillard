@@ -1,7 +1,8 @@
-import { Component, inject, signal } from "@angular/core";
+import { Component, inject, Injector, signal } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
+import { CONFIG_CATEGORIES, CONFIG_PROJECTS, CONFIG_SKILLS } from "@app/shared/route.configs";
 import { Category } from "@classes/category";
-import { Experience, formExperience } from "@classes/experience";
+import { Experience } from "@classes/experience";
 import { Project } from "@classes/project";
 import { Skill } from "@classes/skill";
 import { CrudComponent } from "@components/crud.component";
@@ -18,22 +19,14 @@ import { TextareaModule } from "@openng/optimus-ui/textarea";
 import { TooltipModule } from "@openng/optimus-ui/tooltip";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
-import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
+import { CrudService } from "@services/crud.service";
+import { firstValueFrom } from "rxjs";
 import { ExperienceComponent } from "./experience/experience.component";
-
-const SERVICE_VARIABLE: ServiceConfig<Experience> = {
-  type: Experience,
-  form: formExperience,
-  collection: "experiences",
-  order: ["start", "desc"],
-  compareFn: (a, b) => b.start.getTime() - a.start.getTime(),
-};
 
 @Component({
   selector: "app-career",
   imports: [ReactiveFormsModule, ExperienceComponent, DialogModule, DatePickerModule, MultiSelectModule, SelectModule, TextareaModule, InputTextModule, ButtonModule, InputGroupModule, TooltipModule, PromptComponent, PromptButtonComponent],
   templateUrl: "./career.component.html",
-  providers: [CrudService<Experience>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class CareerComponent extends CrudComponent<Experience> {
   activities: string[] = [];
@@ -52,8 +45,13 @@ export class CareerComponent extends CrudComponent<Experience> {
     const authService = inject(AuthService);
     const confirmService = inject(ConfirmService);
     super(crudService, authService, confirmService);
+
+    const injector = inject(Injector);
+    const projectsService = CrudService.forCollection(injector, CONFIG_PROJECTS);
+    const skillsService = CrudService.forCollection(injector, CONFIG_SKILLS);
+    const categoriesService = CrudService.forCollection(injector, CONFIG_CATEGORIES);
     // TODO skip if not admin
-    Promise.all([crudService.getData(Project, "projects", ["start", "desc"]), crudService.getData(Skill, "skills", ["title"]), crudService.getData(Category, "categories", ["title"])])
+    Promise.all([firstValueFrom(projectsService.items()), firstValueFrom(skillsService.items()), firstValueFrom(categoriesService.items())])
       .then(([projects, skills, categories]) => {
         this.projects.set([...projects]);
         this.skills.set([...skills]);

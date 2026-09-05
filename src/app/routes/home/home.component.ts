@@ -1,8 +1,9 @@
 import { NgOptimizedImage } from "@angular/common";
-import { Component, inject, signal } from "@angular/core";
+import { Component, inject, Injector, signal } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
+import { CONFIG_PROFILES } from "@app/shared/route.configs";
 import { Profile } from "@classes/profile";
-import { formSection, Section } from "@classes/section";
+import { Section } from "@classes/section";
 import { CrudComponent } from "@components/crud.component";
 import { PromptButtonComponent } from "@components/prompt-button/prompt-button.component";
 import { PromptComponent } from "@components/prompt/prompt.component";
@@ -13,23 +14,15 @@ import { InputTextModule } from "@openng/optimus-ui/inputtext";
 import { TextareaModule } from "@openng/optimus-ui/textarea";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
-import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
+import { CrudService } from "@services/crud.service";
 import { NgxTypedJsModule } from "ngx-typed-js";
+import { firstValueFrom } from "rxjs";
 import { SectionComponent } from "./section/section.component";
-
-const SERVICE_VARIABLE: ServiceConfig<Section> = {
-  type: Section,
-  form: formSection,
-  collection: "sections",
-  order: ["rank"],
-  compareFn: (a, b) => a.rank - b.rank,
-};
 
 @Component({
   selector: "app-home",
   imports: [NgxTypedJsModule, ButtonModule, NgOptimizedImage, SectionComponent, ReactiveFormsModule, DialogModule, ButtonModule, InputTextModule, TextareaModule, InputNumberModule, PromptComponent, PromptButtonComponent],
   templateUrl: "./home.component.html",
-  providers: [CrudService<Section>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class HomeComponent extends CrudComponent<Section> {
   profile = signal<Profile | undefined>(undefined);
@@ -40,12 +33,12 @@ export class HomeComponent extends CrudComponent<Section> {
     const confirmService = inject(ConfirmService);
 
     super(crudService, authService, confirmService);
-    crudService
-      .getData(Profile, "profile", ["lastName"])
+
+    const profileService = CrudService.forCollection(inject(Injector), CONFIG_PROFILES);
+    firstValueFrom(profileService.items())
       .then(profile => this.profile.set({ ...profile[0] }))
       .catch(err => console.error(err));
   }
-
   // testGPT = async () => {
   //   const openai = (await this.getOpenai())!;
   //   const client = new OpenAI({ apiKey: openai.api_key, dangerouslyAllowBrowser: true });

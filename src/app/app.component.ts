@@ -1,12 +1,12 @@
 // import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
-import { Component, inject, isDevMode, OnInit, signal } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
-import { AuthGuard, AuthPipe, customClaims, loggedIn } from "@angular/fire/auth-guard";
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
-import { ActivatedRoute, NavigationStart, Route, Router, RouterModule, RouterOutlet, Routes } from "@angular/router";
+import { ActivatedRoute, Route, Router, RouterModule, RouterOutlet } from "@angular/router";
+import { routes } from "@app/app.routes";
 import { AnimationComponent } from "@components/animation/animation.component";
 import { ResumeComponent } from "@components/resume/resume.component";
 import { usePreset } from "@openng/optimus-ui-themes";
@@ -26,64 +26,6 @@ import { PdfmakeService } from "@services/pdfmake.service";
 import { ToastService } from "@services/toast.service";
 import { Amber } from "@themes/amber.preset";
 import { Matrix } from "@themes/matrix.preset";
-import { forkJoin, map, mergeMap, Observable, of, pipe } from "rxjs";
-
-const combined: AuthPipe = pipe(
-  mergeMap(user => (user ? forkJoin([loggedIn(of(user)) as Observable<boolean>, customClaims(of(user)) as Observable<{ admin?: boolean }>]) : of([false, {}] as [boolean, { admin?: boolean }]))),
-  map(([isLoggedIn, claims]: [boolean, { admin?: boolean }]) => (isLoggedIn && claims.admin ? true : false)),
-);
-
-export const routes: Routes = [
-  {
-    path: "",
-    title: "Nicolas Paillard",
-    loadComponent: () => import("@routes/home/home.component").then(m => m.HomeComponent),
-    data: { animation: 0 },
-  },
-  {
-    path: "career",
-    title: "Carrière",
-    loadComponent: () => import("@routes/career/career.component").then(m => m.CareerComponent),
-    data: { animation: 1 },
-  },
-  {
-    path: "skills",
-    title: "Compétences",
-    loadComponent: () => import("@routes/skills/skills.component").then(m => m.SkillsComponent),
-    data: { animation: 2 },
-  },
-  {
-    path: "projects",
-    title: "Projets",
-    loadComponent: () => import("@routes/projects/projects.component").then(m => m.ProjectsComponent),
-    data: { animation: 3 },
-  },
-  isDevMode()
-    ? {
-        path: "pdfmake",
-        title: "PdfMake",
-        loadComponent: () => import("@routes/pdfmake/pdfmake.component").then(m => m.PdfmakeComponent),
-        canActivate: [AuthGuard],
-        data: { animation: 4, authGuardPipe: () => combined },
-      }
-    : {},
-  {
-    path: "applications",
-    title: "Candidatures",
-    loadComponent: () => import("@routes/applications/applications.component").then(m => m.ApplicationsComponent),
-    canActivate: [AuthGuard],
-    data: { animation: 5, authGuardPipe: () => combined },
-  },
-  {
-    path: "profile",
-    title: "Profil",
-    loadComponent: () => import("@routes/profile/profile.component").then(m => m.ProfileComponent),
-    canActivate: [AuthGuard],
-    data: { animation: 6, authGuardPipe: () => combined },
-  },
-  { path: "cv", children: [] },
-  { path: "**", redirectTo: "" },
-];
 
 // TODO update content with experiences on projects
 
@@ -125,13 +67,12 @@ export class AppComponent implements OnInit {
   isSigningIn = signal<boolean>(false);
   isSigningUp = signal<boolean>(false);
   isSignupShown = signal<boolean>(false);
-  isTransitioning = signal<boolean>(false);
   resume = signal<SafeResourceUrl>(inject(DomSanitizer).bypassSecurityTrustResourceUrl(""));
   routes: Route[] = routes.filter(route => route.path && route.data);
   user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   private animationService = inject(AnimationService);
   private authService = inject(AuthService);
-  private interval: NodeJS.Timeout;
+  private interval: ReturnType<typeof setInterval> | undefined;
   private pdfmakeService = inject(PdfmakeService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -152,28 +93,34 @@ export class AppComponent implements OnInit {
       .user()
       .pipe(takeUntilDestroyed())
       .subscribe(user => this.user.set(user ? { ...user } : undefined));
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationStart) {
-        // TODO animations
-        // this.isTransitioning = true;
-        // document.getElementById("router-container")!.scrollTop = 0;
-        // setTimeout(() => (this.isTransitioning = false), 600);
-      }
-      // if (event instanceof NavigationEnd) {
-      // }
-    });
   }
+  clearMatrixAnimation = () => {
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = undefined;
+    }
+  };
+  clearDecorativeShapes = () => {
+    const container = document.getElementById("animation");
+    if (container) container.replaceChildren();
+  };
   animate = () => {
-    clearInterval(this.interval);
+    this.clearMatrixAnimation();
     if (this.enableMatrix()) {
-      const canvas: HTMLCanvasElement = document.querySelector("canvas")!;
-      const context: CanvasRenderingContext2D = canvas.getContext("2d")!;
+      const canvas = document.querySelector("#matrix") as HTMLCanvasElement | null;
+      if (!canvas) return;
+
+      const context = canvas.getContext("2d");
+      if (!context) return;
+
+      this.clearDecorativeShapes();
       context.reset();
       const drops: number[] = [];
       const fontSize = 10;
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       for (let i = 0; i < canvas.width / fontSize; i++) drops[i] = canvas.height + 1;
+
       this.interval = setInterval(() => {
         const letters: string[] = "ABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZ".split("");
         context.fillStyle = "rgba(0, 0, 0, .18)";
@@ -186,21 +133,24 @@ export class AppComponent implements OnInit {
           if (drops[i] * fontSize > canvas.height && Math.random() > 0.99) drops[i] = 0;
         }
       }, 60);
-    } else {
-      if (document.querySelectorAll("#animation>span").length) return;
-      for (let i = 0; i < 15; i++) {
-        const shape = document.createElement("span");
-        shape.classList.add("border-primary", "border", "border-2", "absolute", "animate-slide", "rounded-lg");
-        shape.style.animationDelay = Math.random() * 3 + "s";
-        shape.style.animationDuration = Math.random() * 4 + 4 + "s";
-        shape.style.setProperty("--slide-distance", (Math.random() < 0.5 ? "" : "-") + Math.random() * 100 + 50 + "px");
-        shape.style.width = Math.random() * 250 + 50 + "px";
-        shape.style.height = Math.random() * 250 + 50 + "px";
-        shape.style.left = Math.random() * 100 + "%";
-        shape.style.top = Math.random() * 100 + "%";
-        shape.style.opacity = Math.random() * 0.4 + 0.1 + "";
-        document.getElementById("animation")!.append(shape);
-      }
+      return;
+    }
+
+    const animationRoot = document.getElementById("animation");
+    if (!animationRoot || animationRoot.querySelectorAll("span").length) return;
+
+    for (let i = 0; i < 15; i++) {
+      const shape = document.createElement("span");
+      shape.classList.add("border-primary", "border", "border-2", "absolute", "animate-slide", "rounded-lg");
+      shape.style.animationDelay = Math.random() * 3 + "s";
+      shape.style.animationDuration = Math.random() * 4 + 4 + "s";
+      shape.style.setProperty("--slide-distance", (Math.random() < 0.5 ? "" : "-") + Math.random() * 100 + 50 + "px");
+      shape.style.width = Math.random() * 250 + 50 + "px";
+      shape.style.height = Math.random() * 250 + 50 + "px";
+      shape.style.left = Math.random() * 100 + "%";
+      shape.style.top = Math.random() * 100 + "%";
+      shape.style.opacity = Math.random() * 0.4 + 0.1 + "";
+      animationRoot.append(shape);
     }
   };
   applyPreset = () => {
@@ -224,7 +174,12 @@ export class AppComponent implements OnInit {
       .catch(err => console.error(err));
   };
   ngOnInit() {
-    this.animate();
+    // Keep the app shell lightweight on first render. The decorative animation only starts when the user activates it.
+  }
+
+  ngOnDestroy() {
+    this.clearMatrixAnimation();
+    this.clearDecorativeShapes();
   }
   reset = () => {
     this.isResetting.set(true);

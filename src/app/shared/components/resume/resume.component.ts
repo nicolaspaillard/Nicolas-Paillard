@@ -1,6 +1,7 @@
-import { Component, inject, model, signal } from "@angular/core";
+import { Component, inject, Injector, model, signal } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { CONFIG_CATEGORIES, CONFIG_EXPERIENCES, CONFIG_PROFILES, CONFIG_SECTIONS, CONFIG_SKILLS } from "@app/shared/route.configs";
 import { Category } from "@classes/category";
 import { Experience } from "@classes/experience";
 import { Profile } from "@classes/profile";
@@ -14,6 +15,7 @@ import { TooltipModule } from "@openng/optimus-ui/tooltip";
 import { AnimationService } from "@services/animation.service";
 import { CrudService } from "@services/crud.service";
 import { PdfmakeService } from "@services/pdfmake.service";
+import { firstValueFrom } from "rxjs";
 
 @Component({
   imports: [DialogModule, MultiSelectModule, ButtonModule, FormsModule, CheckboxModule, TooltipModule, ReactiveFormsModule],
@@ -38,8 +40,14 @@ export class ResumeComponent {
   private animationService = inject(AnimationService);
   private ready: Promise<void>;
   constructor() {
-    const crudService = inject<CrudService<Skill>>(CrudService);
-    this.ready = Promise.all([crudService.getData(Section, "sections", ["rank"]), crudService.getData(Experience, "experiences", ["start", "desc"]), crudService.getData(Category, "categories", ["rank"]), crudService.getData(Skill, "skills", ["title"]), crudService.getData(Profile, "profile", ["lastName"])])
+    const injector = inject(Injector);
+    const sectionsService = CrudService.forCollection(injector, CONFIG_SECTIONS);
+    const experiencesService = CrudService.forCollection(injector, CONFIG_EXPERIENCES);
+    const categoriesService = CrudService.forCollection(injector, CONFIG_CATEGORIES);
+    const skillsService = CrudService.forCollection(injector, CONFIG_SKILLS);
+    const profileService = CrudService.forCollection(injector, CONFIG_PROFILES);
+
+    this.ready = Promise.all([firstValueFrom(sectionsService.items()), firstValueFrom(experiencesService.items()), firstValueFrom(categoriesService.items()), firstValueFrom(skillsService.items()), firstValueFrom(profileService.items())])
       .then(([sections, experiences, categories, skills, profiles]) => {
         this.sections.set(sections);
         this.experiences.set(experiences);
@@ -93,20 +101,14 @@ export class ResumeComponent {
   isGroupFullySelected(group: { items: { value: string }[] }): boolean {
     return group.items.length > 0 && group.items.every(i => this.selectedSkills().includes(i.value));
   }
-
   isGroupPartiallySelected(group: { items: { value: string }[] }): boolean {
     const someSelected = group.items.some(i => this.selectedSkills().includes(i.value));
     return someSelected && !this.isGroupFullySelected(group);
   }
   toggleGroup(group: { items: { value: string }[]; label: string }) {
     const groupValues = group.items.map(i => i.value);
-
     const allSelected = groupValues.every(v => this.selectedSkills().includes(v));
-
-    const updated = allSelected
-      ? this.selectedSkills().filter(v => !groupValues.includes(v)) // deselect all in group
-      : [...new Set([...this.selectedSkills(), ...groupValues])]; // select all in group
-
+    const updated = allSelected ? this.selectedSkills().filter(v => !groupValues.includes(v)) : [...new Set([...this.selectedSkills(), ...groupValues])];
     this.selectedSkills.set([...updated]);
   }
 }

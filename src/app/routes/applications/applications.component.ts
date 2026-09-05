@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
-import { Application, formApplication } from "@classes/application";
+import { Application } from "@classes/application";
 import { CrudComponent } from "@components/crud.component";
 import { ButtonModule } from "@openng/optimus-ui/button";
 import { DatePickerModule } from "@openng/optimus-ui/datepicker";
@@ -15,21 +15,12 @@ import { TextareaModule } from "@openng/optimus-ui/textarea";
 import { TooltipModule } from "@openng/optimus-ui/tooltip";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
-import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
-
-const SERVICE_VARIABLE: ServiceConfig<Application> = {
-  type: Application,
-  form: formApplication,
-  collection: "applications",
-  order: ["title"],
-  compareFn: (a, b) => (a.title < b.title ? -1 : a.title > b.title ? 1 : 0),
-};
+import { CrudService } from "@services/crud.service";
 
 @Component({
   selector: "app-applications",
   imports: [DialogModule, DatePickerModule, ReactiveFormsModule, TooltipModule, SelectModule, ButtonModule, InputGroupModule, FileUploadModule, CommonModule, InputTextModule, TextareaModule, DialogModule, DatePickerModule, TableModule],
   templateUrl: "./applications.component.html",
-  providers: [CrudService<Application>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class ApplicationsComponent extends CrudComponent<Application> {
   contacts: string[] = [];

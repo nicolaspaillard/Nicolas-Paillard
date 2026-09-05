@@ -1,5 +1,6 @@
-import { inject, Service } from "@angular/core";
+import { inject, Injector, Service } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
+import { CONFIG_CATEGORIES, CONFIG_EXPERIENCES, CONFIG_PROFILES, CONFIG_SECTIONS, CONFIG_SKILLS } from "@app/shared/route.configs";
 import { Category } from "@classes/category";
 import { Experience } from "@classes/experience";
 import { Profile } from "@classes/profile";
@@ -13,7 +14,8 @@ import { png } from "@cloudinary/url-gen/qualifiers/format";
 import { CrudService } from "@services/crud.service";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
-import { CanvasElement, Content, TableLayout, TDocumentDefinitions } from "pdfmake/interfaces";
+import { Content, TableLayout, TDocumentDefinitions } from "pdfmake/interfaces";
+import { firstValueFrom } from "rxjs";
 import { Step } from "./animation.service";
 
 pdfMake.addVirtualFileSystem(pdfFonts);
@@ -22,31 +24,52 @@ const iconCache = new Map<string, Promise<string>>();
 
 @Service()
 export class PdfmakeService {
-  private crudService = inject<CrudService<Skill>>(CrudService);
+  private categories: Category[] = [];
+  private experiences: Experience[] = [];
+  private injector = inject(Injector);
   private profilePicture = "";
+  private profiles: Profile[] = [];
   private ready: Promise<void>;
   private sanitizer = inject(DomSanitizer);
+  private sections: Section[] = [];
+  private skills: Skill[] = [];
   constructor() {
-    this.ready = fetch(new Cloudinary({ cloud: { cloudName: "dsuvd32up" } }).image("nicolasPaillard/profile").resize(fill().width(200).aspectRatio("1.0")).roundCorners(byRadius(12)).delivery(format(png())).toURL())
-      .then(response => {
-        if (!response.ok) throw new Error(`Cloudinary fetch failed: ${response.status}`);
-        return response.blob();
-      })
-      .then(blob => getBlobDataURL(blob))
-      .then(dataUrl => {
-        this.profilePicture = dataUrl;
-      })
+    const sectionsService = CrudService.forCollection(this.injector, CONFIG_SECTIONS);
+    const experiencesService = CrudService.forCollection(this.injector, CONFIG_EXPERIENCES);
+    const categoriesService = CrudService.forCollection(this.injector, CONFIG_CATEGORIES);
+    const skillsService = CrudService.forCollection(this.injector, CONFIG_SKILLS);
+    const profileService = CrudService.forCollection(this.injector, CONFIG_PROFILES);
+    sectionsService.items().subscribe(sections => (this.sections = sections));
+    experiencesService.items().subscribe(experiences => (this.experiences = experiences));
+    categoriesService.items().subscribe(categories => (this.categories = categories));
+    skillsService.items().subscribe(skills => (this.skills = skills));
+    profileService.items().subscribe(profiles => (this.profiles = profiles));
+    this.ready = Promise.all([
+      fetch(new Cloudinary({ cloud: { cloudName: "dsuvd32up" } }).image("nicolasPaillard/profile").resize(fill().width(200).aspectRatio("1.0")).roundCorners(byRadius(12)).delivery(format(png())).toURL())
+        .then(response => {
+          if (!response.ok) throw new Error(`Cloudinary fetch failed: ${response.status}`);
+          return response.blob();
+        })
+        .then(blob => getBlobDataURL(blob))
+        .then(dataUrl => {
+          this.profilePicture = dataUrl;
+        }),
+      firstValueFrom(sectionsService.items()),
+      firstValueFrom(experiencesService.items()),
+      firstValueFrom(categoriesService.items()),
+      firstValueFrom(skillsService.items()),
+      firstValueFrom(profileService.items()),
+    ])
+      .then(() => undefined)
       .catch(err => console.error(err));
   }
   generate = async (sections?: Section[], experiences?: Experience[], categories?: Category[], skills?: Skill[], profile?: Profile) => {
-    [sections, experiences, categories, skills, profile] = await Promise.all([
-      sections ?? this.crudService.getData(Section, "sections", ["rank"]),
-      experiences ?? this.crudService.getData(Experience, "experiences", ["start", "desc"]),
-      categories ?? this.crudService.getData(Category, "categories", ["rank"]),
-      skills ?? this.crudService.getData(Skill, "skills", ["title"]),
-      profile ?? this.crudService.getData(Profile, "profile", ["lastName"]).then(profiles => profiles[0]),
-    ]);
     await this.ready;
+    sections ??= this.sections;
+    experiences ??= this.experiences;
+    categories ??= this.categories;
+    skills ??= this.skills;
+    profile ??= this.profiles[0];
 
     const pageHeight = 841.89;
     const pageWidth = 595.28;
@@ -110,17 +133,18 @@ export class PdfmakeService {
                         {
                           layout: getTableLayout(),
                           table: {
-                            widths: ["auto", "*", "auto"],
+                            widths: ["auto", "*"],
+                            // widths: ["auto", "*", "auto"],
                             body: [
                               [
                                 { svg: icons.english, width: iconSize, verticalAlignment: "middle" },
                                 { text: "Anglais", style: "text5", marginLeft: 2, verticalAlignment: "middle" },
-                                { canvas: generateDotsCanvas(3.5, "#525252"), verticalAlignment: "middle" },
+                                // { canvas: generateDotsCanvas(3.5, "#525252"), verticalAlignment: "middle" },
                               ],
                               [
                                 { svg: icons.spanish, width: iconSize, verticalAlignment: "middle" },
                                 { text: "Espagnol", style: "text5", marginLeft: 2, verticalAlignment: "middle" },
-                                { canvas: generateDotsCanvas(2.5, "#525252"), verticalAlignment: "middle" },
+                                // { canvas: generateDotsCanvas(2.5, "#525252"), verticalAlignment: "middle" },
                               ],
                             ],
                           },
@@ -222,36 +246,6 @@ const generateHeader = (title: string, icon: string) => [
   ],
   [{ text: "", fontSize: 0, marginTop: 1, fillColor: "#fbbf24" }],
 ];
-
-const generateDotsCanvas = (value: number, color = "black", bgColor = "white"): CanvasElement[] => {
-  const clamped = Math.max(0.5, Math.min(5, Math.round(value * 2) / 2));
-  const radius = 3;
-  const gap = 1.5;
-  const diameter = radius * 2;
-  const shapes: CanvasElement[] = [];
-  for (let i = 0; i < 5; i++) {
-    const fillLevel = clamped - i;
-    const cx = radius + i * (diameter + gap);
-    const cy = radius;
-    shapes.push({
-      type: "ellipse",
-      x: cx,
-      y: cy,
-      r1: radius,
-      r2: radius,
-      color: fillLevel >= 1 ? color : bgColor,
-    });
-    if (fillLevel >= 0.5 && fillLevel < 1) {
-      const points: { x: number; y: number }[] = [];
-      for (let a = 90; a <= 270; a += 9) {
-        const rad = (a * Math.PI) / 180;
-        points.push({ x: cx + radius * Math.cos(rad), y: cy + radius * Math.sin(rad) });
-      }
-      shapes.push({ type: "polyline", closePath: true, color, points });
-    }
-  }
-  return shapes;
-};
 
 const icons = {
   english:

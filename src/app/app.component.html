@@ -33,9 +33,8 @@
       }
     </div>
   </nav>
-  <div class="shrink-0" [style.height.px]="nav.getBoundingClientRect().height + 4"></div>
-  <div class="container relative mx-auto grow overflow-x-hidden" id="router-container" [ngClass]="{ 'overflow-hidden!': isTransitioning() }">
-    <router-outlet #outlet="outlet"></router-outlet>
+  <div class="container relative mx-auto grow overflow-x-hidden!" id="router-container" [style.marginTop.px]="nav.getBoundingClientRect().height + 4">
+    <router-outlet></router-outlet>
   </div>
 </div>
 <app-resume [(visible)]="isResumeGeneratorShown"></app-resume>

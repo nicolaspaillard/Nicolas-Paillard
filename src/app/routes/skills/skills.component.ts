@@ -1,6 +1,7 @@
 import { Component, inject, Injector, signal } from "@angular/core";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
-import { Category, formCategory } from "@classes/category";
+import { CONFIG_SKILLS } from "@app/shared/route.configs";
+import { Category } from "@classes/category";
 import { formSkill, Skill } from "@classes/skill";
 import { CrudComponent } from "@components/crud.component";
 import { ButtonModule } from "@openng/optimus-ui/button";
@@ -10,27 +11,13 @@ import { InputTextModule } from "@openng/optimus-ui/inputtext";
 import { SelectModule } from "@openng/optimus-ui/select";
 import { AuthService } from "@services/auth.service";
 import { ConfirmService } from "@services/confirm.service";
-import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
+import { CrudService } from "@services/crud.service";
 import { CategoryComponent } from "./category/category.component";
-
-const SERVICE_VARIABLE: ServiceConfig<Category> = {
-  type: Category,
-  form: formCategory,
-  collection: "categories",
-  order: ["rank"],
-};
-const SERVICE_VARIABLE_SKILLS: ServiceConfig<Skill> = {
-  type: Skill,
-  form: formSkill,
-  collection: "skills",
-  order: ["title"],
-};
 
 @Component({
   selector: "app-skills",
   imports: [ReactiveFormsModule, CategoryComponent, ButtonModule, DialogModule, InputTextModule, InputNumberModule, SelectModule, InputNumberModule],
   templateUrl: "./skills.component.html",
-  providers: [CrudService<Category>, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE }],
 })
 export class SkillsComponent extends CrudComponent<Category> {
   devIcons: string[] = [
@@ -1924,10 +1911,7 @@ export class SkillsComponent extends CrudComponent<Category> {
     const confirmService = inject(ConfirmService);
 
     super(crudService, authService, confirmService);
-    this.crudServiceSkills = Injector.create({
-      providers: [CrudService, { provide: SERVICE_CONFIG, useValue: SERVICE_VARIABLE_SKILLS }],
-      parent: inject(Injector),
-    }).get(CrudService<Skill>);
+    this.crudServiceSkills = CrudService.forCollection(inject(Injector), CONFIG_SKILLS);
     this.crudServiceSkills.items().subscribe(skills => this.skills.set([...skills]));
   }
   // TODO override create to implement rank
