@@ -1,6 +1,6 @@
 // import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
-import { Component, inject, OnInit, signal } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
@@ -35,7 +35,7 @@ import { Matrix } from "@themes/matrix.preset";
   imports: [CommonModule, RouterModule, RouterOutlet, SplitButtonModule, TooltipModule, ReactiveFormsModule, ButtonModule, DialogModule, ToastModule, ConfirmDialogModule, ToggleSwitchModule, InputTextModule, PasswordModule, AnimationComponent, ProgressSpinnerModule, ResumeComponent],
   templateUrl: "./app.component.html",
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   cvButtonItems = [{ label: "Customiser", icon: "pi pi-pen-to-square", command: () => this.isResumeGeneratorShown.set(true) }];
   enableMatrix = signal<boolean>(false);
   formReset = new FormGroup(
@@ -94,25 +94,13 @@ export class AppComponent implements OnInit {
       .pipe(takeUntilDestroyed())
       .subscribe(user => this.user.set(user ? { ...user } : undefined));
   }
-  clearMatrixAnimation = () => {
-    if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = undefined;
-    }
-  };
-  clearDecorativeShapes = () => {
-    const container = document.getElementById("animation");
-    if (container) container.replaceChildren();
-  };
   animate = () => {
     this.clearMatrixAnimation();
     if (this.enableMatrix()) {
-      const canvas = document.querySelector("#matrix") as HTMLCanvasElement | null;
+      const canvas = document.querySelector<HTMLCanvasElement>("#matrix");
       if (!canvas) return;
-
       const context = canvas.getContext("2d");
       if (!context) return;
-
       this.clearDecorativeShapes();
       context.reset();
       const drops: number[] = [];
@@ -157,6 +145,16 @@ export class AppComponent implements OnInit {
     usePreset(this.enableMatrix() ? Matrix : Amber);
     this.animate();
   };
+  clearDecorativeShapes = () => {
+    const container = document.getElementById("animation");
+    if (container) container.replaceChildren();
+  };
+  clearMatrixAnimation = () => {
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = undefined;
+    }
+  };
   downloadCV = () => {
     this.isGeneratingCV.set(true);
     this.pdfmakeService
@@ -173,14 +171,7 @@ export class AppComponent implements OnInit {
       })
       .catch(err => console.error(err));
   };
-  ngOnInit() {
-    // Keep the app shell lightweight on first render. The decorative animation only starts when the user activates it.
-  }
 
-  ngOnDestroy() {
-    this.clearMatrixAnimation();
-    this.clearDecorativeShapes();
-  }
   reset = () => {
     this.isResetting.set(true);
     this.route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => {
