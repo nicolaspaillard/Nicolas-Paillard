@@ -1,6 +1,6 @@
 // import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
-import { Component, inject, signal } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
@@ -35,7 +35,7 @@ import { Matrix } from "@themes/matrix.preset";
   imports: [CommonModule, RouterModule, RouterOutlet, SplitButtonModule, TooltipModule, ReactiveFormsModule, ButtonModule, DialogModule, ToastModule, ConfirmDialogModule, ToggleSwitchModule, InputTextModule, PasswordModule, AnimationComponent, ProgressSpinnerModule, ResumeComponent],
   templateUrl: "./app.component.html",
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   cvButtonItems = [{ label: "Customiser", icon: "pi pi-pen-to-square", command: () => this.isResumeGeneratorShown.set(true) }];
   enableMatrix = signal<boolean>(false);
   formReset = new FormGroup(
@@ -72,7 +72,7 @@ export class AppComponent {
   user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   private animationService = inject(AnimationService);
   private authService = inject(AuthService);
-  private interval: ReturnType<typeof setInterval> | undefined;
+  private interval: NodeJS.Timeout;
   private pdfmakeService = inject(PdfmakeService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -94,21 +94,18 @@ export class AppComponent {
       .pipe(takeUntilDestroyed())
       .subscribe(user => this.user.set(user ? { ...user } : undefined));
   }
+
   animate = () => {
-    this.clearMatrixAnimation();
+    clearInterval(this.interval);
     if (this.enableMatrix()) {
-      const canvas = document.querySelector<HTMLCanvasElement>("#matrix");
-      if (!canvas) return;
-      const context = canvas.getContext("2d");
-      if (!context) return;
-      this.clearDecorativeShapes();
+      const canvas: HTMLCanvasElement = document.querySelector("canvas")!;
+      const context: CanvasRenderingContext2D = canvas.getContext("2d")!;
       context.reset();
       const drops: number[] = [];
       const fontSize = 10;
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       for (let i = 0; i < canvas.width / fontSize; i++) drops[i] = canvas.height + 1;
-
       this.interval = setInterval(() => {
         const letters: string[] = "ABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVXYZ".split("");
         context.fillStyle = "rgba(0, 0, 0, .18)";
@@ -121,40 +118,28 @@ export class AppComponent {
           if (drops[i] * fontSize > canvas.height && Math.random() > 0.99) drops[i] = 0;
         }
       }, 60);
-      return;
-    }
-
-    const animationRoot = document.getElementById("animation");
-    if (!animationRoot || animationRoot.querySelectorAll("span").length) return;
-
-    for (let i = 0; i < 15; i++) {
-      const shape = document.createElement("span");
-      shape.classList.add("border-primary", "border", "border-2", "absolute", "animate-slide", "rounded-lg");
-      shape.style.animationDelay = Math.random() * 3 + "s";
-      shape.style.animationDuration = Math.random() * 4 + 4 + "s";
-      shape.style.setProperty("--slide-distance", (Math.random() < 0.5 ? "" : "-") + Math.random() * 100 + 50 + "px");
-      shape.style.width = Math.random() * 250 + 50 + "px";
-      shape.style.height = Math.random() * 250 + 50 + "px";
-      shape.style.left = Math.random() * 100 + "%";
-      shape.style.top = Math.random() * 100 + "%";
-      shape.style.opacity = Math.random() * 0.4 + 0.1 + "";
-      animationRoot.append(shape);
+    } else {
+      if (document.querySelectorAll("#animation>span").length) return;
+      for (let i = 0; i < 15; i++) {
+        const shape = document.createElement("span");
+        shape.classList.add("border-primary", "border", "border-2", "absolute", "animate-slide", "rounded-lg");
+        shape.style.animationDelay = Math.random() * 3 + "s";
+        shape.style.animationDuration = Math.random() * 4 + 4 + "s";
+        shape.style.setProperty("--slide-distance", (Math.random() < 0.5 ? "" : "-") + Math.random() * 100 + 50 + "px");
+        shape.style.width = Math.random() * 250 + 50 + "px";
+        shape.style.height = Math.random() * 250 + 50 + "px";
+        shape.style.left = Math.random() * 100 + "%";
+        shape.style.top = Math.random() * 100 + "%";
+        shape.style.opacity = Math.random() * 0.4 + 0.1 + "";
+        document.getElementById("animation")!.append(shape);
+      }
     }
   };
   applyPreset = () => {
     usePreset(this.enableMatrix() ? Matrix : Amber);
     this.animate();
   };
-  clearDecorativeShapes = () => {
-    const container = document.getElementById("animation");
-    if (container) container.replaceChildren();
-  };
-  clearMatrixAnimation = () => {
-    if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = undefined;
-    }
-  };
+
   downloadCV = () => {
     this.isGeneratingCV.set(true);
     this.pdfmakeService
@@ -172,6 +157,9 @@ export class AppComponent {
       .catch(err => console.error(err));
   };
 
+  ngOnInit() {
+    this.animate();
+  }
   reset = () => {
     this.isResetting.set(true);
     this.route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => {
