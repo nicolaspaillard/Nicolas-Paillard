@@ -1,6 +1,8 @@
 import { provideCloudinaryLoader } from "@angular/common";
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from "@angular/common/http";
+import { getAnalytics, provideAnalytics, ScreenTrackingService, UserTrackingService } from "@angular/fire/analytics";
 import { getApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
+import { initializeAppCheck, provideAppCheck, ReCaptchaEnterpriseProvider } from "@angular/fire/app-check";
 import { getAuth, provideAuth } from "@angular/fire/auth";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, provideFirestore } from "@angular/fire/firestore";
 import { bootstrapApplication } from "@angular/platform-browser";
@@ -58,6 +60,15 @@ bootstrapApplication(AppComponent, {
       }),
     ),
     provideAuth(() => getAuth()),
+    provideAnalytics(() => getAnalytics()),
+    ScreenTrackingService,
+    UserTrackingService,
+    provideAppCheck(() =>
+      initializeAppCheck(getApp(), {
+        provider: new ReCaptchaEnterpriseProvider("6Lcwe_kqAAAAAA9b5kizgsjvlZNp1_stQSEc5iSs"),
+        isTokenAutoRefreshEnabled: true,
+      }),
+    ),
     provideFirestore(() =>
       initializeFirestore(getApp(), {
         localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
