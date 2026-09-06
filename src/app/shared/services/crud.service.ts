@@ -19,12 +19,13 @@ export const SERVICE_CONFIG = new InjectionToken<ServiceConfig<unknown>>("sets p
 
 @Injectable({ providedIn: "root" })
 export class CrudService<T extends Base> {
-  private static cache = new Map<string, Subject<Base[]>>();
+  private static cache = new Map<string, ReplaySubject<Base[]>>();
   form: FormGroup;
   type: new (data: Record<string, unknown>) => T;
   private _items: Subject<T[]> = new ReplaySubject(1);
   private collection: string;
   private db: Firestore = inject(Firestore);
+
   constructor() {
     const config = inject<ServiceConfig<T>>(SERVICE_CONFIG);
     if (Object.keys(config).length === 0) return;
@@ -37,14 +38,12 @@ export class CrudService<T extends Base> {
       this._items = cached as unknown as Subject<T[]>;
       return;
     }
-
-    this._items = new ReplaySubject(1);
-    CrudService.cache.set(this.collection, this._items as unknown as Subject<Base[]>);
     onSnapshot(
       query(collection(this.db, "data", config.collection, config.collection), orderBy(...config.order)),
       snapshot => this._items.next(snapshot.docs.map(doc => new config.type({ ...doc.data(), id: doc.id }))),
       error => console.error(error),
     );
+    CrudService.cache.set(this.collection, this._items as unknown as ReplaySubject<Base[]>);
   }
   static forCollection<T extends Base>(parent: Injector, config: ServiceConfig<T>): CrudService<T> {
     return Injector.create({ providers: [CrudService, { provide: SERVICE_CONFIG, useValue: config }], parent }).get(CrudService<T>);

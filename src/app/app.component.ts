@@ -137,7 +137,7 @@ export class AppComponent implements OnInit {
   };
   applyPreset = () => {
     usePreset(this.enableMatrix() ? Matrix : Amber);
-    this.animate();
+    requestAnimationFrame(() => this.animate());
   };
 
   downloadCV = () => {
@@ -158,7 +158,7 @@ export class AppComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.animate();
+    requestAnimationFrame(() => this.animate());
   }
   reset = () => {
     this.isResetting.set(true);

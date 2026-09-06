@@ -30,7 +30,7 @@ export const routes: Routes = [
     title: "Compétences",
     loadComponent: () => import("@routes/skills/skills.component").then(m => m.SkillsComponent),
     providers: [CrudService, { provide: SERVICE_CONFIG, useValue: CONFIG_CATEGORIES }],
-    data: { animation: 2, preload: true, preloadConfigs: [CONFIG_SKILLS] },
+    data: { animation: 2, preloadConfigs: [CONFIG_SKILLS] },
   },
   {
     path: "projects",
