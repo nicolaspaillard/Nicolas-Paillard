@@ -6,7 +6,7 @@
       <div class="flex gap-2">
         <p-button class="lg:hidden" [text]="true" [ngClass]="{ '[&>button]:border-primary!': menuShown.checked }" (onClick)="menuShown.checked = !menuShown.checked" icon="pi pi-bars"></p-button>
         <p-button [ngClass]="{ '[&>button]:border-none!': menuShown.checked }" [routerLinkActiveOptions]="{ exact: true }" [text]="true" routerLink="/" size="large" routerLinkActive="[&>button]:border-primary!" icon="pi pi-home"></p-button>
-        <p-splitbutton class="[&>button:first-of-type]:px-5! [&>button:last-of-type]:px-1! [&>button:first-of-type_.p-button-icon:not(.pi)]:hidden!" [model]="cvButtonItems" [icon]="isGeneratingCV() ? 'pi pi-spinner animate-spin' : undefined" (onClick)="downloadCV()" iconPos="right" label="CV" size="large"></p-splitbutton>
+        <p-splitbutton class="[&>button:first-of-type]:px-5! [&>button:last-of-type]:px-1! [&>button:first-of-type_.p-button-icon:not(.pi)]:hidden!" [model]="resumeButtonItems" [icon]="isResumeGenerating() ? 'pi pi-spinner animate-spin' : undefined" (onClick)="downloadResume()" iconPos="right" label="CV" size="large"></p-splitbutton>
         <input class="peer hidden" #menuShown type="checkbox" />
         <div class="hidden gap-2 overflow-hidden lg:flex">
           @for (route of routes; track route) {
@@ -37,7 +37,9 @@
     <router-outlet></router-outlet>
   </div>
 </div>
-<app-resume [(visible)]="isResumeGeneratorShown"></app-resume>
+@defer (when isResumeGeneratorShown()) {
+  <app-resume [(visible)]="isResumeGeneratorShown"></app-resume>
+}
 <app-animation></app-animation>
 <p-toast [life]="5000" position="bottom-right"></p-toast>
 <p-confirmDialog [dismissableMask]="true"></p-confirmDialog>
@@ -228,6 +230,6 @@
     </div>
   </form>
 </p-dialog>
-<p-dialog [(visible)]="isResumeShown" [modal]="true" [dismissableMask]="true" [resizable]="false" contentStyleClass="w-full! h-full!" styleClass="w-[calc(100%-(--spacing(10)))] h-[calc(100%-(--spacing(10)))] max-h-full!" header="C.V.">
+<p-dialog [(visible)]="isResumeShown" [modal]="true" [dismissableMask]="true" [resizable]="false" contentStyleClass="w-full! h-full!" styleClass="w-[calc(100%-(--spacing(10)))] h-[calc(100%-(--spacing(10)))] max-h-full!" header="Resume">
   <iframe class="w-full h-full" [src]="resume()"></iframe>
 </p-dialog>

@@ -26,7 +26,7 @@ import { firstValueFrom } from "rxjs";
 export class ResumeComponent {
   categories = signal<Category[]>([]);
   experiences = signal<Experience[]>([]);
-  isGeneratingCV = signal<boolean>(false);
+  isGeneratingResume = signal<boolean>(false);
   isResumeShown = signal<boolean>(false);
   pdfmakeService = inject<PdfmakeService>(PdfmakeService);
   profiles = signal<Profile[]>([]);
@@ -77,12 +77,12 @@ export class ResumeComponent {
       })
       .catch(err => console.error(err));
   }
-  downloadCV = () => {
+  downloadResume = () => {
     const selectedSkills = this.skills().filter(skill => this.selectedSkills().includes(skill.id));
     const categories = [...new Set(selectedSkills.map(skill => skill.category))];
     const selectedCategories = this.categories().filter(category => categories.includes(category.id));
     const selectedExperiences = this.experiences().filter(experience => this.selectedExperiences().includes(experience.id));
-    this.isGeneratingCV.set(true);
+    this.isGeneratingResume.set(true);
     this.visible.set(false);
     this.pdfmakeService
       .generate(this.sections(), selectedExperiences, selectedCategories, selectedSkills, this.profiles()[0])
@@ -92,7 +92,7 @@ export class ResumeComponent {
           steps: res.steps,
           callback: () => {
             this.isResumeShown.set(true);
-            this.isGeneratingCV.set(false);
+            this.isGeneratingResume.set(false);
           },
         });
       })

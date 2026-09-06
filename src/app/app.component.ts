@@ -1,6 +1,6 @@
 // import { animate, group, query, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
-import { Component, inject, OnInit, signal } from "@angular/core";
+import { Component, inject, Injector, OnInit, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
@@ -22,7 +22,6 @@ import { ToggleSwitchModule } from "@openng/optimus-ui/toggleswitch";
 import { TooltipModule } from "@openng/optimus-ui/tooltip";
 import { AnimationService } from "@services/animation.service";
 import { AuthService } from "@services/auth.service";
-import { PdfmakeService } from "@services/pdfmake.service";
 import { ToastService } from "@services/toast.service";
 import { Amber } from "@themes/amber.preset";
 import { Matrix } from "@themes/matrix.preset";
@@ -36,7 +35,6 @@ import { Matrix } from "@themes/matrix.preset";
   templateUrl: "./app.component.html",
 })
 export class AppComponent implements OnInit {
-  cvButtonItems = [{ label: "Customiser", icon: "pi pi-pen-to-square", command: () => this.isResumeGeneratorShown.set(true) }];
   enableMatrix = signal<boolean>(false);
   formReset = new FormGroup(
     {
@@ -57,9 +55,9 @@ export class AppComponent implements OnInit {
     },
     { validators: CustomValidators.matchFields("password", "passwordrepeat") },
   );
-  isGeneratingCV = signal<boolean>(false);
   isResetShown = signal<boolean>(false);
   isResetting = signal<boolean>(false);
+  isResumeGenerating = signal<boolean>(false);
   isResumeGeneratorShown = signal<boolean>(false);
   isResumeShown = signal<boolean>(false);
   isSending = signal<boolean>(false);
@@ -68,19 +66,20 @@ export class AppComponent implements OnInit {
   isSigningUp = signal<boolean>(false);
   isSignupShown = signal<boolean>(false);
   resume = signal<SafeResourceUrl>(inject(DomSanitizer).bypassSecurityTrustResourceUrl(""));
+  resumeButtonItems = [{ label: "Customiser", icon: "pi pi-pen-to-square", command: () => this.isResumeGeneratorShown.set(true) }];
   routes: Route[] = routes.filter(route => route.path && route.data);
   user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   private animationService = inject(AnimationService);
   private authService = inject(AuthService);
+  private injector = inject(Injector);
   private interval: NodeJS.Timeout;
-  private pdfmakeService = inject(PdfmakeService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private toastService = inject(ToastService);
   constructor() {
     switch (location.pathname.split("/").pop()) {
       case "cv":
-        this.downloadCV();
+        void this.downloadResume();
         break;
       case "login":
         this.isSigninShown.set(true);
@@ -140,9 +139,11 @@ export class AppComponent implements OnInit {
     requestAnimationFrame(() => this.animate());
   };
 
-  downloadCV = () => {
-    this.isGeneratingCV.set(true);
-    this.pdfmakeService
+  downloadResume = async () => {
+    this.isResumeGenerating.set(true);
+    const { PdfmakeService } = await import("@services/pdfmake.service");
+    this.injector
+      .get(PdfmakeService)
       .generate()
       .then(res => {
         this.resume.set(res.url);
@@ -150,7 +151,7 @@ export class AppComponent implements OnInit {
           steps: res.steps,
           callback: () => {
             this.isResumeShown.set(true);
-            this.isGeneratingCV.set(false);
+            this.isResumeGenerating.set(false);
           },
         });
       })

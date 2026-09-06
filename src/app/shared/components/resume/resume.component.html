@@ -35,9 +35,9 @@
     </label>
   </div>
   <div class="flex justify-end mt-2">
-    <button [loading]="isGeneratingCV()" (click)="downloadCV()" pButton>Générer</button>
+    <button [loading]="isGeneratingResume()" (click)="downloadResume()" pButton>Générer</button>
   </div>
 </p-dialog>
-<p-dialog [(visible)]="isResumeShown" [modal]="true" [dismissableMask]="true" [resizable]="false" contentStyleClass="w-full! h-full!" styleClass="w-[calc(100%-(--spacing(10)))] h-[calc(100%-(--spacing(10)))] max-h-full!" header="C.V.">
+<p-dialog [(visible)]="isResumeShown" [modal]="true" [dismissableMask]="true" [resizable]="false" contentStyleClass="w-full! h-full!" styleClass="w-[calc(100%-(--spacing(10)))] h-[calc(100%-(--spacing(10)))] max-h-full!" header="Resume">
   <iframe class="w-full h-full" [src]="resume()"></iframe>
 </p-dialog>
