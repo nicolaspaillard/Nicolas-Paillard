@@ -81,7 +81,7 @@ export class CareerComponent extends CrudComponent<Experience> {
   }
   add = (activity: string) => {
     this.activities.push(activity);
-    this.form.patchValue({ activities: this.activities.join(";") });
+    this.form.patchValue({ activities: this.activities });
   };
   override create() {
     // TODO update corresponding project
@@ -124,7 +124,6 @@ export class CareerComponent extends CrudComponent<Experience> {
   };
   override open(item?: Experience): void {
     this.activities = item && item.activities ? item.activities : [];
-    this.form.patchValue({ activities: this.activities.join(";") });
     super.open(item);
   }
   remove = (activity: string) => {

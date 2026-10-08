@@ -16,6 +16,7 @@ export class Experience extends Base {
   start: Date;
   type: "Expérience" | "Formation" | "Évènement";
   constructor(experience: Record<string, unknown>) {
+    if (!experience["activities"]) experience["activities"] = [];
     if (experience["start"] && !(experience["start"] instanceof Date)) experience["start"] = (experience["start"] as Timestamp).toDate();
     if (experience["end"] && !(experience["end"] instanceof Date)) experience["end"] = (experience["end"] as Timestamp).toDate();
     super(experience);

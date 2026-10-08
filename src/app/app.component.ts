@@ -31,7 +31,7 @@ import { Matrix } from "@themes/matrix.preset";
 @Component({
   selector: "app-root",
   // animations: [trigger("routeAnimations", [transition(":increment", slideTo("right")), transition(":decrement", slideTo("left"))])],
-  imports: [CommonModule, RouterModule, RouterOutlet, SplitButtonModule, TooltipModule, ReactiveFormsModule, ButtonModule, DialogModule, ToastModule, ConfirmDialogModule, ToggleSwitchModule, InputTextModule, PasswordModule, AnimationComponent, ProgressSpinnerModule, ResumeComponent],
+  imports: [CommonModule, RouterModule, RouterOutlet, SplitButtonModule, TooltipModule, ReactiveFormsModule, ButtonModule, SplitButtonModule, DialogModule, ToastModule, ConfirmDialogModule, ToggleSwitchModule, InputTextModule, PasswordModule, AnimationComponent, ProgressSpinnerModule, ResumeComponent],
   templateUrl: "./app.component.html",
 })
 export class AppComponent implements OnInit {
