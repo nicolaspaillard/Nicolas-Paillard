@@ -1,5 +1,6 @@
 import { provideCloudinaryLoader } from "@angular/common";
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from "@angular/common/http";
+import { provideBrowserGlobalErrorListeners } from "@angular/core";
 import { getAnalytics, provideAnalytics, ScreenTrackingService, UserTrackingService } from "@angular/fire/analytics";
 import { getApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
 import { initializeAppCheck, provideAppCheck, ReCaptchaEnterpriseProvider } from "@angular/fire/app-check";
@@ -16,6 +17,7 @@ import { Amber } from "./themes/amber.preset";
 
 bootstrapApplication(AppComponent, {
   providers: [
+    provideBrowserGlobalErrorListeners(),
     provideRouter(
       routes,
       withPreloading(PreloadWithDataStrategy),
@@ -65,7 +67,7 @@ bootstrapApplication(AppComponent, {
     UserTrackingService,
     provideAppCheck(() =>
       initializeAppCheck(getApp(), {
-        provider: new ReCaptchaEnterpriseProvider("6Lcwe_kqAAAAAA9b5kizgsjvlZNp1_stQSEc5iSs"),
+        provider: new ReCaptchaEnterpriseProvider("6LezwxwuAAAAAI-yg6gRaL6qUYgO_hz9tp8zEtgY"),
         isTokenAutoRefreshEnabled: true,
       }),
     ),
