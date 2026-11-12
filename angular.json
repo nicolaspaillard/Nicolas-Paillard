@@ -45,7 +45,6 @@
             },
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": [],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "stylePreprocessorOptions": {
@@ -61,7 +60,7 @@
                 "output": "./"
               }
             ],
-            "styles": ["src/styles.scss"],
+            "styles": ["src/styles.scss", "@openng/icons/openng-icons.css"],
             "scripts": []
           },
           "configurations": {
