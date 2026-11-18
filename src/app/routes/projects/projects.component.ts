@@ -1,7 +1,5 @@
-import { Component, effect, inject, Injector, signal } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
+import { Component, inject, Injector, signal } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
-import { ActivatedRoute } from "@angular/router";
 import { CONFIG_CATEGORIES, CONFIG_EXPERIENCES, CONFIG_SKILLS } from "@app/shared/route.configs";
 import { Category } from "@classes/category";
 import { Experience } from "@classes/experience";
@@ -22,7 +20,6 @@ import { Select, SelectModule } from "@openng/optimus-ui/select";
 import { TextareaModule } from "@openng/optimus-ui/textarea";
 import { TooltipModule } from "@openng/optimus-ui/tooltip";
 import { AuthService } from "@services/auth.service";
-import { ConfirmService } from "@services/confirm.service";
 import { CrudService } from "@services/crud.service";
 import { firstValueFrom } from "rxjs";
 import { ProjectComponent } from "./project/project.component";
@@ -36,7 +33,6 @@ export class ProjectsComponent extends CrudComponent<Project> {
   activities: string[] = [];
   categories = signal<Category[]>([]);
   experiences = signal<Experience[]>([]);
-  fragment = toSignal(inject(ActivatedRoute).fragment);
   // experiencesOptions = signal<{ label: string; value: string }[]>([]);
   // TODO remove useless "images"
   images: string;
@@ -44,44 +40,28 @@ export class ProjectsComponent extends CrudComponent<Project> {
   skills = signal<Skill[]>([]);
   skillsGroups = signal<{ items: { icon: string; label: string; value: string }[]; label: string; value: string }[]>([]);
   constructor() {
-    const crudService = inject<CrudService<Project>>(CrudService);
-    const authService = inject(AuthService);
-    const confirmService = inject(ConfirmService);
-    super(crudService, authService, confirmService);
-
-    const injector = inject(Injector);
-    const experiencesService = CrudService.forCollection(injector, CONFIG_EXPERIENCES);
-    const skillsService = CrudService.forCollection(injector, CONFIG_SKILLS);
-    const categoriesService = CrudService.forCollection(injector, CONFIG_CATEGORIES);
-    Promise.all([firstValueFrom(experiencesService.items()), firstValueFrom(skillsService.items()), firstValueFrom(categoriesService.items())])
-      .then(([experiences, skills, categories]) => {
-        this.experiences.set([...experiences]);
-        this.skills.set([...skills]);
-        this.categories.set([...categories]);
-        skills.map(skill => {
-          const skillGroup = this.skillsGroups().find(sg => sg.value === skill.category);
-          if (skillGroup) {
-            const updatedGroup = {
-              ...skillGroup,
-              items: [...skillGroup.items, { label: skill.title, value: skill.id, icon: skill.icon }],
-            };
-            this.skillsGroups.update(groups => groups.map(group => (group === skillGroup ? updatedGroup : group)));
-          } else {
-            const newcat = categories.find(category => category.id === skill.category);
-            this.skillsGroups.update(groups => [
-              ...groups,
-              {
-                label: newcat!.title,
-                value: newcat!.id,
-                items: [{ label: skill.title, value: skill.id, icon: skill.icon }],
-              },
-            ]);
-          }
-        });
-      })
-      .catch(err => console.error(err));
-
-    effect(() => this.items().length && setTimeout(id => document.getElementById(id ?? "")?.scrollIntoView({ behavior: "smooth" }), 300, this.fragment()));
+    super();
+    inject(AuthService)
+      .user()
+      .subscribe(user => {
+        const injector = inject(Injector);
+        Promise.all([firstValueFrom(CrudService.forCollection(injector, CONFIG_EXPERIENCES).items()), firstValueFrom(CrudService.forCollection(injector, CONFIG_SKILLS).items()), firstValueFrom(CrudService.forCollection(injector, CONFIG_CATEGORIES).items())])
+          .then(([experiences, skills, categories]) => {
+            this.experiences.set([...experiences]);
+            this.skills.set([...skills]);
+            this.categories.set([...categories]);
+            if (!user?.admin) return;
+            skills.map(skill => {
+              const skillGroup = this.skillsGroups().find(sg => sg.value === skill.category);
+              if (skillGroup) this.skillsGroups.update(groups => groups.map(group => (group === skillGroup ? { ...skillGroup, items: [...skillGroup.items, { label: skill.title, value: skill.id, icon: skill.icon }] } : group)));
+              else {
+                const category = categories.find(category => category.id === skill.category);
+                this.skillsGroups.update(groups => [...groups, { label: category!.title, value: category!.id, items: [{ label: skill.title, value: skill.id, icon: skill.icon }] }]);
+              }
+            });
+          })
+          .catch(err => console.error(err));
+      });
   }
   add = (activity: string) => {
     this.activities.push(activity);

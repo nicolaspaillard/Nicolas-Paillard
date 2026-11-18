@@ -17,6 +17,7 @@ import { TooltipModule } from "@openng/optimus-ui/tooltip";
 })
 export class ExperienceComponent {
   @Output() edit = new EventEmitter<Experience>();
+  @Output() link = new EventEmitter<Experience>();
   @Output() remove = new EventEmitter<Experience>();
   experience = input.required<Experience>();
   projects = input.required<{ id: string; title: string }[]>();

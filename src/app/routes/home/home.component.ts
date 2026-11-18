@@ -12,8 +12,6 @@ import { DialogModule } from "@openng/optimus-ui/dialog";
 import { InputNumberModule } from "@openng/optimus-ui/inputnumber";
 import { InputTextModule } from "@openng/optimus-ui/inputtext";
 import { TextareaModule } from "@openng/optimus-ui/textarea";
-import { AuthService } from "@services/auth.service";
-import { ConfirmService } from "@services/confirm.service";
 import { CrudService } from "@services/crud.service";
 import { NgxTypedJsModule } from "ngx-typed-js";
 import { firstValueFrom } from "rxjs";
@@ -28,11 +26,7 @@ export class HomeComponent extends CrudComponent<Section> {
   profile = signal<Profile | undefined>(undefined);
   strings: string[] = ["Web", "Backend", "Frontend", "FullStack", "SQL", "TypeScript", ".NET", "Angular", "Java", "Python"];
   constructor() {
-    const crudService = inject<CrudService<Section>>(CrudService);
-    const authService = inject(AuthService);
-    const confirmService = inject(ConfirmService);
-
-    super(crudService, authService, confirmService);
+    super();
 
     const profileService = CrudService.forCollection(inject(Injector), CONFIG_PROFILES);
     firstValueFrom(profileService.items())

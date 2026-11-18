@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, inject } from "@angular/core";
+import { Component } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { Application } from "@classes/application";
 import { CrudComponent } from "@components/crud.component";
@@ -13,9 +13,6 @@ import { SelectModule } from "@openng/optimus-ui/select";
 import { TableModule } from "@openng/optimus-ui/table";
 import { TextareaModule } from "@openng/optimus-ui/textarea";
 import { TooltipModule } from "@openng/optimus-ui/tooltip";
-import { AuthService } from "@services/auth.service";
-import { ConfirmService } from "@services/confirm.service";
-import { CrudService } from "@services/crud.service";
 
 @Component({
   selector: "app-applications",
@@ -47,11 +44,7 @@ Je reste à votre entière disposition via ce mail ou mon numéro de portable.%0
 Cordialement%0D%0A
   `;
   constructor() {
-    const crudService = inject<CrudService<Application>>(CrudService);
-    const authService = inject(AuthService);
-    const confirmService = inject(ConfirmService);
-
-    super(crudService, authService, confirmService);
+    super();
   }
   add = (item: string, field: string) => {
     this[field].push(item);

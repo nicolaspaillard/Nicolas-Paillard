@@ -1,4 +1,4 @@
-import { inject, Injectable, InjectionToken, Injector } from "@angular/core";
+import { DestroyRef, inject, Injectable, InjectionToken, Injector } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { addDoc, collection, deleteDoc, doc, Firestore, getDoc, onSnapshot, orderBy, OrderByDirection, query, setDoc } from "@angular/fire/firestore";
 import { FormGroup } from "@angular/forms";
@@ -26,6 +26,7 @@ export class CrudService<T extends Base> {
   private collection: string;
   private db: Firestore = inject(Firestore);
 
+  private destroyRef: DestroyRef = inject(DestroyRef);
   constructor() {
     const config = inject<ServiceConfig<T>>(SERVICE_CONFIG);
     if (Object.keys(config).length === 0) return;
@@ -64,6 +65,6 @@ export class CrudService<T extends Base> {
       return;
     }
   };
-  items = () => this._items.pipe(takeUntilDestroyed());
+  items = () => this._items.pipe(takeUntilDestroyed(this.destroyRef));
   update = async (item: T) => setDoc(doc(this.db, "data", this.collection, this.collection, item.id), Object.assign({}, item)).catch(err => console.error(err));
 }

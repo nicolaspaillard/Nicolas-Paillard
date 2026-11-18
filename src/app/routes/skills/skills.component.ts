@@ -1,7 +1,5 @@
 import { Component, effect, inject, Injector, signal } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
-import { ActivatedRoute } from "@angular/router";
 import { CONFIG_SKILLS } from "@app/shared/route.configs";
 import { Category } from "@classes/category";
 import { formSkill, Skill } from "@classes/skill";
@@ -11,8 +9,6 @@ import { DialogModule } from "@openng/optimus-ui/dialog";
 import { InputNumberModule } from "@openng/optimus-ui/inputnumber";
 import { InputTextModule } from "@openng/optimus-ui/inputtext";
 import { SelectModule } from "@openng/optimus-ui/select";
-import { AuthService } from "@services/auth.service";
-import { ConfirmService } from "@services/confirm.service";
 import { CrudService } from "@services/crud.service";
 import { CategoryComponent } from "./category/category.component";
 
@@ -23,26 +19,18 @@ import { CategoryComponent } from "./category/category.component";
 })
 export class SkillsComponent extends CrudComponent<Category> {
   devIcons: string[] = [];
-
   formSkill: FormGroup = formSkill;
-  fragment = toSignal(inject(ActivatedRoute).fragment);
-
   isEditingSkill = signal(false);
   isShownSkill = signal(false);
   skills = signal<Skill[]>([]);
   private crudServiceSkills = inject<CrudService<Skill>>(CrudService);
   constructor() {
-    const crudService = inject<CrudService<Category>>(CrudService);
-    const authService = inject(AuthService);
-    const confirmService = inject(ConfirmService);
-
-    super(crudService, authService, confirmService);
+    super();
     effect(() => {
       if (this.isShownSkill()) void this.loadDevIcons();
     });
     this.crudServiceSkills = CrudService.forCollection(inject(Injector), CONFIG_SKILLS);
     this.crudServiceSkills.items().subscribe(skills => this.skills.set([...skills]));
-    effect(() => this.items().length && setTimeout(id => document.getElementById(id ?? "")?.scrollIntoView({ behavior: "smooth" }), 300, this.fragment()));
   }
   // TODO override create to implement rank
   createCategory = async () =>

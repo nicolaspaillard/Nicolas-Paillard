@@ -7,9 +7,6 @@ import { sha1 } from "@helpers/sha1";
 import { ButtonModule } from "@openng/optimus-ui/button";
 import { FileUpload, FileUploadHandlerEvent } from "@openng/optimus-ui/fileupload";
 import { InputTextModule } from "@openng/optimus-ui/inputtext";
-import { AuthService } from "@services/auth.service";
-import { ConfirmService } from "@services/confirm.service";
-import { CrudService } from "@services/crud.service";
 import { ToastService } from "@services/toast.service";
 
 @Component({
@@ -23,17 +20,7 @@ export class ProfileComponent extends CrudComponent<Profile> {
   private toastService = inject(ToastService);
 
   constructor() {
-    const crudService = inject<CrudService<Profile>>(CrudService);
-    const authService = inject(AuthService);
-    const confirmService = inject(ConfirmService);
-
-    // crudService
-    //   .items()
-    //   .pipe(takeUntilDestroyed())
-    //   .subscribe(items => {
-    //     if (items().length) this.form.setValue(new Profile(items[0]));
-    //   });
-    super(crudService, authService, confirmService);
+    super();
     if (this.items().length) this.form.setValue(this.items()[0]);
   }
   // override async create() {}

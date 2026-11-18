@@ -9,7 +9,7 @@
     }
     @if (skills().length && projects().length) {
       @for (experience of items(); track experience; let index = $index) {
-        <app-experience class="nth-[n+3]:mt-5 lg:nth-[n+3]:-mt-20 block" [id]="experience.id" [class.animate-glow]="fragment() === experience.id" [experience]="experience" [skills]="getSkills(experience)" [projects]="getProjects(experience)" [right]="index % 2 !== 0" (remove)="delete(experience, 'title')" (edit)="open(experience)"></app-experience>
+        <app-experience class="nth-[n+3]:mt-5 lg:nth-[n+3]:-mt-20 block" [id]="experience.id" [class.animate-glow]="fragment() === experience.id" [experience]="experience" [skills]="getSkills(experience)" [projects]="getProjects(experience)" [right]="index % 2 !== 0" (link)="copy('/career#' + experience.id)" (remove)="delete(experience, 'title')" (edit)="open(experience)"></app-experience>
       }
     }
   </div>

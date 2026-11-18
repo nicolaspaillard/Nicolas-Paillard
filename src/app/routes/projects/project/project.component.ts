@@ -19,6 +19,7 @@ import { ImageModule } from "@openng/optimus-ui/image";
 })
 export class ProjectComponent {
   @Output() edit = new EventEmitter<Project>();
+  @Output() link = new EventEmitter();
   @Output() remove = new EventEmitter<Project>();
   cld: Cloudinary = new Cloudinary({ cloud: { cloudName: "dsuvd32up" } });
   experience = input.required<{ id: string; title: string } | undefined>();
