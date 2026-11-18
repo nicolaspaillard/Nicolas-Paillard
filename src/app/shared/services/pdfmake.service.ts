@@ -108,7 +108,7 @@ export class PdfmakeService {
                         { text: profile.address + " - Mobile", style: "text5" },
                         { text: "Permis B - Véhiculé", style: "text5" },
                         { text: profile.github, link: "https://" + profile.github, style: ["link", "text5"] },
-                        { text: profile.gitlab, link: "https://" + profile.gitlab, style: ["link", "text5"] },
+                        // { text: profile.gitlab, link: "https://" + profile.gitlab, style: ["link", "text5"] },
                         { text: profile.linkedin, link: "https://" + profile.linkedin, style: ["link", "text5"] },
                         { text: "Compétences", style: ["margin2", "text3"], bold: true },
                         ...(await Promise.all(
@@ -164,7 +164,7 @@ export class PdfmakeService {
                 body: [
                   [{ text: profile.firstName + " " + profile.lastName, style: ["title", "text1"] }],
                   [{ text: profile.title, italics: true, style: ["title", "text3"] }],
-                  [{ text: sections.map(section => section.text).join(" "), alignment: "justify", style: ["margin1", "text5"] }],
+                  [{ text: sections.map(section => section.text).join(" "), alignment: "justify", style: ["margin2", "text5"] }],
                   ...generateHeader("Expérience", icons.suitcase),
                   ...experiences.filter(e => e.type === "Expérience").map(experience => generateExperience(experience)),
                   ...generateHeader("Formation", icons.graduation),
@@ -229,7 +229,7 @@ const formatDateRange = (start: Date, end?: Date): string => {
 };
 
 const generateHeader = (title: string, icon: string) => [
-  [{ text: "", style: "margin1", fontSize: 0 }],
+  [{ text: "", style: "margin2", fontSize: 0 }],
   [
     {
       layout: getTableLayout(),
