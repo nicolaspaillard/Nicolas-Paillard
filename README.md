@@ -1,36 +1,41 @@
 # [Nicolas Paillard](https://nicolaspaillard.fr)
 
-[![Deploy to Firebase Hosting on merge](https://github.com/nicolaspaillard/nicolaspaillard.github.io/actions/workflows/firebase-hosting-merge.yml/badge.svg)](https://github.com/nicolaspaillard/nicolaspaillard.github.io/actions/workflows/firebase-hosting-merge.yml)
+[nicolaspaillard.fr](https://nicolaspaillard.fr)
+
+[![Deploy to Firebase Hosting on merge](https://github.com/nicolaspaillard/Nicolas-Paillard/actions/workflows/firebase-hosting-merge.yml/badge.svg)](https://github.com/nicolaspaillard/Nicolas-Paillard/actions/workflows/firebase-hosting-merge.yml)
 
 ## Overview
 
-A modern, interactive portfolio website built with Angular, featuring a unique matrix-style design. The site showcases my professional journey, technical skills, and project portfolio. Additionally, it includes my dynamic resume generator.
+An interactive portfolio and resume website built with Angular. It presents Nicolas Paillard's career, skills, projects, and applications, with an optional matrix-style visual theme and animated navigation.
 
-## Technical Stack
+The portfolio also includes a resume generator, protected administration sections, PDF export, image management, and AI-assisted text generation.
 
-- **Frontend**: Angular
-- **Backend**: Firebase
-- **Styling**: Tailwind
-- **UI Components**: OpenNG
-- **Image Management**: Cloudinary
-- **Authentication**: Firebase Auth
-- **Database**: Firestore
-- **Deployment**: Firebase Hosting
-- **PDF Generation**: Pdfme + custom plugin
+## Features
 
-## Key Features
+- Career, skills, projects, and profile pages
+- Visual effects and route transitions
+- PDF resume generation with PDFMake
+- Firebase Authentication and role-based administration
+- Firestore-backed portfolio content
+- Cloudinary image management
+- Gemini-powered text prompts
+- Responsive OpenNG and Tailwind CSS interface
+- Offline persistence with a multi-tab Firestore cache
 
-- ✏️ Online editing
-- 📄 Dynamic Resume Generator
-  - Customizable template
-  - Real-time preview
-  - PDF export
-- 🎨 Dynamic text animations
-- 🔐 Secure admin authentication
-- 📱 Responsive design
-- 🔄 Real-time database updates
-- 🎯 Interactive project showcase
-- 📊 Admin dashboard
-- 🌐 Multi-route navigation
-- 🎆 Matrix-style visual effects
-- 🤖 AI Prompts to generate text
+## Technology
+
+- Angular 22
+- AngularFire
+- Firebase Authentication and Firestore
+- Firebase App Check
+- Cloudinary
+- PDFMake
+- Google Gen AI SDK
+- OpenNG Optimus UI
+- Tailwind CSS
+- RxJS
+- TypeScript
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
