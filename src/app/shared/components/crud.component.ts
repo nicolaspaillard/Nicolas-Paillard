@@ -1,4 +1,4 @@
-import { effect, inject, signal } from "@angular/core";
+import { effect, inject, isDevMode, signal } from "@angular/core";
 import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
 import { User } from "@angular/fire/auth";
 import { FormGroup } from "@angular/forms";
@@ -10,7 +10,7 @@ import { CrudService } from "@services/crud.service";
 import { Base } from "../classes/base";
 
 export class CrudComponent<T extends Base> {
-  copy = inject(ClipboardService).copyWith(`https://nicolaspaillard.fr/`);
+  copy = inject(ClipboardService).copyWith(isDevMode() ? "https://192.168.1.2:4200/" : "https://nicolaspaillard.fr/");
   form: FormGroup;
   fragment = toSignal(inject(ActivatedRoute).fragment);
   isEditing = signal(false);

@@ -41,10 +41,10 @@ export class CareerComponent extends CrudComponent<Experience> {
   >([]);
   constructor() {
     super();
+    const injector = inject(Injector);
     inject(AuthService)
       .user()
       .subscribe(user => {
-        const injector = inject(Injector);
         Promise.all([firstValueFrom(CrudService.forCollection(injector, CONFIG_PROJECTS).items()), firstValueFrom(CrudService.forCollection(injector, CONFIG_SKILLS).items()), firstValueFrom(CrudService.forCollection(injector, CONFIG_CATEGORIES).items())])
           .then(([projects, skills, categories]) => {
             this.projects.set([...projects]);
