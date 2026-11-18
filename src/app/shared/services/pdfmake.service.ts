@@ -216,7 +216,7 @@ const generateExperience = (experience: Experience) => [
       { text: experience.title, style: ["margin3", "text3"] },
       { text: experience.company + formatDateRange(experience.start, experience.end), style: ["date", "text4"] },
       ...(experience.description && experience.description.length ? [{ text: experience.description, style: "text5" }] : []),
-      ...(experience.activities && experience.activities.length ? [{ ul: experience.activities, style: "text5" }] : []),
+      ...(experience.activities && experience.activities.length ? [{ ul: [...experience.activities], style: "text5" }] : []),
     ],
   },
 ];
