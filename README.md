@@ -6,7 +6,7 @@
 
 ## Overview
 
-An interactive portfolio and resume website built with Angular. It presents Nicolas Paillard's career, skills, projects, and applications, with an optional matrix-style visual theme and animated navigation.
+An interactive portfolio and resume website built with Angular. It presents my career, skills, and projects, with an optional matrix-style visual theme and animated navigation.
 
 The portfolio also includes a resume generator, protected administration sections, PDF export, image management, and AI-assisted text generation.
 
