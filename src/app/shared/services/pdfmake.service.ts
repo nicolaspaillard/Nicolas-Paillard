@@ -170,7 +170,7 @@ export class PdfmakeService {
                   ...generateHeader("Formation", icons.graduation),
                   ...experiences.filter(e => e.type === "Formation").map(experience => generateExperience(experience)),
                   ...generateHeader("Centres d'intérêt", icons.star),
-                  [{ text: "Voyages • Pêche • Randonnée & camping • Cuisine & restaurants • Conception et maintenance d’un système de sonorisation • Organisation d’événements • Cinéma & séries", style: ["text5", "margin2"] }],
+                  [{ text: "Voyages • Pêche • Randonnée & camping • Cuisine & restaurants • Self-Hosting • Conception et maintenance d’un système de sonorisation • Organisation d’événements • Cinéma & séries", style: ["text5", "margin2"] }],
                 ],
               },
             },
@@ -213,7 +213,7 @@ export class PdfmakeService {
 const generateExperience = (experience: Experience) => [
   {
     stack: [
-      { text: experience.title, style: ["margin2", "text3"] },
+      { text: experience.title, style: ["margin3", "text3"] },
       { text: experience.company + formatDateRange(experience.start, experience.end), style: ["date", "text4"] },
       ...(experience.description && experience.description.length ? [{ text: experience.description, style: "text5" }] : []),
       ...(experience.activities && experience.activities.length ? [{ ul: experience.activities, style: "text5" }] : []),
