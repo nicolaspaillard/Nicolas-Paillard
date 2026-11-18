@@ -1,5 +1,7 @@
-import { Component, inject, Injector, signal } from "@angular/core";
+import { Component, effect, inject, Injector, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { ReactiveFormsModule } from "@angular/forms";
+import { ActivatedRoute } from "@angular/router";
 import { CONFIG_CATEGORIES, CONFIG_PROJECTS, CONFIG_SKILLS } from "@app/shared/route.configs";
 import { Category } from "@classes/category";
 import { Experience } from "@classes/experience";
@@ -31,6 +33,7 @@ import { ExperienceComponent } from "./experience/experience.component";
 export class CareerComponent extends CrudComponent<Experience> {
   activities: string[] = [];
   categories = signal<Category[]>([]);
+  fragment = toSignal(inject(ActivatedRoute).fragment);
   projects = signal<Project[]>([]);
   skills = signal<Skill[]>([]);
   skillsGroups = signal<
@@ -78,13 +81,14 @@ export class CareerComponent extends CrudComponent<Experience> {
         });
       })
       .catch(err => console.error(err));
+    effect(() => this.items().length && setTimeout(id => document.getElementById(id ?? "")?.scrollIntoView({ behavior: "smooth" }), 300, this.fragment()));
   }
   add = (activity: string) => {
     this.activities.push(activity);
     this.form.patchValue({ activities: this.activities });
   };
   override create() {
-    // TODO update corresponding project
+    // TODO update corresponding projects
     return super.create();
   }
   getProjects = (experience: Experience) => {

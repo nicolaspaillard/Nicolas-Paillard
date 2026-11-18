@@ -12,10 +12,10 @@
   .animate-slide {
     animation: slide 3s infinite alternate ease-in-out;
   }
+  .animate-glow > :nth-child(1) {
+    animation: glow 1s infinite alternate linear;
+  }
 }
-
-/* TODO Implement route transition animation */
-/* animate only the route container */
 
 ::view-transition-old(route-content),
 ::view-transition-new(route-content) {
@@ -62,6 +62,15 @@
   }
   to {
     transform: translateY(var(--slide-distance));
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px 0 var(--p-primary-color);
+  }
+  to {
+    box-shadow: none;
   }
 }
 

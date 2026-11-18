@@ -1,5 +1,7 @@
 import { Component, effect, inject, Injector, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
+import { ActivatedRoute } from "@angular/router";
 import { CONFIG_SKILLS } from "@app/shared/route.configs";
 import { Category } from "@classes/category";
 import { formSkill, Skill } from "@classes/skill";
@@ -22,22 +24,13 @@ import { CategoryComponent } from "./category/category.component";
 export class SkillsComponent extends CrudComponent<Category> {
   devIcons: string[] = [];
 
-  private async loadDevIcons(): Promise<void> {
-    try {
-      const response = await fetch("/assets/dev-icons.json", { cache: "force-cache" });
-      if (!response.ok) throw new Error(`Failed to load icons (${response.status})`);
-      this.devIcons = (await response.json()) as string[];
-    } catch (error) {
-      console.error("Unable to load developer icons", error);
-    }
-  }
-
   formSkill: FormGroup = formSkill;
+  fragment = toSignal(inject(ActivatedRoute).fragment);
+
   isEditingSkill = signal(false);
   isShownSkill = signal(false);
   skills = signal<Skill[]>([]);
   private crudServiceSkills = inject<CrudService<Skill>>(CrudService);
-
   constructor() {
     const crudService = inject<CrudService<Category>>(CrudService);
     const authService = inject(AuthService);
@@ -49,6 +42,7 @@ export class SkillsComponent extends CrudComponent<Category> {
     });
     this.crudServiceSkills = CrudService.forCollection(inject(Injector), CONFIG_SKILLS);
     this.crudServiceSkills.items().subscribe(skills => this.skills.set([...skills]));
+    effect(() => this.items().length && setTimeout(id => document.getElementById(id ?? "")?.scrollIntoView({ behavior: "smooth" }), 300, this.fragment()));
   }
   // TODO override create to implement rank
   createCategory = async () =>
@@ -69,4 +63,13 @@ export class SkillsComponent extends CrudComponent<Category> {
     });
   filter = (category: Category) => (skill: Skill) => skill.category === category.id;
   updateSkill = async () => this.createCategory().then(() => this.crudServiceSkills.update(formSkill.value as Skill));
+  private async loadDevIcons(): Promise<void> {
+    try {
+      const response = await fetch("/assets/dev-icons.json", { cache: "force-cache" });
+      if (!response.ok) throw new Error(`Failed to load icons (${response.status})`);
+      this.devIcons = (await response.json()) as string[];
+    } catch (error) {
+      console.error("Unable to load developer icons", error);
+    }
+  }
 }

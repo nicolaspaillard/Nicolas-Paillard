@@ -1,5 +1,7 @@
-import { Component, inject, Injector, signal } from "@angular/core";
+import { Component, effect, inject, Injector, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { ReactiveFormsModule } from "@angular/forms";
+import { ActivatedRoute } from "@angular/router";
 import { CONFIG_CATEGORIES, CONFIG_EXPERIENCES, CONFIG_SKILLS } from "@app/shared/route.configs";
 import { Category } from "@classes/category";
 import { Experience } from "@classes/experience";
@@ -34,6 +36,7 @@ export class ProjectsComponent extends CrudComponent<Project> {
   activities: string[] = [];
   categories = signal<Category[]>([]);
   experiences = signal<Experience[]>([]);
+  fragment = toSignal(inject(ActivatedRoute).fragment);
   // experiencesOptions = signal<{ label: string; value: string }[]>([]);
   // TODO remove useless "images"
   images: string;
@@ -77,6 +80,8 @@ export class ProjectsComponent extends CrudComponent<Project> {
         });
       })
       .catch(err => console.error(err));
+
+    effect(() => this.items().length && setTimeout(id => document.getElementById(id ?? "")?.scrollIntoView({ behavior: "smooth" }), 300, this.fragment()));
   }
   add = (activity: string) => {
     this.activities.push(activity);

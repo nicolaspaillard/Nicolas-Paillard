@@ -7,7 +7,7 @@ import { initializeAppCheck, provideAppCheck, ReCaptchaEnterpriseProvider } from
 import { getAuth, provideAuth } from "@angular/fire/auth";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, provideFirestore } from "@angular/fire/firestore";
 import { bootstrapApplication } from "@angular/platform-browser";
-import { provideRouter, withComponentInputBinding, withInMemoryScrolling, withPreloading, withViewTransitions } from "@angular/router";
+import { provideRouter, withComponentInputBinding, withPreloading, withViewTransitions } from "@angular/router";
 import { AppComponent } from "@app/app.component";
 import { routes } from "@app/app.routes";
 import { ConfirmationService, MessageService } from "@openng/optimus-ui/api";
@@ -35,10 +35,9 @@ bootstrapApplication(AppComponent, {
             .catch(err => console.error(err));
         },
       }),
-      withInMemoryScrolling({
-        scrollPositionRestoration: "enabled",
-        anchorScrolling: "enabled",
-      }),
+      // withInMemoryScrolling({
+      //   scrollPositionRestoration: "enabled",
+      // }),
     ),
     provideHttpClient(withXhr(), withInterceptorsFromDi()),
     provideOptimus({
