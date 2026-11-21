@@ -10,8 +10,21 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Aldrich&display=swap" />
-    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+    <link rel="preconnect" href="https://res.cloudinary.com" />
     <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin />
+    <script>
+      if (location.pathname === "/") {
+        var base = "https://res.cloudinary.com/dsuvd32up/image/upload/f_auto,q_auto,";
+        var l = document.createElement("link");
+        l.setAttribute("rel", "preload");
+        l.setAttribute("as", "image");
+        l.setAttribute("fetchpriority", "high");
+        l.setAttribute("href", base + "w_600/nicolaspaillard/profile");
+        l.setAttribute("imagesrcset", base + "w_300/nicolaspaillard/profile 300w, " + base + "w_600/nicolaspaillard/profile 600w");
+        l.setAttribute("imagesizes", "100vw");
+        document.head.appendChild(l);
+      }
+    </script>
   </head>
   <body>
     <app-root></app-root>
