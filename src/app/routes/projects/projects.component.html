@@ -12,7 +12,7 @@
     }
   </div>
 </div>
-@if (user()?.admin) {
+@defer (when user()?.admin) {
   <p-dialog [(visible)]="isShown" [modal]="true" [header]="(isEditing() ? 'Modifier' : 'Ajouter') + ' un projet'" [dismissableMask]="true">
     <form class="grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col" [formGroup]="form">
       <input type="hidden" formControlName="id" />

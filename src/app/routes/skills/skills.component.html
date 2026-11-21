@@ -20,7 +20,7 @@
     }
   </div>
 </div>
-@if (user()?.admin) {
+@defer (when user()?.admin) {
   <p-dialog [(visible)]="isShown" [modal]="true" [dismissableMask]="true" [header]="(isEditing() ? 'Modifier' : 'Ajouter') + ' une catégorie'">
     <form class="flex flex-col gap-2" [formGroup]="form">
       @if (isEditing()) {
