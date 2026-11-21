@@ -6,9 +6,10 @@ import { initializeAppCheck, provideAppCheck, ReCaptchaEnterpriseProvider } from
 import { getAuth, provideAuth } from "@angular/fire/auth";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, provideFirestore } from "@angular/fire/firestore";
 import { bootstrapApplication } from "@angular/platform-browser";
-import { provideRouter, withComponentInputBinding, withViewTransitions } from "@angular/router";
+import { provideRouter, withComponentInputBinding, withPreloading, withViewTransitions } from "@angular/router";
 import { App } from "@app/app";
 import { routes } from "@app/app.routes";
+import { PreloadWithDataStrategy } from "@app/preload.strategy";
 import { ConfirmationService, MessageService } from "@openng/optimus-ui/api";
 import { provideOptimus } from "@openng/optimus-ui/config";
 import { Amber } from "./themes/amber.preset";
@@ -18,7 +19,7 @@ bootstrapApplication(App, {
     provideBrowserGlobalErrorListeners(),
     provideRouter(
       routes,
-      // withPreloading(PreloadWithDataStrategy),
+      withPreloading(PreloadWithDataStrategy),
       withComponentInputBinding(),
       withViewTransitions({
         skipInitialTransition: true,
@@ -52,7 +53,6 @@ bootstrapApplication(App, {
         storageBucket: "nicolas-paillard.firebasestorage.app",
         messagingSenderId: "95010764775",
         appId: "1:95010764775:web:e31ecc087cb7e98d5bef42",
-        measurementId: "G-TP7L771J2P",
       }),
     ),
     provideAuth(() => getAuth()),
