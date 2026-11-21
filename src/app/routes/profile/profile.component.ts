@@ -37,7 +37,7 @@ export class ProfileComponent extends Crud<Profile> {
       this.isUpdating = false;
     }
   }
-  updatePhoto = async (event: FileUploadHandlerEvent) => {
+  updatePhoto = async (event: FileUploadHandlerEvent): Promise<void> => {
     const timestamp: string = Math.round(new Date().getTime() / 1000).toString();
     const cloudinary = (await this.getCloudinary())!;
     const formData: FormData = new FormData();
@@ -50,16 +50,15 @@ export class ProfileComponent extends Crud<Profile> {
     formData.append("timestamp", timestamp);
     formData.append("signature", sha1(new URLSearchParams({ folder: "nicolasPaillard", invalidate: "true", public_id: "profile", timestamp: timestamp, upload_preset: "ml_default" }).toString() + cloudinary.api_secret));
     formData.append("folder", "nicolasPaillard");
-    fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/upload`, { method: "POST", body: formData })
-      .then(async response => {
-        const data = JSON.parse(await response.text());
-        if (data.public_id) return data.public_id.split("/")[1];
-        console.error(data);
-        return false;
-      })
-      .catch(error => {
-        console.error(error);
-        return false;
-      });
+    try {
+      const response = await fetch(`https://api.cloudinary.com/v1_1/dsuvd32up/image/upload`, { method: "POST", body: formData });
+      const data: unknown = JSON.parse(await response.text()) as unknown;
+      if (typeof data === "object" && data !== null && "public_id" in data && typeof data.public_id === "string") {
+        return;
+      }
+      console.error(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 }

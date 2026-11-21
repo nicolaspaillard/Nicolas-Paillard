@@ -1,5 +1,5 @@
 import { provideCloudinaryLoader } from "@angular/common";
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from "@angular/common/http";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { provideBrowserGlobalErrorListeners } from "@angular/core";
 import { getAnalytics, provideAnalytics, ScreenTrackingService, UserTrackingService } from "@angular/fire/analytics";
 import { getApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
@@ -39,7 +39,7 @@ bootstrapApplication(App, {
       //   scrollPositionRestoration: "enabled",
       // }),
     ),
-    provideHttpClient(withXhr(), withInterceptorsFromDi()),
+    provideHttpClient(withInterceptorsFromDi()),
     provideOptimus({
       theme: { preset: Amber },
       ripple: true,

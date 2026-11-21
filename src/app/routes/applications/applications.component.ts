@@ -46,20 +46,20 @@ Cordialement%0D%0A
   constructor() {
     super();
   }
-  add = (item: string, field: string) => {
-    this[field].push(item);
+  add = (item: string, field: "links" | "contacts") => {
+    this[field] = [...this[field], item];
     this.form.patchValue({ [field]: this[field].join(";") });
   };
   mail = (application: Application) => {
     let body = this.model;
     [["annonce", "entreprise"]].forEach((value, index) => (body = body.replace(`[${index}]`, value[application.type === "Annonce" ? 0 : 1])));
     [["link", application.links.split(";")[0].split("://").pop()]].forEach(value => (body = body.replace(`[${value[0]}]`, value[1] ? value[1] + "%0D%0A" : "")));
-    open("mailto:" + application.contacts.split(",") + "?subject=Candidature " + application.title + " Nicolas Paillard&body=" + body, "_blank");
+    window.open("mailto:" + application.contacts + "?subject=Candidature " + application.title + " Nicolas Paillard&body=" + body, "_blank");
   };
-  move = (item: string, field: string, up = false) => {
+  move = (item: string, field: "links" | "contacts", up = false) => {
     const fromIndex = this[field].indexOf(item);
-    if ((fromIndex == 0 && up) || (fromIndex == this.links.length - 1 && !up)) return;
-    const element = this.links[fromIndex];
+    if ((fromIndex === 0 && up) || (fromIndex === this[field].length - 1 && !up)) return;
+    const element = this[field][fromIndex];
     this[field].splice(fromIndex, 1);
     this[field].splice(fromIndex + (up ? -1 : 1), 0, element);
     this.form.patchValue({ [field]: this[field].join(";") });
@@ -69,8 +69,8 @@ Cordialement%0D%0A
     this.contacts = item && item.contacts ? item.contacts.split(";") : [];
     super.open(item);
   }
-  remove = (item: string, field: string) => {
-    this[field] = this[field].filter((itm: string) => itm != item);
-    this.form.patchValue({ links: this.links.join(";") });
+  remove = (item: string, field: "links" | "contacts") => {
+    this[field] = this[field].filter((itm: string) => itm !== item);
+    this.form.patchValue({ [field]: this[field].join(";") });
   };
 }

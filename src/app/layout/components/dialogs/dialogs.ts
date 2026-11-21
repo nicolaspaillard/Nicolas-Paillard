@@ -2,7 +2,7 @@ import { NgClass, NgTemplateOutlet } from "@angular/common";
 import { Component, effect, inject, Injector, signal } from "@angular/core";
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { AnimationService } from "@app/layout/animation/animation.service";
+import { AnimationService } from "@app/layout/components/animation/animation.service";
 import { AuthService } from "@app/layout/services/auth.service";
 import { ToastService } from "@app/layout/services/toast.service";
 import { Category } from "@classes/category";

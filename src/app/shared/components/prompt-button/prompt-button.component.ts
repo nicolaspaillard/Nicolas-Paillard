@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from "@angular/core";
+import { Component, output } from "@angular/core";
 import { TooltipModule } from "@openng/optimus-ui/tooltip";
 
 @Component({
@@ -8,5 +8,5 @@ import { TooltipModule } from "@openng/optimus-ui/tooltip";
   styles: ``,
 })
 export class PromptButtonComponent {
-  @Output() onClick = new EventEmitter();
+  readonly promptClick = output();
 }

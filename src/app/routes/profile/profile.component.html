@@ -4,7 +4,7 @@
       <div class="absolute right-0 top-0 z-10">
         <p-fileupload class="mix-blend-overlay transition-opacity group-hover:opacity-100 lg:opacity-0" [customUpload]="true" [auto]="true" (uploadHandler)="updatePhoto($event)" mode="basic" chooseIcon="pi pi-pencil" accept="image/*" maxFileSize="1000000" chooseLabel="" chooseStyleClass="p-button-icon-only p-button-text p-button-sm text-primary!" />
       </div>
-      <img class="block" ngSrc="nicolaspaillard/profile" sizes="(max-width: 768px) 100vw, 30vw" priority placeholder fill />
+      <img class="block" ngSrc="nicolaspaillard/profile" alt="Photo de profil de Nicolas Paillard" sizes="(max-width: 768px) 100vw, 30vw" priority placeholder fill />
     </div>
     <div class="w-full flex flex-col gap-5">
       <form class="w-full grid gap-2 md:grid-cols-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col" [formGroup]="form">

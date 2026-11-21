@@ -1,4 +1,4 @@
-import { Component, effect, inject } from "@angular/core";
+import { Component, DestroyRef, effect, inject } from "@angular/core";
 import { usePreset } from "@openng/optimus-ui-themes";
 import { Amber } from "@themes/amber.preset";
 import { Matrix } from "@themes/matrix.preset";
@@ -14,12 +14,22 @@ const SHAPES_COUNT = 15;
 })
 export class Background {
   protected readonly background = inject(BackgroundService);
+  private destroyRef = inject(DestroyRef);
   private interval?: ReturnType<typeof setInterval>;
+  private readonly handleVisibilityChange = () => {
+    if (document.hidden) clearInterval(this.interval);
+    else this.animate();
+  };
 
   constructor() {
     effect(() => {
       usePreset(this.background.enableMatrix() ? Matrix : Amber);
       requestAnimationFrame(() => this.animate());
+    });
+    document.addEventListener("visibilitychange", this.handleVisibilityChange);
+    this.destroyRef.onDestroy(() => {
+      clearInterval(this.interval);
+      document.removeEventListener("visibilitychange", this.handleVisibilityChange);
     });
   }
 

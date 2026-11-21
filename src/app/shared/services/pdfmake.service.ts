@@ -16,7 +16,7 @@ import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import { Content, TableLayout, TDocumentDefinitions } from "pdfmake/interfaces";
 import { firstValueFrom } from "rxjs";
-import { Step } from "../../layout/animation/animation.service";
+import { Step } from "../../layout/components/animation/animation.service";
 
 pdfMake.addVirtualFileSystem(pdfFonts);
 

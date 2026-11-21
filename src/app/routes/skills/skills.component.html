@@ -5,7 +5,7 @@
         <p-button class="block text-center" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
       </div>
     }
-    @for (category of items(); track category) {
+    @for (category of items(); track category.id) {
       <app-category
         class="flex-[0_0_100%] md:flex-[0_0_calc(50%-(--spacing(5)))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))]"
         [id]="category.id"

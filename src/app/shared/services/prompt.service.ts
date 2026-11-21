@@ -1,13 +1,16 @@
 import { inject, Injectable } from "@angular/core";
 import { doc, Firestore, getDoc } from "@angular/fire/firestore";
-import { ApiError, GoogleGenAI, Model } from "@google/genai";
+import type { ApiError, Model } from "@google/genai";
 
 @Injectable({
   providedIn: "root",
 })
 export class PromptService {
   private db: Firestore = inject(Firestore);
-  getAi = async () => new GoogleGenAI({ apiKey: (await getDoc(doc(this.db, "keys", "gemini"))).get("api_key") as string });
+  getAi = async () => {
+    const { GoogleGenAI } = await import("@google/genai");
+    return new GoogleGenAI({ apiKey: (await getDoc(doc(this.db, "keys", "gemini"))).get("api_key") as string });
+  };
   getModels = async (): Promise<string[]> => {
     const ai = await this.getAi();
     // const models = (await ai.models.list({ config: { pageSize: 1000 } })).page.filter(model => {});

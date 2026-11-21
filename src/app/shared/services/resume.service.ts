@@ -1,6 +1,6 @@
 import { inject, Injector, Service, signal } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
-import { AnimationService } from "@app/layout/animation/animation.service";
+import { AnimationService } from "@app/layout/components/animation/animation.service";
 
 @Service()
 export class ResumeService {

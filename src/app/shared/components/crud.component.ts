@@ -29,7 +29,12 @@ export class Crud<T extends Base> {
         this.items.set([...items]);
       });
     this.form = this.crudService.form;
-    effect(() => this.fragment() && this.items().length && setTimeout(id => document.getElementById(id ?? "")?.scrollIntoView({ behavior: "smooth" }), 300, this.fragment()));
+    effect(onCleanup => {
+      if (!this.fragment() || !this.items().length) return;
+      const id = this.fragment();
+      const timeout = setTimeout(() => document.getElementById(id ?? "")?.scrollIntoView({ behavior: "smooth" }), 300);
+      onCleanup(() => clearTimeout(timeout));
+    });
   }
   async create(item?: T) {
     await this.crudService.create(item ? item : (this.form.value as T)).then(() => this.isShown.set(false));

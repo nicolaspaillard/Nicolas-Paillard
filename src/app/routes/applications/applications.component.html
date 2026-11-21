@@ -112,9 +112,9 @@
       Société
       <input pInputText formControlName="company" />
     </label>
-    <label>
+    <label for="type">
       Type
-      <p-select [options]="['Annonce', 'Spontané']" formControlName="type" placeholder="Type"></p-select>
+      <p-select [options]="['Annonce', 'Spontané']" inputId="type" formControlName="type" placeholder="Type"></p-select>
     </label>
     <label>
       Secteur
@@ -132,25 +132,25 @@
       Commentaires
       <textarea pTextarea formControlName="comments"></textarea>
     </label>
-    <label>
+    <label for="answer">
       Réponse
-      <textarea pTextarea formControlName="answer"></textarea>
+      <textarea id="answer" pTextarea formControlName="answer"></textarea>
     </label>
     <label for="lnk">
       Liens
       @for (link of links; track link) {
         <div class="relative flex items-center justify-between">
-          <span class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="lnk.value = link">•&nbsp;&nbsp;{{ link }}</span>
+          <button class="p-button-sm p-button-text p-button-contrast max-w-75 cursor-pointer truncate rounded-md" (click)="lnk.value = link" type="button">•&nbsp;&nbsp;{{ link }}</button>
           <div class="flex">
-            <p-button [disabled]="links[0] == link" [text]="true" (onClick)="move(link, 'links', true)" icon="pi pi-angle-up" size="small" severity="secondary" />
-            <p-button [disabled]="links[links.length - 1] == link" [text]="true" (onClick)="move(link, 'links')" icon="pi pi-angle-down" size="small" severity="secondary" />
-            <p-button [text]="true" (onClick)="remove(link, 'links')" icon="pi pi-trash" size="small" severity="danger" />
+            <p-button [disabled]="links[0] === link" [text]="true" (onClick)="move(link, 'links', true)" icon="pi pi-angle-up" size="small" severity="secondary" aria-label="Monter le lien" />
+            <p-button [disabled]="links[links.length - 1] === link" [text]="true" (onClick)="move(link, 'links')" icon="pi pi-angle-down" size="small" severity="secondary" aria-label="Descendre le lien" />
+            <p-button [text]="true" (onClick)="remove(link, 'links')" icon="pi pi-trash" size="small" severity="danger" aria-label="Supprimer le lien" />
           </div>
         </div>
       }
       <p-inputGroup>
         <input id="lnk" #lnk pInputText placeholder="Lien" />
-        <button [disabled]="!lnk.value" (click)="add(lnk.value, 'links')" type="button" pButton icon="pi pi-plus"></button>
+        <button [disabled]="!lnk.value" (click)="add(lnk.value, 'links')" type="button" pButton icon="pi pi-plus" aria-label="Ajouter le lien"></button>
       </p-inputGroup>
     </label>
     <label for="ctt">
@@ -158,32 +158,32 @@
       @if (contacts && contacts.length) {
         @for (contact of contacts; track contact) {
           <div class="relative flex items-center justify-between">
-            <span class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="ctt.value = contact">•&nbsp;&nbsp;{{ contact }}</span>
+            <button class="p-button-sm p-button-text p-button-contrast max-w-[300px] cursor-pointer truncate rounded-md" (click)="ctt.value = contact" type="button">•&nbsp;&nbsp;{{ contact }}</button>
             <div class="flex">
-              <p-button [disabled]="contacts[0] == contact" [text]="true" (onClick)="move(contact, 'contacts', true)" icon="pi pi-angle-up" size="small" severity="secondary" />
-              <p-button [disabled]="contacts[contacts.length - 1] == contact" [text]="true" (onClick)="move(contact, 'contacts')" icon="pi pi-angle-down" size="small" severity="secondary" />
-              <p-button [text]="true" (onClick)="remove(contact, 'contacts')" icon="pi pi-trash" size="small" severity="danger" />
+              <p-button [disabled]="contacts[0] === contact" [text]="true" (onClick)="move(contact, 'contacts', true)" icon="pi pi-angle-up" size="small" severity="secondary" aria-label="Monter le contact" />
+              <p-button [disabled]="contacts[contacts.length - 1] === contact" [text]="true" (onClick)="move(contact, 'contacts')" icon="pi pi-angle-down" size="small" severity="secondary" aria-label="Descendre le contact" />
+              <p-button [text]="true" (onClick)="remove(contact, 'contacts')" icon="pi pi-trash" size="small" severity="danger" aria-label="Supprimer le contact" />
             </div>
           </div>
         }
       }
       <p-inputGroup>
         <input id="ctt" #ctt pInputText placeholder="Contact" />
-        <button [disabled]="!ctt.value" (click)="add(ctt.value, 'contacts')" type="button" pButton icon="pi pi-plus"></button>
+        <button [disabled]="!ctt.value" (click)="add(ctt.value, 'contacts')" type="button" pButton icon="pi pi-plus" aria-label="Ajouter le contact"></button>
       </p-inputGroup>
     </label>
     <div class="grid gap-2 md:col-span-2 md:grid-cols-3">
-      <label>
+      <label for="contact-date">
         Contact
-        <p-datepicker styleClass="w-full" formControlName="contactDate" dateFormat="dd/mm/yy"></p-datepicker>
+        <p-datepicker inputId="contact-date" styleClass="w-full" formControlName="contactDate" dateFormat="dd/mm/yy"></p-datepicker>
       </label>
-      <label>
+      <label for="relaunch-date">
         Relance
-        <p-datepicker styleClass="w-full" formControlName="relaunchDate" dateFormat="dd/mm/yy"></p-datepicker>
+        <p-datepicker inputId="relaunch-date" styleClass="w-full" formControlName="relaunchDate" dateFormat="dd/mm/yy"></p-datepicker>
       </label>
-      <label>
+      <label for="answer-date">
         Réponse
-        <p-datepicker styleClass="w-full" formControlName="answerDate" dateFormat="dd/mm/yy"></p-datepicker>
+        <p-datepicker inputId="answer-date" styleClass="w-full" formControlName="answerDate" dateFormat="dd/mm/yy"></p-datepicker>
       </label>
     </div>
     <div class="flex justify-end gap-2 md:col-span-2">

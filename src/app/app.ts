@@ -1,13 +1,13 @@
 import { Component, inject } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
-import { Animation } from "@app/layout/animation/animation.component";
+import { Animation } from "@app/layout/components/animation/animation.component";
 import { ConfirmDialogModule } from "@openng/optimus-ui/confirmdialog";
 import { ToastModule } from "@openng/optimus-ui/toast";
 import { ResumeService } from "@services/resume.service";
-import { Background } from "./layout/background/background";
-import { Dialogs } from "./layout/dialogs/dialogs";
-import { DialogsService } from "./layout/dialogs/dialogs.service";
-import { Navbar } from "./layout/navbar/navbar";
+import { Background } from "./layout/components/background/background";
+import { Dialogs } from "./layout/components/dialogs/dialogs";
+import { DialogsService } from "./layout/components/dialogs/dialogs.service";
+import { Navbar } from "./layout/components/navbar/navbar";
 
 @Component({
   selector: "app-root",
@@ -20,7 +20,7 @@ export class App {
     const dialogsService = inject(DialogsService);
     switch (location.pathname.split("/").pop()) {
       case "cv":
-        inject(ResumeService).download();
+        void inject(ResumeService).download();
         break;
       case "login":
         dialogsService.isSigninShown.set(true);

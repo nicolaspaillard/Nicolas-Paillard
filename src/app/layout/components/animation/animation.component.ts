@@ -1,10 +1,11 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnDestroy, inject, signal } from "@angular/core";
 import { Router } from "@angular/router";
-import { AnimationService } from "@app/layout/animation/animation.service";
-import { SafeHtmlPipe } from "@helpers/safehtml.pipe";
+import { AnimationService } from "@app/layout/components/animation/animation.service";
+import { SafeHtmlPipe } from "@app/layout/components/animation/safehtml.pipe";
 import { ButtonModule } from "@openng/optimus-ui/button";
 import { Subscription } from "rxjs";
+import { Animation as AnimationData } from "./animation.service";
 
 @Component({
   selector: "app-animation",
@@ -14,7 +15,7 @@ import { Subscription } from "rxjs";
 export class Animation implements OnDestroy {
   animationSubscription: Subscription;
   callback?: () => void;
-  interval: NodeJS.Timeout;
+  interval?: ReturnType<typeof setInterval>;
   isAnimationShown = signal<boolean>(false);
   text = signal<string[]>([]);
   private router = inject(Router);
@@ -23,7 +24,7 @@ export class Animation implements OnDestroy {
     const animationService = inject(AnimationService);
     this.animationSubscription = animationService.animations().subscribe(animation => this.animate(animation));
   }
-  animate = animation => {
+  animate = (animation: AnimationData) => {
     this.callback = animation.callback;
     this.isAnimationShown.set(true);
     this.text.set([]);
@@ -54,6 +55,7 @@ export class Animation implements OnDestroy {
     if (this.callback) this.callback();
   };
   ngOnDestroy() {
+    if (this.interval) clearInterval(this.interval);
     this.animationSubscription.unsubscribe();
   }
 }

@@ -6,7 +6,7 @@
       </div>
     }
     @if (skills().length && experiences().length) {
-      @for (project of items(); track project) {
+      @for (project of items(); track project.id) {
         <app-project [id]="project.id" [class.animate-glow]="fragment() === project.id" [project]="project" [skills]="getSkills(project)" [experience]="getExperience(project)" (link)="copy('/projects#' + project.id)" (edit)="open(project)" (remove)="delete(project, 'title')"></app-project>
       }
     }
@@ -35,7 +35,7 @@
       <label class="md:col-span-2">
         <div class="flex items-center gap-1">
           Description
-          <app-prompt-button (onClick)="promptedField.set('text'); isPrompting.set(true)"></app-prompt-button>
+          <app-prompt-button (promptClick)="promptedField.set('text'); isPrompting.set(true)"></app-prompt-button>
         </div>
         <textarea pTextarea formControlName="description"></textarea>
       </label>

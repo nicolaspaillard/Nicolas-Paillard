@@ -1,7 +1,7 @@
 import { Component, effect, inject, input, model, signal } from "@angular/core";
 import { FormGroup, ɵInternalFormsSharedModule } from "@angular/forms";
 import { AuthService } from "@app/layout/services/auth.service";
-import { ApiError } from "@google/genai";
+import type { ApiError } from "@google/genai";
 import { ButtonModule } from "@openng/optimus-ui/button";
 import { DialogModule } from "@openng/optimus-ui/dialog";
 import { InputGroupModule } from "@openng/optimus-ui/inputgroup";

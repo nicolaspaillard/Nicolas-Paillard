@@ -22,6 +22,14 @@
   animation-duration: 0.3s;
 }
 
+::view-transition-group(animation-overlay) {
+  z-index: 1;
+}
+
+.animation-overlay {
+  view-transition-name: animation-overlay;
+}
+
 :root[data-direction="forward"]::view-transition-old(route-content) {
   animation-name: slide-out-left;
 }

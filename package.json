@@ -17,7 +17,7 @@
     "@angular/platform-browser": "^22.2.0",
     "@angular/router": "^22.3.0",
     "@cloudinary/url-gen": "^1.22.1",
-    "@google/genai": "^2.32.0",
+    "@google/genai": "^3.6.1",
     "@openng/icons": "^1.0.0",
     "@openng/optimus-ui": "^2.0.2",
     "@openng/optimus-ui-tailwindcss": "^2.0.2",
@@ -48,5 +48,8 @@
     "tailwindcss": "^4.1.12",
     "typescript": "~6.0.3",
     "typescript-eslint": "8.59.2"
+  },
+  "overrides": {
+    "p-retry": "9.0.0"
   }
 }
