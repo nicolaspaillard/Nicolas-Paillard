@@ -2,7 +2,7 @@ import { provideCloudinaryLoader } from "@angular/common";
 import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { provideBrowserGlobalErrorListeners } from "@angular/core";
 import { getApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
-import { getAuth, provideAuth } from "@angular/fire/auth";
+import { browserLocalPersistence, browserSessionPersistence, indexedDBLocalPersistence, initializeAuth, provideAuth } from "@angular/fire/auth";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, provideFirestore } from "@angular/fire/firestore";
 import { bootstrapApplication } from "@angular/platform-browser";
 import { provideRouter, withComponentInputBinding, withViewTransitions } from "@angular/router";
@@ -53,7 +53,7 @@ bootstrapApplication(App, {
         appId: "1:95010764775:web:e31ecc087cb7e98d5bef42",
       }),
     ),
-    provideAuth(() => getAuth()),
+    provideAuth(() => initializeAuth(getApp(), { persistence: [indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence] })),
     // provideAppCheck(() =>
     //   initializeAppCheck(getApp(), {
     //     provider: new ReCaptchaEnterpriseProvider("6LezwxwuAAAAAI-yg6gRaL6qUYgO_hz9tp8zEtgY"),
