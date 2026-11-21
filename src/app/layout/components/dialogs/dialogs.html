@@ -1,10 +1,10 @@
-<ng-template #recaptcha>
+<!-- <ng-template #recaptcha>
   <div class="g-recaptcha" data-sitekey="6LezwxwuAAAAAI-yg6gRaL6qUYgO_hz9tp8zEtgY" data-action="LOGIN"></div>
-</ng-template>
+</ng-template> -->
 
 <p-dialog [(visible)]="dialogsService.isSigninShown" [modal]="true" [dismissableMask]="true" header="Connexion">
   <form class="flex flex-col gap-2 [&_input]:w-full" [formGroup]="formSignin">
-    <ng-container [ngTemplateOutlet]="recaptcha"></ng-container>
+    <!-- <ng-container [ngTemplateOutlet]="recaptcha"></ng-container> -->
     <label for="signinemail">
       Email
       <input id="signinemail" [ngClass]="{ 'ng-invalid ng-dirty': hasError(formSignin.controls.email) }" type="text" pInputText formControlName="email" />
@@ -35,7 +35,7 @@
 </p-dialog>
 
 <p-dialog [(visible)]="dialogsService.isSignupShown" [modal]="true" [dismissableMask]="true" header="Inscription">
-  <ng-container [ngTemplateOutlet]="recaptcha"></ng-container>
+  <!-- <ng-container [ngTemplateOutlet]="recaptcha"></ng-container> -->
   <form class="flex flex-col gap-2 [&_input]:w-full" [formGroup]="formSignup">
     <label>
       Email
@@ -74,7 +74,7 @@
 </p-dialog>
 
 <p-dialog [(visible)]="dialogsService.isResetShown" [modal]="true" [closable]="false" header="Réinitialisation">
-  <ng-container [ngTemplateOutlet]="recaptcha"></ng-container>
+  <!-- <ng-container [ngTemplateOutlet]="recaptcha"></ng-container> -->
   <form class="flex flex-col gap-2 [&_input]:w-full" [formGroup]="formReset">
     <label for="resetpassword">
       Mot de passe

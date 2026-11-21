@@ -61,16 +61,12 @@
                 "output": "./"
               }
             ],
-            "styles": ["src/styles.scss", "@openng/icons/openng-icons.css"],
+            "styles": ["@openng/icons/openng-icons.css", "src/styles.scss"],
             "scripts": []
           },
           "configurations": {
             "production": {
-              "sourceMap": {
-                "scripts": true,
-                "styles": false,
-                "hidden": false
-              },
+              "sourceMap": false,
               "outputHashing": "all",
               "budgets": [
                 {

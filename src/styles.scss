@@ -1,4 +1,3 @@
-@import "https://fonts.googleapis.com/css2?family=Aldrich&display=swap";
 @import "tailwindcss";
 @plugin "@openng/optimus-ui-tailwindcss";
 
@@ -89,6 +88,14 @@ body {
   line-height: 1.2;
   font-size: 14px;
   background-color: var(--p-form-field-background);
+}
+
+@font-face {
+  font-family: "openng-icons";
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url("../node_modules/@openng/icons/fonts/openng-icons.woff2") format("woff2");
 }
 
 .vt-active #router-container {
