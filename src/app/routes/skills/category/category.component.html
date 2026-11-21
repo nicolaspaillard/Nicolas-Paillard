@@ -7,7 +7,7 @@
   }
   <h3 class="mb-1 text-lg font-bold">{{ category.title }}</h3>
   <div class="grid grid-cols-2 md:grid-cols-1 2xl:grid-cols-2 gap-1">
-    @for (skill of skills; track skill) {
+    @for (skill of skills; track skill.id) {
       <app-skill [skill]="skill" (edit)="editSkill.emit($event)" (remove)="removeSkill.emit($event)"></app-skill>
     }
     @if (user()?.admin) {

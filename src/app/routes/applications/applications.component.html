@@ -78,7 +78,7 @@
             <div>
               Contacts :
               @if (application.contacts && application.contacts.length) {
-                @for (contact of application.contacts.split(";"); track contact) {
+                @for (contact of application.contacts.split(";"); track $index) {
                   <div>{{ contact }}</div>
                 }
               }
@@ -86,7 +86,7 @@
             <div>
               Liens :
               <br />
-              @for (link of application.links.split(";"); track link; let index = $index) {
+              @for (link of application.links.split(";"); track $index; let index = $index) {
                 <a [href]="link" target="_blank">{{ index + 1 }}&nbsp;</a>
               }
             </div>

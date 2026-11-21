@@ -39,7 +39,7 @@
           <p-accordion-header>Activités</p-accordion-header>
           <p-accordion-content>
             <ul class="list-inside list-disc">
-              @for (activity of experience().activities; track activity) {
+              @for (activity of experience().activities; track $index) {
                 <li>{{ activity }}</li>
               }
             </ul>

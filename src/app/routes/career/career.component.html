@@ -64,7 +64,7 @@
       </div>
       <label class="md:col-span-2">
         Activités
-        @for (activity of activities; track activity; let index = $index) {
+        @for (activity of activities; track $index; let index = $index) {
           <div class="relative flex items-center justify-between">
             <span class="p-button-sm p-button-text p-button-contrast max-w-75 cursor-pointer truncate rounded-md" (keydown.enter)="act.value = activity" (keydown.space)="act.value = activity" (click)="act.value = activity" tabindex="0">•&nbsp;&nbsp;{{ activity }}</span>
             <div class="flex">
