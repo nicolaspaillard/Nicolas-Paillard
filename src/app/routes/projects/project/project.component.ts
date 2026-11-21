@@ -1,9 +1,7 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, inject, input, Output, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { User } from "@angular/fire/auth";
+import { Component, EventEmitter, inject, input, Output } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { AuthService } from "@app/shared/services/auth.service";
+import { AuthService } from "@app/layout/services/auth.service";
 import { Project } from "@classes/project";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { scale } from "@cloudinary/url-gen/actions/resize";
@@ -31,14 +29,10 @@ export class ProjectComponent {
       title: string;
     }[]
   >();
-  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
-  constructor() {
-    const authService = inject(AuthService);
-    authService
-      .user()
-      .pipe(takeUntilDestroyed())
-      .subscribe(user => this.user.set(user ? { ...user } : undefined));
-  }
-  // prettier-ignore
-  getURL = (image: string, thumbnail = true) => this.cld.image("nicolasPaillard/" + image).resize(thumbnail?(scale().height(500)):(scale().width(1500))).toURL();
+  readonly user = inject(AuthService).user;
+  getURL = (image: string, thumbnail = true) =>
+    this.cld
+      .image("nicolasPaillard/" + image)
+      .resize(thumbnail ? scale().height(500) : scale().width(1500))
+      .toURL();
 }

@@ -1,13 +1,13 @@
 import { NgOptimizedImage } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
+import { ToastService } from "@app/layout/services/toast.service";
 import { Profile } from "@classes/profile";
-import { CrudComponent } from "@components/crud.component";
+import { Crud } from "@components/crud.component";
 import { sha1 } from "@helpers/sha1";
 import { ButtonModule } from "@openng/optimus-ui/button";
 import { FileUpload, FileUploadHandlerEvent } from "@openng/optimus-ui/fileupload";
 import { InputTextModule } from "@openng/optimus-ui/inputtext";
-import { ToastService } from "@services/toast.service";
 
 @Component({
   selector: "app-profile",
@@ -15,7 +15,7 @@ import { ToastService } from "@services/toast.service";
   templateUrl: "./profile.component.html",
   styles: ``,
 })
-export class ProfileComponent extends CrudComponent<Profile> {
+export class ProfileComponent extends Crud<Profile> {
   isUpdating = false;
   private toastService = inject(ToastService);
 

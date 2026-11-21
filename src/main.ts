@@ -8,14 +8,14 @@ import { getAuth, provideAuth } from "@angular/fire/auth";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, provideFirestore } from "@angular/fire/firestore";
 import { bootstrapApplication } from "@angular/platform-browser";
 import { provideRouter, withComponentInputBinding, withPreloading, withViewTransitions } from "@angular/router";
-import { AppComponent } from "@app/app.component";
+import { App } from "@app/app";
 import { routes } from "@app/app.routes";
+import { PreloadWithDataStrategy } from "@app/preload.strategy";
 import { ConfirmationService, MessageService } from "@openng/optimus-ui/api";
 import { provideOptimus } from "@openng/optimus-ui/config";
-import { PreloadWithDataStrategy } from "@services/preload.strategy";
 import { Amber } from "./themes/amber.preset";
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(

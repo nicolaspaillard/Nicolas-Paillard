@@ -13,7 +13,7 @@
     animation: slide 3s infinite alternate ease-in-out;
   }
   .animate-glow > :nth-child(1) {
-    animation: glow 1s infinite alternate linear;
+    animation: glow 0.8s infinite alternate linear;
   }
 }
 
@@ -70,7 +70,7 @@
     box-shadow: none;
   }
   to {
-    box-shadow: 0 0 20px 0 var(--p-primary-color);
+    box-shadow: 0 0 10px 5px var(--p-primary-color);
   }
 }
 

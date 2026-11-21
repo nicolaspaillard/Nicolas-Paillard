@@ -1,7 +1,5 @@
-import { Component, EventEmitter, inject, Input, Output, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { User } from "@angular/fire/auth";
-import { AuthService } from "@app/shared/services/auth.service";
+import { Component, EventEmitter, inject, Input, Output } from "@angular/core";
+import { AuthService } from "@app/layout/services/auth.service";
 import { Section } from "@classes/section";
 import { ButtonModule } from "@openng/optimus-ui/button";
 
@@ -11,16 +9,8 @@ import { ButtonModule } from "@openng/optimus-ui/button";
   templateUrl: "./section.component.html",
 })
 export class SectionComponent {
-  @Output() onEdit = new EventEmitter<Section>();
-  @Output() onRemove = new EventEmitter<Section>();
+  @Output() edit = new EventEmitter<Section>();
+  @Output() remove = new EventEmitter<Section>();
   @Input() section: Section;
-  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
-  private authService = inject(AuthService);
-
-  constructor() {
-    this.authService
-      .user()
-      .pipe(takeUntilDestroyed())
-      .subscribe(user => this.user.set(user ? { ...user } : undefined));
-  }
+  user = inject(AuthService).user;
 }

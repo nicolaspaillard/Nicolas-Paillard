@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { Application } from "@classes/application";
-import { CrudComponent } from "@components/crud.component";
+import { Crud } from "@components/crud.component";
 import { ButtonModule } from "@openng/optimus-ui/button";
 import { DatePickerModule } from "@openng/optimus-ui/datepicker";
 import { DialogModule } from "@openng/optimus-ui/dialog";
@@ -19,7 +19,7 @@ import { TooltipModule } from "@openng/optimus-ui/tooltip";
   imports: [DialogModule, DatePickerModule, ReactiveFormsModule, TooltipModule, SelectModule, ButtonModule, InputGroupModule, FileUploadModule, CommonModule, InputTextModule, TextareaModule, DialogModule, DatePickerModule, TableModule],
   templateUrl: "./applications.component.html",
 })
-export class ApplicationsComponent extends CrudComponent<Application> {
+export class ApplicationsComponent extends Crud<Application> {
   contacts: string[] = [];
   expandedRows = {};
   links: string[] = [];

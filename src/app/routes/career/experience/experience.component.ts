@@ -1,9 +1,7 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, inject, input, Output, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { User } from "@angular/fire/auth";
+import { Component, EventEmitter, inject, input, Output } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { AuthService } from "@app/shared/services/auth.service";
+import { AuthService } from "@app/layout/services/auth.service";
 import { Experience } from "@classes/experience";
 import { AccordionModule } from "@openng/optimus-ui/accordion";
 import { ButtonModule } from "@openng/optimus-ui/button";
@@ -29,13 +27,5 @@ export class ExperienceComponent {
       title: string;
     }[]
   >();
-  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
-
-  constructor() {
-    const authService = inject(AuthService);
-    authService
-      .user()
-      .pipe(takeUntilDestroyed())
-      .subscribe(user => this.user.set(user ? { ...user } : undefined));
-  }
+  readonly user = inject(AuthService).user;
 }

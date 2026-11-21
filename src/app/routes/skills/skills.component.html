@@ -1,5 +1,10 @@
 <div class="flex min-h-full flex-col justify-center p-5 lg:p-10">
   <div class="flex flex-wrap items-center justify-center gap-5 lg:gap-10">
+    @if (user()?.admin) {
+      <div class="card flex-[0_0_100%] p-5 md:flex-[0_0_calc(50%-(--spacing(5)))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))] lg:p-10">
+        <p-button class="block text-center" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
+      </div>
+    }
     @for (category of items(); track category) {
       <app-category
         class="flex-[0_0_100%] md:flex-[0_0_calc(50%-(--spacing(5)))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))]"
@@ -12,11 +17,6 @@
         (editSkill)="formSkill.setValue($event); isEditingSkill.set(true); isShownSkill.set(true)"
         (removeSkill)="deleteSkill($event)"
         (addSkill)="formSkill.reset(); formSkill.get('category')?.setValue($event.id); isShownSkill.set(true)"></app-category>
-    }
-    @if (user()?.admin) {
-      <div class="card flex-[0_0_100%] p-5 md:flex-[0_0_calc(50%-(--spacing(5)))] lg:flex-[0_0_calc(calc(100%/3)-calc(var(--spacing)*20/3))] lg:p-10">
-        <p-button class="block text-center" [text]="true" (onClick)="open()" size="large" icon="pi pi-plus"></p-button>
-      </div>
     }
   </div>
 </div>

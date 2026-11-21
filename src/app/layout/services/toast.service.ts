@@ -7,9 +7,9 @@ import { MessageService } from "@openng/optimus-ui/api";
 export class ToastService {
   private messageService = inject(MessageService);
 
-  success(title: string, message?: string) {
+  error(title: string, message?: string) {
     this.messageService.add({
-      severity: "success",
+      severity: "error",
       summary: title,
       detail: message,
     });
@@ -23,17 +23,17 @@ export class ToastService {
     });
     return;
   }
-  warn(title: string, message?: string) {
+  success(title: string, message?: string) {
     this.messageService.add({
-      severity: "warn",
+      severity: "success",
       summary: title,
       detail: message,
     });
     return;
   }
-  error(title: string, message?: string) {
+  warn(title: string, message?: string) {
     this.messageService.add({
-      severity: "error",
+      severity: "warn",
       summary: title,
       detail: message,
     });

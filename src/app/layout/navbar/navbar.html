@@ -1,0 +1,28 @@
+<ng-template #links>
+  @for (route of visibleRoutes(); track route.path) {
+    <p-button class="mb-2 lg:mb-0" [routerLink]="route.path" [label]="route.title + ''" [text]="true" (onClick)="isMenuShown.set(false)" size="large" routerLinkActive="[&>button]:border-primary!"></p-button>
+  }
+</ng-template>
+<nav class="card backdrop-blur-md [&_button]:h-full [&_button]:w-full">
+  <div class="flex justify-between gap-2 p-2 lg:justify-center">
+    <div class="flex gap-2">
+      <p-button class="lg:hidden" [text]="true" [ngClass]="{ '[&>button]:border-primary!': isMenuShown() }" (onClick)="isMenuShown.set(!isMenuShown())" icon="pi pi-bars"></p-button>
+      <p-button [ngClass]="{ '[&>button]:border-none!': isMenuShown() }" [routerLinkActiveOptions]="{ exact: true }" [text]="true" routerLink="/" size="large" routerLinkActive="[&>button]:border-primary!" icon="pi pi-home"></p-button>
+      <p-splitbutton class="[&>button:first-of-type]:px-5! [&>button:last-of-type]:px-1! [&>button:first-of-type_.p-button-icon:not(.pi)]:hidden!" [model]="resumeButtonItems" [icon]="resumeService.isGenerating() ? 'pi pi-spinner animate-spin' : undefined" (onClick)="resumeService.download()" iconPos="right" label="CV" size="large"></p-splitbutton>
+      <div class="hidden gap-2 overflow-hidden lg:flex">
+        <ng-container [ngTemplateOutlet]="links"></ng-container>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <p-toggleswitch class="flex" [pTooltip]="backgroundService.enableMatrix() ? 'Blue pill' : 'Red pill'" (onChange)="backgroundService.enableMatrix.set(!backgroundService.enableMatrix())" tooltipPosition="bottom">
+        <ng-template #handle let-checked="checked">
+          <i class="text-[10px]! pi" [ngClass]="[checked ? 'pi-check' : 'pi-times']"></i>
+        </ng-template>
+      </p-toggleswitch>
+      <p-button (onClick)="user() ? signout() : dialogs.isSigninShown.set(true)" size="large">{{ user() ? "Déconnexion" : "Connexion" }}</p-button>
+    </div>
+  </div>
+  <div class="flex max-h-0 w-full flex-col overflow-hidden px-2 transition-[max-height] lg:hidden" [ngClass]="{ 'max-h-249.75!': isMenuShown() }">
+    <ng-container [ngTemplateOutlet]="links"></ng-container>
+  </div>
+</nav>

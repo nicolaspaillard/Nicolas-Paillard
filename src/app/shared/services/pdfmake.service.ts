@@ -1,6 +1,5 @@
 import { inject, Injector, Service } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
-import { CONFIG_CATEGORIES, CONFIG_EXPERIENCES, CONFIG_PROFILES, CONFIG_SECTIONS, CONFIG_SKILLS } from "@app/shared/route.configs";
 import { Category } from "@classes/category";
 import { Experience } from "@classes/experience";
 import { Profile } from "@classes/profile";
@@ -11,12 +10,13 @@ import { fill } from "@cloudinary/url-gen/actions/resize";
 import { byRadius } from "@cloudinary/url-gen/actions/roundCorners";
 import { Cloudinary } from "@cloudinary/url-gen/index";
 import { png } from "@cloudinary/url-gen/qualifiers/format";
+import { CONFIG_CATEGORIES, CONFIG_EXPERIENCES, CONFIG_PROFILES, CONFIG_SECTIONS, CONFIG_SKILLS } from "@routes/route.configs";
 import { CrudService } from "@services/crud.service";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import { Content, TableLayout, TDocumentDefinitions } from "pdfmake/interfaces";
 import { firstValueFrom } from "rxjs";
-import { Step } from "./animation.service";
+import { Step } from "../../layout/animation/animation.service";
 
 pdfMake.addVirtualFileSystem(pdfFonts);
 

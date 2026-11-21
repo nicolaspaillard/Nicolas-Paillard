@@ -1,11 +1,10 @@
-import { Component, inject, Injector, signal } from "@angular/core";
+import { Component, computed, inject, Injector, signal } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
-import { CONFIG_CATEGORIES, CONFIG_PROJECTS, CONFIG_SKILLS } from "@app/shared/route.configs";
 import { Category } from "@classes/category";
 import { Experience } from "@classes/experience";
 import { Project } from "@classes/project";
 import { Skill } from "@classes/skill";
-import { CrudComponent } from "@components/crud.component";
+import { Crud } from "@components/crud.component";
 import { PromptButtonComponent } from "@components/prompt-button/prompt-button.component";
 import { PromptComponent } from "@components/prompt/prompt.component";
 import { ButtonModule } from "@openng/optimus-ui/button";
@@ -17,7 +16,7 @@ import { MultiSelectModule } from "@openng/optimus-ui/multiselect";
 import { SelectModule } from "@openng/optimus-ui/select";
 import { TextareaModule } from "@openng/optimus-ui/textarea";
 import { TooltipModule } from "@openng/optimus-ui/tooltip";
-import { AuthService } from "@services/auth.service";
+import { CONFIG_CATEGORIES, CONFIG_PROJECTS, CONFIG_SKILLS } from "@routes/route.configs";
 import { CrudService } from "@services/crud.service";
 import { firstValueFrom } from "rxjs";
 import { ExperienceComponent } from "./experience/experience.component";
@@ -27,41 +26,33 @@ import { ExperienceComponent } from "./experience/experience.component";
   imports: [ReactiveFormsModule, ExperienceComponent, DialogModule, DatePickerModule, MultiSelectModule, SelectModule, TextareaModule, InputTextModule, ButtonModule, InputGroupModule, TooltipModule, PromptComponent, PromptButtonComponent],
   templateUrl: "./career.component.html",
 })
-export class CareerComponent extends CrudComponent<Experience> {
+export class CareerComponent extends Crud<Experience> {
   activities: string[] = [];
   categories = signal<Category[]>([]);
   projects = signal<Project[]>([]);
   skills = signal<Skill[]>([]);
-  skillsGroups = signal<
-    {
-      items: { icon: string; label: string; value: string }[];
-      label: string;
-      value: string;
-    }[]
-  >([]);
+  skillsGroups = computed(() => {
+    if (!this.user()?.admin) return [];
+    return this.categories()
+      .map(category => ({
+        label: category.title,
+        value: category.id,
+        items: this.skills()
+          .filter(skill => skill.category === category.id)
+          .map(skill => ({ label: skill.title, value: skill.id, icon: skill.icon })),
+      }))
+      .filter(group => group.items.length);
+  });
   constructor() {
     super();
     const injector = inject(Injector);
-    inject(AuthService)
-      .user()
-      .subscribe(user => {
-        Promise.all([firstValueFrom(CrudService.forCollection(injector, CONFIG_PROJECTS).items()), firstValueFrom(CrudService.forCollection(injector, CONFIG_SKILLS).items()), firstValueFrom(CrudService.forCollection(injector, CONFIG_CATEGORIES).items())])
-          .then(([projects, skills, categories]) => {
-            this.projects.set([...projects]);
-            this.skills.set([...skills]);
-            this.categories.set([...categories]);
-            if (!user?.admin) return;
-            skills.map(skill => {
-              const skillGroup = this.skillsGroups().find(sg => sg.value === skill.category);
-              if (skillGroup) this.skillsGroups.update(groups => groups.map(group => (group === skillGroup ? { ...skillGroup, items: [...skillGroup.items, { label: skill.title, value: skill.id, icon: skill.icon }] } : group)));
-              else {
-                const category = categories.find(category => category.id === skill.category);
-                this.skillsGroups.update(groups => [...groups, { label: category!.title, value: category!.id, items: [{ label: skill.title, value: skill.id, icon: skill.icon }] }]);
-              }
-            });
-          })
-          .catch(err => console.error(err));
-      });
+    Promise.all([firstValueFrom(CrudService.forCollection(injector, CONFIG_PROJECTS).items()), firstValueFrom(CrudService.forCollection(injector, CONFIG_SKILLS).items()), firstValueFrom(CrudService.forCollection(injector, CONFIG_CATEGORIES).items())])
+      .then(([projects, skills, categories]) => {
+        this.projects.set([...projects]);
+        this.skills.set([...skills]);
+        this.categories.set([...categories]);
+      })
+      .catch(err => console.error(err));
   }
   add = (activity: string) => {
     this.activities.push(activity);

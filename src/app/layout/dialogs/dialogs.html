@@ -1,0 +1,148 @@
+<ng-template #recaptcha>
+  <div class="g-recaptcha" data-sitekey="6LezwxwuAAAAAI-yg6gRaL6qUYgO_hz9tp8zEtgY" data-action="LOGIN"></div>
+</ng-template>
+
+<p-dialog [(visible)]="dialogsService.isSigninShown" [modal]="true" [dismissableMask]="true" header="Connexion">
+  <form class="flex flex-col gap-2 [&_input]:w-full" [formGroup]="formSignin">
+    <ng-container [ngTemplateOutlet]="recaptcha"></ng-container>
+    <label for="signinemail">
+      Email
+      <input id="signinemail" [ngClass]="{ 'ng-invalid ng-dirty': hasError(formSignin.controls.email) }" type="text" pInputText formControlName="email" />
+      @if (hasError(formSignin.controls.email) && formSignin.controls.email.hasError("required")) {
+        <small class="text-red-500">L'email est requis</small>
+      }
+    </label>
+    <label for="signinpassword">
+      Mot de passe
+      <p-password id="signinpassword" [feedback]="false" [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': hasError(formSignin.controls.password) }" formControlName="password" styleClass="w-full" inputStyleClass="w-full"></p-password>
+      @if (hasError(formSignin.controls.password) && formSignin.controls.password.hasError("required")) {
+        <small class="text-red-500">Le mot de passe est requis</small>
+      }
+    </label>
+    @if (formSignin.invalid && (formSignin.dirty || formSignin.touched) && formSignin.hasError("invalid")) {
+      <small class="text-red-500">Email ou mot de passe invalide</small>
+    }
+    <div class="flex justify-between gap-2">
+      <p-button [disabled]="!formSignin.controls.email.valid" [loading]="isSending()" (onClick)="send()">Mdp oublié</p-button>
+      <div class="flex gap-2">
+        @if (!authService.user()) {
+          <p-button [outlined]="true" (onClick)="dialogsService.isSigninShown.set(false); dialogsService.isSignupShown.set(true)">Inscription</p-button>
+        }
+        <p-button [disabled]="!formSignin.valid || isSigningIn()" [loading]="isSigningIn()" (onClick)="signin()" type="submit">Connexion</p-button>
+      </div>
+    </div>
+  </form>
+</p-dialog>
+
+<p-dialog [(visible)]="dialogsService.isSignupShown" [modal]="true" [dismissableMask]="true" header="Inscription">
+  <ng-container [ngTemplateOutlet]="recaptcha"></ng-container>
+  <form class="flex flex-col gap-2 [&_input]:w-full" [formGroup]="formSignup">
+    <label>
+      Email
+      <input [ngClass]="{ 'ng-invalid ng-dirty': hasError(formSignup.controls.email) }" type="text" pInputText formControlName="email" />
+      <div class="flex flex-col text-red-500">
+        @for (message of errorMessages(formSignup.controls.email, emailErrors); track message) {
+          <small>{{ message }}</small>
+        }
+      </div>
+    </label>
+    <label for="signuppassowrd">
+      Mot de passe
+      <p-password id="signuppassowrd" [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': hasError(formSignup.controls.password) }" formControlName="password" styleClass="w-full" inputStyleClass="w-full">
+        <div class="flex flex-col text-red-500">
+          @for (message of errorMessages(formSignup.controls.password, passwordErrors); track message) {
+            <small>{{ message }}</small>
+          }
+        </div>
+      </p-password>
+    </label>
+    <label for="signuppassowrdrepeat">
+      Répétez le mot de passe
+      <p-password id="signuppassowrdrepeat" [feedback]="false" [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': hasError(formSignup.controls.passwordrepeat) }" formControlName="passwordrepeat" styleClass="w-full" inputStyleClass="w-full">
+        <div class="flex flex-col text-red-500">
+          @for (message of errorMessages(formSignup.controls.passwordrepeat, passwordRepeatErrors); track message) {
+            <small>{{ message }}</small>
+          }
+        </div>
+      </p-password>
+    </label>
+    <div class="flex justify-end gap-2">
+      <p-button [text]="true" (onClick)="dialogsService.isSignupShown.set(false)">Annuler</p-button>
+      <p-button [disabled]="!formSignup.valid || isSigningUp()" [loading]="isSigningUp()" (onClick)="signup()" type="submit">Inscription</p-button>
+    </div>
+  </form>
+</p-dialog>
+
+<p-dialog [(visible)]="dialogsService.isResetShown" [modal]="true" [closable]="false" header="Réinitialisation">
+  <ng-container [ngTemplateOutlet]="recaptcha"></ng-container>
+  <form class="flex flex-col gap-2 [&_input]:w-full" [formGroup]="formReset">
+    <label for="resetpassword">
+      Mot de passe
+      <p-password id="resetpassword" [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': hasError(formReset.controls.password) }" formControlName="password" styleClass="w-full" inputStyleClass="w-full">
+        <div class="flex flex-col text-red-500">
+          @for (message of errorMessages(formReset.controls.password, passwordErrors); track message) {
+            <small>{{ message }}</small>
+          }
+        </div>
+      </p-password>
+    </label>
+    <label for="resetpasswordrepeat">
+      Répétez le mot de passe
+      <p-password id="resetpasswordrepeat" [feedback]="false" [toggleMask]="true" [ngClass]="{ 'ng-invalid ng-dirty': hasError(formReset.controls.passwordrepeat) }" formControlName="passwordrepeat" styleClass="w-full" inputStyleClass="w-full">
+        <div class="flex flex-col text-red-500">
+          @for (message of errorMessages(formReset.controls.passwordrepeat, passwordRepeatErrors); track message) {
+            <small>{{ message }}</small>
+          }
+        </div>
+      </p-password>
+    </label>
+    <div class="flex justify-end gap-2">
+      <p-button [disabled]="!formReset.valid || isResetting()" [loading]="isResetting()" (onClick)="reset()" type="submit">Sauvegarder</p-button>
+    </div>
+  </form>
+</p-dialog>
+
+<p-dialog [(visible)]="resumeService.isGeneratorShown" [dismissableMask]="true" [modal]="true" header="Génération d'un CV">
+  <div class="grid gap-2 [&_label>*]:w-full [&_label]:flex [&_label]:flex-col">
+    <label for="skills">
+      Compétences
+      <div #skillsWrapper>
+        <p-multiselect class="w-full" id="skills" [(ngModel)]="selectedSkills" [options]="skillsGroups()" [group]="true" [panelStyle]="{ width: skillsWrapper.offsetWidth + 'px' }" [showClear]="true" optionLabel="label" optionValue="value" optionGroupLabel="label" optionGroupChildren="items" placeholder="Choisir les compétences">
+          <ng-template class="p-multiselect-option" #group let-group>
+            <div class="flex items-center gap-2 cursor-pointer" (click)="toggleGroup(group)" (keydown.enter)="$event.preventDefault(); toggleGroup(group)" (keydown.space)="$event.preventDefault(); toggleGroup(group)" role="button" tabindex="0">
+              <p-checkbox [binary]="true" [ngModel]="isGroupFullySelected(group)" [indeterminate]="isGroupPartiallySelected(group)" (click)="$event.stopPropagation()" (onChange)="toggleGroup(group)" />
+              <span class="font-bold">{{ group.label }}</span>
+            </div>
+          </ng-template>
+          <ng-template #item let-skill>
+            <div class="flex items-center gap-2">
+              @if (skill.icon) {
+                <img [alt]="skill.label + ' icon'" width="24" height="24" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/{{ skill.icon.includes('dot-net') ? 'dot-net' : skill.icon.split('-')[0] }}/{{ skill.icon }}.svg" />
+              } @else {
+                <span class="font-extrabold mx-1">{{ skill.label[0].toUpperCase() }}</span>
+              }
+              <span class="w-full truncate">{{ skill.label }}</span>
+            </div>
+          </ng-template>
+        </p-multiselect>
+      </div>
+    </label>
+    <label for="experience">
+      Expérience
+      <div #experiencesWrapper>
+        <p-multiselect class="w-full" id="experience" [(ngModel)]="selectedExperiences" [options]="experiences()" [showClear]="true" [panelStyle]="{ width: experiencesWrapper.offsetWidth + 'px' }" optionLabel="title" optionValue="id" placeholder="Choisir l'expérience">
+          <ng-template #item let-experience>
+            <span class="w-full truncate" [pTooltip]="experience.title + ' - ' + experience.company">{{ experience.title + " - " + experience.company }}</span>
+          </ng-template>
+        </p-multiselect>
+      </div>
+    </label>
+  </div>
+  <div class="flex justify-end mt-2">
+    <button [loading]="isGeneratingResume()" (click)="downloadResume()" pButton>Générer</button>
+  </div>
+</p-dialog>
+
+<p-dialog [(visible)]="resumeService.isShown" [modal]="true" [dismissableMask]="true" [resizable]="false" contentStyleClass="w-full! h-full!" styleClass="w-[calc(100%-(--spacing(10)))] h-[calc(100%-(--spacing(10)))] max-h-full!" header="Resume">
+  <iframe class="w-full h-full" [src]="resumeService.url()"></iframe>
+</p-dialog>

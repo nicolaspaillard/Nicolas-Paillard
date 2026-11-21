@@ -1,14 +1,14 @@
 import { Component, effect, inject, Injector, signal } from "@angular/core";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
-import { CONFIG_SKILLS } from "@app/shared/route.configs";
 import { Category } from "@classes/category";
 import { formSkill, Skill } from "@classes/skill";
-import { CrudComponent } from "@components/crud.component";
+import { Crud } from "@components/crud.component";
 import { ButtonModule } from "@openng/optimus-ui/button";
 import { DialogModule } from "@openng/optimus-ui/dialog";
 import { InputNumberModule } from "@openng/optimus-ui/inputnumber";
 import { InputTextModule } from "@openng/optimus-ui/inputtext";
 import { SelectModule } from "@openng/optimus-ui/select";
+import { CONFIG_SKILLS } from "@routes/route.configs";
 import { CrudService } from "@services/crud.service";
 import { CategoryComponent } from "./category/category.component";
 
@@ -17,7 +17,7 @@ import { CategoryComponent } from "./category/category.component";
   imports: [ReactiveFormsModule, CategoryComponent, ButtonModule, DialogModule, InputTextModule, InputNumberModule, SelectModule, InputNumberModule],
   templateUrl: "./skills.component.html",
 })
-export class SkillsComponent extends CrudComponent<Category> {
+export class SkillsComponent extends Crud<Category> {
   devIcons: string[] = [];
   formSkill: FormGroup = formSkill;
   isEditingSkill = signal(false);

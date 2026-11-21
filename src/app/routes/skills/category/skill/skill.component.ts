@@ -1,8 +1,6 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, inject, Input, Output, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { User } from "@angular/fire/auth";
-import { AuthService } from "@app/shared/services/auth.service";
+import { Component, EventEmitter, inject, Input, Output } from "@angular/core";
+import { AuthService } from "@app/layout/services/auth.service";
 import { Skill } from "@classes/skill";
 import { ButtonModule } from "@openng/optimus-ui/button";
 
@@ -16,13 +14,5 @@ export class SkillComponent {
   @Output() remove = new EventEmitter<Skill>();
   @Input() right: boolean;
   @Input() skill: Skill;
-  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
-
-  constructor() {
-    const authService = inject(AuthService);
-    authService
-      .user()
-      .pipe(takeUntilDestroyed())
-      .subscribe(user => this.user.set(user ? { ...user } : undefined));
-  }
+  readonly user = inject(AuthService).user;
 }

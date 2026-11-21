@@ -1,22 +1,21 @@
-import { inject, Injectable } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { computed, inject, Injectable, signal } from "@angular/core";
 import { Auth, confirmPasswordReset, createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, User, validatePassword, verifyPasswordResetCode } from "@angular/fire/auth";
-import { Observable, ReplaySubject, Subject } from "rxjs";
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
-  private _user: Subject<{ admin: boolean; user: User } | undefined> = new ReplaySubject(1);
+  readonly user = computed(() => this._user());
+  private readonly _user = signal<{ admin: boolean; user: User } | undefined>(undefined);
   private auth = inject(Auth);
   constructor() {
     onAuthStateChanged(this.auth, user => {
       if (user)
         user
           .getIdTokenResult()
-          .then(idTokenResult => this._user.next({ user: user, admin: !!idTokenResult.claims["admin"] }))
+          .then(idTokenResult => this._user.set({ user: user, admin: !!idTokenResult.claims["admin"] }))
           .catch(error => console.error(error));
-      else this._user.next(undefined);
+      else this._user.set(undefined);
     });
   }
   reset = (code: string, password: string) =>
@@ -71,5 +70,5 @@ export class AuthService {
           return ["email", { inuse: true }];
         });
   };
-  user = (): Observable<{ admin: boolean; user: User } | undefined> => this._user.pipe(takeUntilDestroyed());
+  // user = (): Observable<{ admin: boolean; user: User } | undefined> => this._user.pipe(takeUntilDestroyed());
 }

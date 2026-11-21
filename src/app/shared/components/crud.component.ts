@@ -1,16 +1,15 @@
 import { effect, inject, isDevMode, signal } from "@angular/core";
 import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
-import { User } from "@angular/fire/auth";
 import { FormGroup } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { AuthService } from "@services/auth.service";
+import { AuthService } from "@app/layout/services/auth.service";
 import { ClipboardService } from "@services/clipboard.service";
 import { ConfirmService } from "@services/confirm.service";
 import { CrudService } from "@services/crud.service";
 import { Base } from "../classes/base";
 
-export class CrudComponent<T extends Base> {
-  copy = inject(ClipboardService).copyWith(isDevMode() ? "https://192.168.1.2:4200/" : "https://nicolaspaillard.fr/");
+export class Crud<T extends Base> {
+  copy = inject(ClipboardService).copyWith(isDevMode() ? "https://192.168.1.2:4200" : "https://nicolaspaillard.fr");
   form: FormGroup;
   fragment = toSignal(inject(ActivatedRoute).fragment);
   isEditing = signal(false);
@@ -18,14 +17,10 @@ export class CrudComponent<T extends Base> {
   isShown = signal(false);
   items = signal<T[]>([]);
   promptedField = signal("");
-  user = signal<{ admin: boolean; user: User } | undefined>(undefined);
+  readonly user = inject(AuthService).user;
   protected confirmService = inject(ConfirmService);
   private crudService = inject(CrudService<T>);
   constructor() {
-    inject(AuthService)
-      .user()
-      .pipe(takeUntilDestroyed())
-      .subscribe(user => this.user.set(user ? { ...user } : undefined));
     this.crudService
       .items()
       .pipe(takeUntilDestroyed())

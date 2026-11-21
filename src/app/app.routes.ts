@@ -1,9 +1,9 @@
 import { isDevMode } from "@angular/core";
 import { AuthGuard, AuthPipe, customClaims, loggedIn } from "@angular/fire/auth-guard";
 import { Routes } from "@angular/router";
+import { CONFIG_APPLICATIONS, CONFIG_CATEGORIES, CONFIG_EXPERIENCES, CONFIG_PROFILES, CONFIG_PROJECTS, CONFIG_SECTIONS, CONFIG_SKILLS } from "@routes/route.configs";
 import { CrudService, SERVICE_CONFIG } from "@services/crud.service";
 import { forkJoin, map, mergeMap, Observable, of, pipe } from "rxjs";
-import { CONFIG_APPLICATIONS, CONFIG_CATEGORIES, CONFIG_EXPERIENCES, CONFIG_PROFILES, CONFIG_PROJECTS, CONFIG_SECTIONS, CONFIG_SKILLS } from "./shared/route.configs";
 
 const combined: AuthPipe = pipe(
   mergeMap(user => (user ? forkJoin([loggedIn(of(user)) as Observable<boolean>, customClaims(of(user)) as Observable<{ admin?: boolean }>]) : of([false, {}] as [boolean, { admin?: boolean }]))),

@@ -1,10 +1,9 @@
 import { NgOptimizedImage } from "@angular/common";
 import { Component, inject, Injector, signal } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
-import { CONFIG_PROFILES } from "@app/shared/route.configs";
 import { Profile } from "@classes/profile";
 import { Section } from "@classes/section";
-import { CrudComponent } from "@components/crud.component";
+import { Crud } from "@components/crud.component";
 import { PromptButtonComponent } from "@components/prompt-button/prompt-button.component";
 import { PromptComponent } from "@components/prompt/prompt.component";
 import { ButtonModule } from "@openng/optimus-ui/button";
@@ -12,6 +11,7 @@ import { DialogModule } from "@openng/optimus-ui/dialog";
 import { InputNumberModule } from "@openng/optimus-ui/inputnumber";
 import { InputTextModule } from "@openng/optimus-ui/inputtext";
 import { TextareaModule } from "@openng/optimus-ui/textarea";
+import { CONFIG_PROFILES } from "@routes/route.configs";
 import { CrudService } from "@services/crud.service";
 import { NgxTypedJsModule } from "ngx-typed-js";
 import { firstValueFrom } from "rxjs";
@@ -22,7 +22,7 @@ import { SectionComponent } from "./section/section.component";
   imports: [NgxTypedJsModule, ButtonModule, NgOptimizedImage, SectionComponent, ReactiveFormsModule, DialogModule, ButtonModule, InputTextModule, TextareaModule, InputNumberModule, PromptComponent, PromptButtonComponent],
   templateUrl: "./home.component.html",
 })
-export class HomeComponent extends CrudComponent<Section> {
+export class HomeComponent extends Crud<Section> {
   profile = signal<Profile | undefined>(undefined);
   strings: string[] = ["Web", "Backend", "Frontend", "FullStack", "SQL", "TypeScript", ".NET", "Angular", "Java", "Python"];
   constructor() {

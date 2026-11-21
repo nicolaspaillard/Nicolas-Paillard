@@ -26,7 +26,7 @@
   <div>
     <div class="flex flex-wrap justify-center gap-5 lg:gap-10">
       @for (section of items(); track section) {
-        <app-section class="flex-[0_0_100%] sm:flex-[0_0_calc(50%-(--spacing(calc(5/2))))] lg:flex-[0_0_calc(50%-(--spacing(calc(10/2))))]" [section]="section" (onEdit)="open(section)" (onRemove)="delete(section, 'text')"></app-section>
+        <app-section class="flex-[0_0_100%] sm:flex-[0_0_calc(50%-(--spacing(calc(5/2))))] lg:flex-[0_0_calc(50%-(--spacing(calc(10/2))))]" [section]="section" (edit)="open(section)" (remove)="delete(section, 'text')"></app-section>
       }
       @if (user()?.admin) {
         <div class="card flex flex-[0_0_100%] items-center justify-center sm:flex-[0_0_calc(50%-(--spacing(calc(5/2))))] lg:flex-[0_0_calc(50%-(--spacing(calc(10/2))))]">

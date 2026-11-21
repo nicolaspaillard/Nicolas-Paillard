@@ -1,13 +1,12 @@
-import { Component, inject, input, model, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Component, effect, inject, input, model, signal } from "@angular/core";
 import { FormGroup, ɵInternalFormsSharedModule } from "@angular/forms";
+import { AuthService } from "@app/layout/services/auth.service";
 import { ApiError } from "@google/genai";
 import { ButtonModule } from "@openng/optimus-ui/button";
 import { DialogModule } from "@openng/optimus-ui/dialog";
 import { InputGroupModule } from "@openng/optimus-ui/inputgroup";
 import { InputTextModule } from "@openng/optimus-ui/inputtext";
 import { SelectModule } from "@openng/optimus-ui/select";
-import { AuthService } from "@services/auth.service";
 import { PromptService } from "@services/prompt.service";
 
 @Component({
@@ -25,19 +24,15 @@ export class PromptComponent {
   models: string[] = [];
 
   private promptService = inject(PromptService);
+  private user = inject(AuthService).user;
   constructor() {
-    const authService = inject(AuthService);
-    authService
-      .user()
-      .pipe(takeUntilDestroyed())
-      .subscribe(user => {
-        if (user?.admin) {
-          this.promptService
-            .getModels()
-            .then(models => (this.models = models))
-            .catch(err => console.error(err));
-        }
-      });
+    effect(() => {
+      if (!this.user()?.admin) return;
+      this.promptService
+        .getModels()
+        .then(models => (this.models = models))
+        .catch(err => console.error(err));
+    });
   }
   pick = (message: string) => {
     this.form.update(current => {
