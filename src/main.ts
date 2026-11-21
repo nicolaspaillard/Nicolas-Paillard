@@ -1,7 +1,6 @@
 import { provideCloudinaryLoader } from "@angular/common";
 import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { provideBrowserGlobalErrorListeners } from "@angular/core";
-import { getAnalytics, provideAnalytics, ScreenTrackingService, UserTrackingService } from "@angular/fire/analytics";
 import { getApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
 import { initializeAppCheck, provideAppCheck, ReCaptchaEnterpriseProvider } from "@angular/fire/app-check";
 import { getAuth, provideAuth } from "@angular/fire/auth";
@@ -34,9 +33,6 @@ bootstrapApplication(App, {
             .catch(err => console.error(err));
         },
       }),
-      // withInMemoryScrolling({
-      //   scrollPositionRestoration: "enabled",
-      // }),
     ),
     provideHttpClient(withInterceptorsFromDi()),
     provideOptimus({
@@ -60,9 +56,6 @@ bootstrapApplication(App, {
       }),
     ),
     provideAuth(() => getAuth()),
-    provideAnalytics(() => getAnalytics()),
-    ScreenTrackingService,
-    UserTrackingService,
     provideAppCheck(() =>
       initializeAppCheck(getApp(), {
         provider: new ReCaptchaEnterpriseProvider("6LezwxwuAAAAAI-yg6gRaL6qUYgO_hz9tp8zEtgY"),
