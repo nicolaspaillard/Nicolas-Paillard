@@ -1,4 +1,4 @@
-import { NgClass, NgTemplateOutlet } from "@angular/common";
+import { NgClass } from "@angular/common";
 import { Component, effect, inject, Injector, signal } from "@angular/core";
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
@@ -55,7 +55,7 @@ const matchFields =
 
 @Component({
   selector: "app-dialogs",
-  imports: [NgClass, NgTemplateOutlet, FormsModule, ReactiveFormsModule, ButtonModule, CheckboxModule, DialogModule, InputTextModule, MultiSelectModule, PasswordModule, TooltipModule],
+  imports: [NgClass, FormsModule, ReactiveFormsModule, ButtonModule, CheckboxModule, DialogModule, InputTextModule, MultiSelectModule, PasswordModule, TooltipModule],
   templateUrl: "./dialogs.html",
 })
 export class Dialogs {

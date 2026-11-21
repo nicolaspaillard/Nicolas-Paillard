@@ -1,9 +1,7 @@
-import { Injectable, inject } from "@angular/core";
+import { inject, Service } from "@angular/core";
 import { Confirmation, ConfirmationService } from "@openng/optimus-ui/api";
 
-@Injectable({
-  providedIn: "root",
-})
+@Service()
 export class ConfirmService {
   private confirmationService = inject(ConfirmationService);
 

@@ -3,7 +3,6 @@ import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http"
 import { provideBrowserGlobalErrorListeners } from "@angular/core";
 import { getApp, initializeApp, provideFirebaseApp } from "@angular/fire/app";
 import { browserLocalPersistence, browserSessionPersistence, indexedDBLocalPersistence, initializeAuth, provideAuth } from "@angular/fire/auth";
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, provideFirestore } from "@angular/fire/firestore";
 import { bootstrapApplication } from "@angular/platform-browser";
 import { provideRouter, withComponentInputBinding, withViewTransitions } from "@angular/router";
 import { App } from "@app/app";
@@ -60,10 +59,10 @@ bootstrapApplication(App, {
     //     isTokenAutoRefreshEnabled: true,
     //   }),
     // ),
-    provideFirestore(() =>
-      initializeFirestore(getApp(), {
-        localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
-      }),
-    ),
+    // provideFirestore(() =>
+    //   initializeFirestore(getApp(), {
+    //     localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+    //   }),
+    // ),
   ],
 }).catch(err => console.error(err));

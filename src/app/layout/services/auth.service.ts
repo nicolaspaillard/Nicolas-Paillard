@@ -1,9 +1,7 @@
-import { computed, inject, Injectable, signal } from "@angular/core";
+import { computed, inject, Service, signal } from "@angular/core";
 import { Auth, confirmPasswordReset, createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, User, validatePassword, verifyPasswordResetCode } from "@angular/fire/auth";
 
-@Injectable({
-  providedIn: "root",
-})
+@Service()
 export class AuthService {
   readonly user = computed(() => this._user());
   private readonly _user = signal<{ admin: boolean; user: User } | undefined>(undefined);

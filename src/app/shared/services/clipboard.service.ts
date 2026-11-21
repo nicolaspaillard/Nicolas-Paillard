@@ -1,7 +1,7 @@
-import { inject, Injectable } from "@angular/core";
+import { inject, Service } from "@angular/core";
 import { ToastService } from "@app/layout/services/toast.service";
 
-@Injectable({ providedIn: "root" })
+@Service()
 export class ClipboardService {
   private toastService = inject(ToastService);
 

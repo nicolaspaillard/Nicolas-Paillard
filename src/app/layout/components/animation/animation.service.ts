@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Service } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Observable, Subject } from "rxjs";
 
@@ -11,9 +11,7 @@ export interface Animation {
   steps: Step[];
 }
 
-@Injectable({
-  providedIn: "root",
-})
+@Service()
 export class AnimationService {
   private _animations = new Subject<Animation>();
   animate = (animation: Animation) => this._animations.next(animation);

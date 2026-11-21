@@ -1,10 +1,10 @@
-import { EnvironmentInjector, inject, Injectable } from "@angular/core";
+import { EnvironmentInjector, inject } from "@angular/core";
 import { PreloadingStrategy, Route } from "@angular/router";
 import { Base } from "@classes/base";
 import { CrudService, SERVICE_CONFIG, ServiceConfig } from "@services/crud.service";
 import { catchError, forkJoin, Observable, of, take, timeout } from "rxjs";
 
-@Injectable({ providedIn: "root" })
+@Service()
 export class PreloadWithDataStrategy implements PreloadingStrategy {
   private parentInjector = inject(EnvironmentInjector);
   private readonly preloadedCollections = new Set<string>();
